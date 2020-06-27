@@ -1,0 +1,1 @@
+![Version](https://img.shields.io/github/package-json/v/aseprano/burraco_match) ![Build](https://img.shields.io/travis/aseprano/burraco_match) [![Coverage Status](https://img.shields.io/coveralls/github/aseprano/burraco_match/master)](https://coveralls.io/github/aseprano/burraco_match?branch=master)
