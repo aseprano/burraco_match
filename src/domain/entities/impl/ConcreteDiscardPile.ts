@@ -46,7 +46,7 @@ export class ConcreteDiscardPile extends AbstractEntity implements DiscardPile {
         this.cards = this.cardSerializer.unserializeCards(snapshot.cards);
     }
     
-    protected applyEvent(event: Event): void {
+    public applyEvent(event: Event): void {
         switch (event.getName()) {
             case DiscardPileInitialized.EventName:
                 this.handleDiscardPileInitializedEvent(event);

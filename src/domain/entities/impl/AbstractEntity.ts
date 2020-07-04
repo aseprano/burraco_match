@@ -52,7 +52,7 @@ export abstract class AbstractEntity implements Entity {
 
     protected abstract applySnapshot(snapshot: SnapshotState): void;
 
-    protected abstract applyEvent(event: Event): void;
+    public abstract applyEvent(event: Event): void;
     
     public abstract getId(): any;
     

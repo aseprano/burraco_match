@@ -1,13 +1,28 @@
-import { Entity } from "./Entity";
-import { Card } from "../value_objects/Card";
+import { Card, CardList } from "../value_objects/Card";
 
-export interface Stock extends Entity {
+export interface Stock {
 
+    initialize(cards: CardList): void;
+
+    getCards(): CardList;
+    
     /**
      * Pick one card from the top of the stock
      * Throws a StockEmptyException if the stock is empty
      */
-    pickOneCard(): Card;
+    pickOne(): Card;
+
+    /**
+     * Pick some cards from the top of the stock
+     * Throws a StockEmptyException if the stock has no enough cards.
+     */
+    pick(n: number): CardList;
+
+    /**
+     * Removes the first n cards. No excpetion is thrown if there are no enough cards.
+     * @param n 
+     */
+    shift(n: number): void;
 
     isEmpty(): boolean;
     
