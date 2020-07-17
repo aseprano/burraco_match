@@ -1,5 +1,5 @@
 import { Match } from "../Match";
-import { AbstractEntity } from "./AbstractEntity";
+import { AbstractRootEntity } from "./AbstractRootEntity";
 import { MatchInitialized} from "../../events/MatchInitialized";
 import { PlayerID } from "../../value_objects/PlayerID";
 import { Team } from "../../value_objects/Team";
@@ -9,18 +9,59 @@ import { MatchPlayersException } from "../../exceptions/MatchPlayersException";
 import { MatchStarted } from "../../events/MatchStarted";
 import { Stock } from "../Stock";
 import { CardList } from "../../value_objects/Card";
+import { CardSerializer } from "../../domain-services/CardSerializer";
+import { Player } from "../Player";
+import { ConcretePlayer } from "./ConcretePlayer";
+import { DiscardPile } from "../DiscardPile";
+import { DomainEvent } from "../../events/DomainEvent";
 
-export class ConcreteMatch extends AbstractEntity implements Match {
+export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
-    private gameId = 0;
+    private started = false;
+    private players: Player[] = [];
+    private currentPlayerIndex = -1;
 
-    constructor(private stock: Stock) {
+    constructor(
+        private stock: Stock,
+        private discardPile: DiscardPile,
+        private cardSerializer: CardSerializer
+    ) {
         super();
     }
 
     private handleMatchInitializedEvent(event: Event) {
         this.id = event.getPayload().id;
-        this.stock.applyEvent(event);
+        this.stock.initialize(this.cardSerializer.unserializeCards(event.getPayload().cards));
+    }
+
+    private handleMatchStartedEvent(event: Event) {
+        this.started = true;
+
+        this.players = event.getPayload()
+            .players
+            .map((playerId: string) => new ConcretePlayer(playerId, this.stock, this.discardPile));
+    }
+
+    private deal(): void {
+        // this.players.forEach((player) => {
+        //     player.deal(this.stock.pick(11));
+        // });
+    }
+
+    private checkTeams(team1: PlayerID[], team2: PlayerID[]) {
+        if (team1.some((player) => team2.includes(player))) {
+            throw new MatchPlayersException();
+        }
+    }
+
+    private start(gameId: number, team1: PlayerID[], team2: PlayerID[]): void {
+        if (this.started) {
+            throw new Error('Match already started');
+        }
+
+        this.checkTeams(team1, team2);
+        this.appendUncommittedEvent(new MatchStarted(this.id, team1.map(p => p.asString()), team2.map(p => p.asString())));
+        this.deal();
     }
 
     protected buildSnapshot(): SnapshotState {
@@ -31,10 +72,20 @@ export class ConcreteMatch extends AbstractEntity implements Match {
         throw new Error("Method not implemented.");
     }
 
+    protected propagateEvent(event: Event): void {
+        this.stock.applyEvent(event);
+        this.discardPile.applyEvent(event);
+        this.players.forEach((p) => p.applyEvent(event));
+    }
+
     public applyEvent(event: Event): void {
         switch(event.getName()) {
             case MatchInitialized.EventName:
                 this.handleMatchInitializedEvent(event);
+                break;
+
+            case MatchStarted.EventName:
+                this.handleMatchStartedEvent(event);
                 break;
         }
     }
@@ -45,17 +96,6 @@ export class ConcreteMatch extends AbstractEntity implements Match {
 
     public initialize(id: number, cards: CardList) {
         this.appendUncommittedEvent(new MatchInitialized(id, cards));
-    }
-
-    private checkTeams(team1: PlayerID[], team2: PlayerID[]) {
-        if (team1.some((player) => team2.includes(player))) {
-            throw new MatchPlayersException();
-        }
-    }
-
-    private start(gameId: number, team1: PlayerID[], team2: PlayerID[]): void {
-        this.checkTeams(team1, team2);
-        this.appendUncommittedEvent(new MatchStarted(this.id, this.gameId, team1.map(p => p.asString()), team2.map(p => p.asString())));
     }
 
     public start1vs1(gameId: number, player1: PlayerID, player2: PlayerID): void {
