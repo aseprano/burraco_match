@@ -1,11 +1,11 @@
 import { Run } from "../Run";
-import { AbstractEntity } from "./AbstractEntity";
 import { RunID } from "../../value_objects/RunID";
 import { Card, CardList } from "../../value_objects/Card";
 import { RunException } from "../../exceptions/RunException";
 import { WildcardException } from "../../exceptions/WildcardException";
 import { SnapshotState } from "../../../tech/Snapshot";
 import { IncomingEvent } from "../../../tech/impl/events/IncomingEvent";
+import { AbstractEntity } from "./AbstractEntity";
 
 export abstract class AbstractRun extends AbstractEntity implements Run
 {
