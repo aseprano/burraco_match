@@ -1,8 +1,8 @@
-import { Entity } from "../../entities/Entity";
 import { Snapshot } from "../../../tech/Snapshot";
 import { EventStream } from "../../../tech/events/EventStream";
 import { EventStore } from "../../../tech/events/EventStore";
 import { SnapshotRepository } from "../../../tech/SnapshotRepository";
+import { RootEntity } from "../../entities/RootEntity";
 
 export interface EntityStream {
     snapshot?: Snapshot;
@@ -13,7 +13,7 @@ export abstract class AbstractRepository {
 
     constructor(private eventStore: EventStore, private snapshotRepo: SnapshotRepository) {}
 
-    private shouldTakeSnapshot(entity: Entity): boolean {
+    private shouldTakeSnapshot(entity: RootEntity): boolean {
         return this.getSnapshotInterval() > 0 && (entity.getVersion() % this.getSnapshotInterval()) === 0
     }
 
@@ -40,7 +40,7 @@ export abstract class AbstractRepository {
      * @throws StreamAlreadyExistingException if the entity is being persisted for the first time and a stream with the same name already exists
      * @throws StreamNotFoundException if the entity is being updated but no stream exists for it
      */
-    protected async saveEntity(entity: Entity): Promise<void> {
+    protected async saveEntity(entity: RootEntity): Promise<void> {
         const streamId = this.streamNameForId(entity.getId());
 
         if (entity.getVersion() >= 0) {
@@ -60,7 +60,7 @@ export abstract class AbstractRepository {
         }
     }
 
-    protected async deleteEntity(entity: Entity): Promise<void> {
+    protected async deleteEntity(entity: RootEntity): Promise<void> {
 
     }
 
