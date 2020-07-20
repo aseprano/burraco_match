@@ -1,13 +1,22 @@
 import { MatchStarted } from "./MatchStarted";
+import { Card, Suit } from "../value_objects/Card";
 
 describe('MatchStarted', () => {
     it('builds the proper payload', () => {
-        const event = new MatchStarted(123, 7, ['john', 'mike'], ['foo', 'bar']);
+        const event = new MatchStarted(
+            123,
+            7,
+            [Card.Joker(), new Card(Suit.Clubs, 2)],
+            ['john', 'mike'],
+            ['foo', 'bar']
+        );
 
         expect(event.getName()).toEqual('com.herrdoktor.buraco.events.MatchStarted');
+        
         expect(event.getPayload()).toEqual({
             id: 123,
             game_id: 7,
+            stock: [{suit: Suit.Joker, value: 0}, {suit: Suit.Clubs, value: 2}],
             team1: ['john', 'mike'],
             team2: ['foo', 'bar'],
         });
