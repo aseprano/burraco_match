@@ -1,7 +1,7 @@
 import { DomainEvent } from "./DomainEvent";
 import { CardList } from "../value_objects/Card";
 
-const EventName = 'com.herrdoktor.buraco.events.cardsDealtToPlayer';
+const EventName = 'com.herrdoktor.buraco.events.CardsDealtToPlayer';
 
 export class CardsDealtToPlayer extends DomainEvent {
     public static EventName = EventName;

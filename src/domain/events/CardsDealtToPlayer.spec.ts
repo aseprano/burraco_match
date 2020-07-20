@@ -10,7 +10,7 @@ describe('CardsDealtToPlayer', () => {
             'darkbyte'
         );
 
-        expect(event.getName()).toEqual('com.herrdoktor.buraco.events.cardsDealtToPlayer');
+        expect(event.getName()).toEqual('com.herrdoktor.buraco.events.CardsDealtToPlayer');
         
         expect(event.getPayload()).toEqual({
             match_id: 10,

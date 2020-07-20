@@ -1,16 +1,18 @@
 import { DiscardPileInitialized } from "./DiscardPileInitialized";
+import { Card, Suit } from "../value_objects/Card";
 
-describe("DiscardPileInitialized", () => {
+describe('DiscardPileInitialized', () => {
 
-    it("returns the proper payload", () => {
-        const event = new DiscardPileInitialized(10, 123);
+    it('builds the proper payload', () => {
+        const event = new DiscardPileInitialized(7, Card.Joker());
+
+        expect(event.getName()).toEqual('com.herrdoktor.buraco.events.DiscardPileInitialized');
 
         expect(event.getPayload()).toEqual({
-            id: 10,
-            matchId: 123
+            match_id: 7,
+            card: {suit: Suit.Joker, value: 0}
         });
-
-        expect(event.getName()).toEqual("com.herrdoktor.buraco.events.discardPileInitialized");
+        
     });
 
 });

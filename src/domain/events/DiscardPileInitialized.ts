@@ -1,19 +1,22 @@
 import { DomainEvent } from "./DomainEvent";
+import { Card } from "../value_objects/Card";
+
+const EventName = 'com.herrdoktor.buraco.events.DiscardPileInitialized';
 
 export class DiscardPileInitialized extends DomainEvent {
-    public static EventName = "com.herrdoktor.buraco.events.discardPileInitialized";
+    public static EventName = EventName;
 
-    constructor(id: number, matchId: number) {
+    constructor(matchId: number, card: Card) {
         super();
-
+        
         this.setPayload({
-            id,
-            matchId
+            match_id: matchId,
+            card: this.serializeCard(card)
         });
     }
-
+    
     public getName(): string {
-        return DiscardPileInitialized.EventName;
+        return EventName;
     }
 
 }
