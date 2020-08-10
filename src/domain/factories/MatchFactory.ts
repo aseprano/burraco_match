@@ -4,6 +4,8 @@ import { Team } from "../value_objects/Team";
 
 export interface MatchFactory {
 
-    createNew(): Promise<Match>;
+    createInitialized(): Promise<Match>;
 
+    createEmpty(): Match;
+    
 }

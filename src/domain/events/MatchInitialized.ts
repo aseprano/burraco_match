@@ -4,12 +4,11 @@ import { CardList } from "../value_objects/Card";
 export class MatchInitialized extends DomainEvent {
     public static EventName = 'com.herrdoktor.buraco.events.MatchInitialized';
 
-    constructor(matchId: number, cards: CardList) {
+    constructor(matchId: number) {
         super();
         
         this.setPayload({
-            id: matchId,
-            cards: this.serializeCardList(cards)
+            id: matchId
         });
     }
 

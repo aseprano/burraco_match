@@ -9,11 +9,9 @@ import { MatchPlayersException } from "../../exceptions/MatchPlayersException";
 import { MatchStarted } from "../../events/MatchStarted";
 import { Stock } from "../Stock";
 import { CardList } from "../../value_objects/Card";
-import { CardSerializer } from "../../domain-services/CardSerializer";
 import { Player } from "../Player";
 import { ConcretePlayer } from "./ConcretePlayer";
 import { DiscardPile } from "../DiscardPile";
-import { DomainEvent } from "../../events/DomainEvent";
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
@@ -24,14 +22,12 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     constructor(
         private stock: Stock,
         private discardPile: DiscardPile,
-        private cardSerializer: CardSerializer
     ) {
         super();
     }
 
     private handleMatchInitializedEvent(event: Event) {
         this.id = event.getPayload().id;
-        this.stock.initialize(this.cardSerializer.unserializeCards(event.getPayload().cards));
     }
 
     private handleMatchStartedEvent(event: Event) {
@@ -60,7 +56,8 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         }
 
         this.checkTeams(team1, team2);
-        this.appendUncommittedEvent(new MatchStarted(this.id, team1.map(p => p.asString()), team2.map(p => p.asString())));
+
+        this.appendUncommittedEvent(new MatchStarted(this.id, gameId, [], team1.map(p => p.asString()), team2.map(p => p.asString())));
         this.deal();
     }
 
@@ -94,8 +91,8 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         return this.id;
     }
 
-    public initialize(id: number, cards: CardList) {
-        this.appendUncommittedEvent(new MatchInitialized(id, cards));
+    public initialize(id: number) {
+        this.appendUncommittedEvent(new MatchInitialized(id));
     }
 
     public start1vs1(gameId: number, player1: PlayerID, player2: PlayerID): void {
