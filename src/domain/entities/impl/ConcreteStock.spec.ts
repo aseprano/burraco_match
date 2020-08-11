@@ -10,9 +10,10 @@ describe("ConcreteStock", () => {
     const joker = Card.Joker();
     const serializer = new StdCardSerializer();
 
-    it("can be initialized", () => {
-        const stockCards = [deuceOfClubs, threeOfClubs, joker];
+    it("can be initialized from MatchStarted event", () => {
         const stock = new ConcreteStock(serializer);
+
+        const stockCards = [deuceOfClubs, threeOfClubs, joker];
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
         expect(stock.getCards()).toEqual(stockCards);
