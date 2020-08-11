@@ -76,7 +76,7 @@ export class ConcreteStock implements Stock {
     }
 
     public getCards(): CardList {
-        return this.cards;
+        return this.cards.slice(0);
     }
     
     public isEmpty(): boolean {
