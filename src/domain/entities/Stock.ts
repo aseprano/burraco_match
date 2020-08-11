@@ -4,6 +4,12 @@ import { Entity } from "./Entity";
 export interface Stock extends Entity {
     
     /**
+     * Initializes and shuffles the stock.
+     * The result is a 108-cards stock.
+     */
+    shuffle(): void;
+
+    /**
      * Pick one card from the top of the stock
      * Throws a StockEmptyException if the stock is empty
      */
