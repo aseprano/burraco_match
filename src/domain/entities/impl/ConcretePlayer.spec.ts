@@ -1,9 +1,8 @@
 import { Stock } from '../Stock';
-import { DiscardPile } from '../DiscardPile';
 import { StdCardSerializer } from '../../domain-services/impl/StdCardSerializer';
 import { ConcretePlayer } from './ConcretePlayer';
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
-import { Card, Suit } from "../../value_objects/Card";
+import { Card, Suit, CardList } from "../../value_objects/Card";
 
 describe('ConcretePlayer', () => {
     const serializer = new StdCardSerializer();
@@ -14,7 +13,7 @@ describe('ConcretePlayer', () => {
 
     it('can be initialized via constructor', () => {
         const stock: Stock = <Stock>{};
-        const discardPile: DiscardPile = <DiscardPile>{};
+        const discardPile: CardList = [];
 
         const player = new ConcretePlayer('darkbyte', serializer, stock, discardPile);
         expect(player.getId()).toEqual('darkbyte');
@@ -23,7 +22,7 @@ describe('ConcretePlayer', () => {
 
     it('\'s hand is built from event', () => {
         const stock: Stock = <Stock>{};
-        const discardPile: DiscardPile = <DiscardPile>{};
+        const discardPile: CardList = [];
 
         const player = new ConcretePlayer('darkbyte', serializer, stock, discardPile);
 

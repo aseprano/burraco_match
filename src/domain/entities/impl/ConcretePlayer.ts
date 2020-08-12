@@ -1,12 +1,9 @@
 import { Player } from "../Player";
-import { AbstractRootEntity } from "./AbstractRootEntity";
-import { SnapshotState } from "../../../tech/Snapshot";
 import { Event } from "../../../tech/events/Event";
 import { Card, CardList } from "../../value_objects/Card";
 import { Run } from "../Run";
 import { RunID } from "../../value_objects/RunID";
 import { Stock } from "../Stock";
-import { DiscardPile } from "../DiscardPile";
 import { AbstractEntity } from "./AbstractEntity";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 import { CardSerializer } from "../../domain-services/CardSerializer";
@@ -18,7 +15,7 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         private playerId: string,
         private cardSerializer: CardSerializer,
         private stock: Stock,
-        private discardPile: DiscardPile
+        private discardPile: CardList
     ) {
         super();
     }
