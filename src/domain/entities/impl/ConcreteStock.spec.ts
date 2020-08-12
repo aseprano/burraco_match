@@ -17,7 +17,6 @@ describe("ConcreteStock", () => {
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
         expect(stock.getCards()).toEqual(stockCards);
-        expect(stock.isEmpty()).toBeFalse();
     });
 
     it('can be used to pick one card when non empty', () => {
@@ -27,7 +26,17 @@ describe("ConcreteStock", () => {
 
         const card = stock.pickOne();
         expect(card).toEqual(deuceOfClubs);
-        expect(stock.isEmpty()).toBeFalse();
+        expect(stock.getCards().length).toBe(3, 'Cards must not be removed from stock when picked');
+    });
+
+    it('can be used to pick more than one card', () => {
+        const stockCards = [deuceOfClubs, threeOfClubs, joker];
+        const stock = new ConcreteStock(serializer);
+        stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
+
+        const card = stock.pick(2);
+        expect(card).toEqual([deuceOfClubs, threeOfClubs]);
+        expect(stock.getCards().length).toBe(3, 'Cards must not be removed from stock when picked');
     });
 
     it('throws an exception when trying to pick one card and is empty', () => {

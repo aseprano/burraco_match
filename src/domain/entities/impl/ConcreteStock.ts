@@ -5,6 +5,7 @@ import { Event } from "../../../tech/events/Event";
 import { MatchStarted } from "../../events/MatchStarted";
 import { CardSerializer } from "../../domain-services/CardSerializer";
 import { timingSafeEqual } from "crypto";
+import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 
 export class ConcreteStock implements Stock {
     private cards: CardList = [];
@@ -31,12 +32,31 @@ export class ConcreteStock implements Stock {
         return this.cards.length < n;
     }
 
-    private shift(n: number): CardList {
+    /**
+     * Removes the first n cards
+     * 
+     * @param n 
+     */
+    private remove(n: number): CardList {
         return this.cards.splice(0, n);
+    }
+
+    /**
+     * Returns n cards from the top of the stock.
+     * The cards are not removed.
+     * 
+     * @param n 
+     */
+    private get(n: number): CardList {
+        return this.cards.slice(0, n);
     }
 
     private handleMatchStarted(event: Event) {
         this.cards = this.serializer.unserializeCards(event.getPayload().stock);
+    }
+
+    private handleCardsDealtToPlayer(event: Event) {
+        this.remove(event.getPayload().cards.length);
     }
 
     public getId(): number {
@@ -47,6 +67,10 @@ export class ConcreteStock implements Stock {
         switch (event.getName()) {
             case MatchStarted.EventName:
                 this.handleMatchStarted(event);
+                break;
+
+            case CardsDealtToPlayer.EventName:
+                this.handleCardsDealtToPlayer(event);
                 break;
         }
     }
@@ -68,7 +92,7 @@ export class ConcreteStock implements Stock {
             throw new InsufficientCardsInStockException();
         }
         
-        return this.shift(n);
+        return this.get(n);
     }
     
     public pickOne(): Card {
@@ -79,8 +103,4 @@ export class ConcreteStock implements Stock {
         return this.cards.slice(0);
     }
     
-    public isEmpty(): boolean {
-        return this.cards.length === 0;
-    }
-
 }
