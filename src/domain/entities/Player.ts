@@ -5,8 +5,6 @@ import { Entity } from "./Entity";
 
 export interface Player extends Entity {
 
-    deal(cards: CardList): void;
-    
     pickOneCardFromStock(): Card;
 
     pickAllCardsFromDiscardPile(): CardList;
