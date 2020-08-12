@@ -1,5 +1,5 @@
 import { Player } from "../Player";
-import { AbstractEntity } from "./AbstractEntity";
+import { AbstractRootEntity } from "./AbstractRootEntity";
 import { SnapshotState } from "../../../tech/Snapshot";
 import { Event } from "../../../tech/events/Event";
 import { Card, CardList } from "../../value_objects/Card";
@@ -7,37 +7,43 @@ import { Run } from "../Run";
 import { RunID } from "../../value_objects/RunID";
 import { Stock } from "../Stock";
 import { DiscardPile } from "../DiscardPile";
+import { AbstractEntity } from "./AbstractEntity";
+import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
+import { CardSerializer } from "../../domain-services/CardSerializer";
 
 export class ConcretePlayer extends AbstractEntity implements Player {
-    private cards: CardList = [];
+    private hand: CardList = [];
 
     public constructor(
-        private playerId: number,
+        private playerId: string,
+        private cardSerializer: CardSerializer,
         private stock: Stock,
         private discardPile: DiscardPile
     ) {
         super();
-
+    }
+    
+    private appendCardsFromEvent(eventCards: any[]) {
+        const cards: CardList = this.cardSerializer.unserializeCards(eventCards);
+        this.hand.push(...cards);
     }
 
-    protected buildSnapshot(): SnapshotState {
-        throw new Error("Method not implemented.");
+    private handleCardsDealtToPlayerEvent(event: Event) {
+        if (event.getPayload().player_id === this.playerId) {
+            this.appendCardsFromEvent(event.getPayload().cards);
+        }
     }
 
-    protected applySnapshot(snapshot: SnapshotState): void {
-        throw new Error("Method not implemented.");
-    }
-
-    protected applyEvent(event: Event): void {
-        throw new Error("Method not implemented.");
+    public applyEvent(event: Event): void {
+        switch (event.getName()) {
+            case CardsDealtToPlayer.EventName:
+                this.handleCardsDealtToPlayerEvent(event);
+                break;
+        }
     }
 
     public getId() {
         return this.playerId;
-    }
-    
-    public deal(cards: CardList): void {
-
     }
 
     public pickOneCardFromStock(): Card {
@@ -58,6 +64,10 @@ export class ConcretePlayer extends AbstractEntity implements Player {
 
     public discard(card: Card): void {
         throw new Error("Method not implemented.");
+    }
+
+    public getHand(): CardList {
+        return this.hand.slice(0);
     }
 
 }
