@@ -43,11 +43,11 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         return this.playerId;
     }
 
-    public pickOneCardFromStock(): Card {
+    public takeOneCardFromStock(): Card {
         throw new Error("Method not implemented.");
     }
 
-    public pickAllCardsFromDiscardPile(): CardList {
+    public pickUpAllCardsFromDiscardPile(): CardList {
         throw new Error("Method not implemented.");
     }
 

@@ -103,7 +103,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     }
 
     protected deal(targetPlayer: Player, numberOfCards = 1) {
-        const cardsDealt = this.stock.pick(numberOfCards);
+        const cardsDealt = this.stock.take(numberOfCards);
         this.appendUncommittedEvent(new CardsDealtToPlayer(this.id, cardsDealt, targetPlayer.getId()));
     }
 
@@ -114,12 +114,12 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     }
 
     private createPots(): void {
-        this.appendUncommittedEvent(new PotCreated(this.id, this.stock.pick(11)));
-        this.appendUncommittedEvent(new PotCreated(this.id, this.stock.pick(11)));
+        this.appendUncommittedEvent(new PotCreated(this.id, this.stock.take(11)));
+        this.appendUncommittedEvent(new PotCreated(this.id, this.stock.take(11)));
     }
 
     private throwFirstCard(): void {
-        const cardThrown = this.stock.pickOne();
+        const cardThrown = this.stock.takeOne();
         this.appendUncommittedEvent(new FirstCardThrown(this.id, cardThrown));
     }
 

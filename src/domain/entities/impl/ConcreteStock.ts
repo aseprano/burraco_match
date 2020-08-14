@@ -120,7 +120,7 @@ export class ConcreteStock extends AbstractEntity implements Stock {
         this.setCards(deck);
     }
 
-    public pick(n: number): CardList {
+    public take(n: number): CardList {
         if (this.hasLessCardsThan(n)) {
             throw new InsufficientCardsInStockException();
         }
@@ -128,8 +128,8 @@ export class ConcreteStock extends AbstractEntity implements Stock {
         return this.get(n);
     }
     
-    public pickOne(): Card {
-        return this.pick(1)[0];
+    public takeOne(): Card {
+        return this.take(1)[0];
     }
 
     public getCards(): CardList {

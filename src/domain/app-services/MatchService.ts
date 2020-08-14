@@ -20,4 +20,8 @@ export interface MatchService {
      */
     start2v2(gameId: number, team1: Team, team2: Team): Promise<MatchID>;
 
+    playerPicksFromStock(matchId: MatchID, player: PlayerID): void;
+
+    playerTakesDiscardPile(matchId: MatchID, player: PlayerID): void;
+
 }

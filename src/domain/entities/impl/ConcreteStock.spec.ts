@@ -28,7 +28,7 @@ describe("ConcreteStock", () => {
         const stock = new ConcreteStock(serializer);
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
-        const card = stock.pickOne();
+        const card = stock.takeOne();
         expect(card).toEqual(deuceOfClubs);
         expect(stock.getCards().length).toBe(3, 'Cards must not be removed from stock when picked');
     });
@@ -38,14 +38,14 @@ describe("ConcreteStock", () => {
         const stock = new ConcreteStock(serializer);
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
-        const card = stock.pick(2);
+        const card = stock.take(2);
         expect(card).toEqual([deuceOfClubs, threeOfClubs]);
         expect(stock.getCards().length).toBe(3, 'Cards must not be removed from stock when picked');
     });
 
     it('throws an exception when trying to pick one card and is empty', () => {
         const emptyStock = new ConcreteStock(serializer);
-        expect(() => emptyStock.pickOne()).toThrow(new InsufficientCardsInStockException());
+        expect(() => emptyStock.takeOne()).toThrow(new InsufficientCardsInStockException());
     });
 
     it('throws an exception when trying to pick too many cards', () => {
@@ -53,7 +53,7 @@ describe("ConcreteStock", () => {
         const stock = new ConcreteStock(serializer);
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
-        expect(() => stock.pick(4)).toThrow(new InsufficientCardsInStockException());
+        expect(() => stock.take(4)).toThrow(new InsufficientCardsInStockException());
     });
 
     it('can be rebuilt and shuffled', () => {

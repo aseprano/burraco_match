@@ -5,9 +5,9 @@ import { Entity } from "./Entity";
 
 export interface Player extends Entity {
 
-    pickOneCardFromStock(): Card;
+    takeOneCardFromStock(): Card;
 
-    pickAllCardsFromDiscardPile(): CardList;
+    pickUpAllCardsFromDiscardPile(): CardList;
 
     createRun(cards: CardList): Run;
 
