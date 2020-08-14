@@ -4,41 +4,64 @@ import { InsufficientCardsInStockException } from "../../exceptions/Insufficient
 import { Event } from "../../../tech/events/Event";
 import { MatchStarted } from "../../events/MatchStarted";
 import { CardSerializer } from "../../domain-services/CardSerializer";
-import { timingSafeEqual } from "crypto";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
+import { Provider } from "../../../lib/Provider";
+import { Consumer } from "../../../lib/Conumer";
+import { CardsShuffler } from "../../domain-services/CardsShuffler";
+import { PotCreated } from "../../events/PotCreated";
+import { FirstCardThrown } from "../../events/FirstCardThrown";
+import { AbstractEntity } from "./AbstractEntity";
 
-export class ConcreteStock implements Stock {
+export class ConcreteStock extends AbstractEntity implements Stock {
     private cards: CardList = [];
 
-    constructor(private serializer: CardSerializer) {}
+    constructor(
+        private serializer: CardSerializer,
+        private shuffler: Consumer<CardList> = CardsShuffler.randomShuffling,
+        private deckProvider?: Provider<CardList>,
+    ) {
+        super();
+    }
 
-    private rebuild(): void {
-        const newCards: CardList = [];
+    private getNewDeckOfCards(): CardList {
+        if (this.deckProvider) {
+            return this.deckProvider().slice(0);
+        }
+
+        const newDeck: CardList = [];
 
         [...Array(2)].forEach(() => {
             [Suit.Clubs, Suit.Diamonds, Suit.Hearts, Suit.Spades].forEach((suit) => {
                 [...Array(13).keys()].forEach((value) => {
-                    newCards.push(new Card(suit, value+1));
+                    newDeck.push(new Card(suit, value+1));
                 })
             });
 
-            newCards.push(Card.Joker(), Card.Joker());
+            newDeck.push(Card.Joker(), Card.Joker());
         });
 
-        this.cards = newCards;
+        return newDeck;
     }
 
     private hasLessCardsThan(n: number): boolean {
         return this.cards.length < n;
     }
 
-    /**
-     * Removes the first n cards
-     * 
-     * @param n 
-     */
-    private remove(n: number): CardList {
-        return this.cards.splice(0, n);
+    private setCards(newCards: CardList) {
+        this.cards = newCards.slice(0);
+    }
+
+    private removeFirstOccurrenceOf(cardToRemove: Card) {
+        const firstOccurrence = this.cards.findIndex((card) => card.isEqual(cardToRemove));
+
+        if (firstOccurrence !== -1) {
+            this.cards.splice(firstOccurrence, 1);
+        }
+    }
+
+    private removeCardsFromEvent(cards: any[]) {
+        this.serializer.unserializeCards(cards)
+            .forEach((card) => this.removeFirstOccurrenceOf(card))
     }
 
     /**
@@ -51,40 +74,50 @@ export class ConcreteStock implements Stock {
         return this.cards.slice(0, n);
     }
 
-    private handleMatchStarted(event: Event) {
-        this.cards = this.serializer.unserializeCards(event.getPayload().stock);
+    private handleMatchStartedEvent(event: Event) {
+        this.setCards(this.serializer.unserializeCards(event.getPayload().stock));
     }
 
-    private handleCardsDealtToPlayer(event: Event) {
-        this.remove(event.getPayload().cards.length);
+    private handleCardsDealtToPlayerEvent(event: Event) {
+        this.removeCardsFromEvent(event.getPayload().cards);
+    }
+
+    private handlePotCreatedEvent(event: Event) {
+        this.removeCardsFromEvent(event.getPayload().cards);
+    }
+
+    private handleFirstCardThrownEvent(event: Event) {
+        this.removeCardsFromEvent([event.getPayload().card]);
     }
 
     public getId(): number {
         return 1;
     }
 
-    public applyEvent(event: Event): void {
+    protected doApplyEvent(event: Event): void {
         switch (event.getName()) {
             case MatchStarted.EventName:
-                this.handleMatchStarted(event);
+                this.handleMatchStartedEvent(event);
                 break;
 
             case CardsDealtToPlayer.EventName:
-                this.handleCardsDealtToPlayer(event);
+                this.handleCardsDealtToPlayerEvent(event);
+                break;
+
+            case PotCreated.EventName:
+                this.handlePotCreatedEvent(event);
+                break;
+
+            case FirstCardThrown.EventName:
+                this.handleFirstCardThrownEvent(event);
                 break;
         }
     }
 
     public shuffle(): void {
-        this.rebuild();
-
-        const newCards: CardList = [];
-
-        while (this.cards.length) {
-            newCards.push(...this.cards.splice(Math.floor(Math.random()*this.cards.length), 1));
-        }
-
-        this.cards = newCards;
+        const deck = this.getNewDeckOfCards();
+        this.shuffler(deck);
+        this.setCards(deck);
     }
 
     public pick(n: number): CardList {

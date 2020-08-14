@@ -9,8 +9,8 @@ export class ConcreteMatchService implements MatchService {
     constructor(private factory: MatchFactory) {}
 
     public async start1v1(gameId: number, player1: PlayerID, player2: PlayerID): Promise<MatchID> {
-        const match = await this.factory.createNew(gameId);
-        match.start1vs1(player1, player2);
+        const match = await this.factory.createInitialized();
+        match.start1vs1(gameId, player1, player2);
 
         throw new Error('Method not implemented');
     }

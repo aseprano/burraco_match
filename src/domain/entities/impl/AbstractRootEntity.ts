@@ -30,6 +30,11 @@ export abstract class AbstractRootEntity extends AbstractEntity implements RootE
         return events;
     }
 
+    public applyEvent(event: Event) {
+        super.applyEvent(event);
+        this.propagateEvent(event);
+    }
+
     public getSnapshot(): Snapshot {
         const snapshotState = this.buildSnapshot();
         
@@ -46,13 +51,9 @@ export abstract class AbstractRootEntity extends AbstractEntity implements RootE
         }
         
         if (stream.events.length) {
-            stream.events.forEach((event) => {
-                this.applyEvent(event);
-                this.propagateEvent(event);
-            });
-            
+            stream.events.forEach((event) => this.applyEvent(event));
             this.currentStreamVersion = stream.version;
         }
     }
-    
+
 }

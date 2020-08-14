@@ -4,8 +4,8 @@ import { Card, CardList } from "../../value_objects/Card";
 import { RunException } from "../../exceptions/RunException";
 import { WildcardException } from "../../exceptions/WildcardException";
 import { SnapshotState } from "../../../tech/Snapshot";
-import { IncomingEvent } from "../../../tech/impl/events/IncomingEvent";
 import { AbstractEntity } from "./AbstractEntity";
+import { Event } from "../../../tech/events/Event";
 
 export abstract class AbstractRun extends AbstractEntity implements Run
 {
@@ -180,7 +180,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
         this.wildcardPosition = wildcardPosition;
     }
 
-    public applyEvent(event: IncomingEvent) {
+    protected doApplyEvent(event: Event) {
     }
 
     protected abstract addJoker(joker: Card): boolean;

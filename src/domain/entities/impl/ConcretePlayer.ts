@@ -31,7 +31,7 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         }
     }
 
-    public applyEvent(event: Event): void {
+    protected doApplyEvent(event: Event): void {
         switch (event.getName()) {
             case CardsDealtToPlayer.EventName:
                 this.handleCardsDealtToPlayerEvent(event);
