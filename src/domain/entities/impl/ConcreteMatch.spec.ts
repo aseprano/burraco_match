@@ -91,10 +91,8 @@ describe('ConcreteMatch', () => {
         const committedEvents = match.commitEvents();
 
         // Ensuring that MatchStarted event has been fired
-        expect(committedEvents[0]).toEqual(new MatchStarted(8, 1981, stockCards, ['darkbyte'], ['johndoe']));
-
-        // Ensuring that CardsDealtToPlayer events have been fired
-        expect(committedEvents.slice(1, 23)).toEqual([
+        expect(committedEvents).toEqual([
+            new MatchStarted(8, 1981, stockCards, ['darkbyte'], ['johndoe']),
             new CardsDealtToPlayer(8, [new Card(Suit.Clubs, 1)], 'darkbyte'),
             new CardsDealtToPlayer(8, [new Card(Suit.Clubs, 1)], 'johndoe'),
             new CardsDealtToPlayer(8, [new Card(Suit.Clubs, 2)], 'darkbyte'),
@@ -117,10 +115,6 @@ describe('ConcreteMatch', () => {
             new CardsDealtToPlayer(8, [new Card(Suit.Clubs, 10)], 'johndoe'),
             new CardsDealtToPlayer(8, [new Card(Suit.Clubs, 11)], 'darkbyte'),
             new CardsDealtToPlayer(8, [new Card(Suit.Clubs, 11)], 'johndoe'),
-        ]);
-
-        // Ensuring that PotCreated events have been fired
-        expect(committedEvents.slice(23, 25)).toEqual([
             new PotCreated(
                 8,
                 [
@@ -153,13 +147,9 @@ describe('ConcreteMatch', () => {
                     new Card(Suit.Hearts, 11)
                 ]
             ),
+            new FirstCardThrown(8, Card.Joker()),
+            new GameTurnToPlayer(8, 'darkbyte'),
         ]);
-
-        // Ensuring that FirstCardThrown event has been fired
-        expect(committedEvents[25]).toEqual(new FirstCardThrown(8, Card.Joker()));
-
-        // Ensuring that GameTurnsToPlayer event has been fired
-        expect(committedEvents[26]).toEqual(new GameTurnToPlayer(8, 'darkbyte'));
     });
 
 });
