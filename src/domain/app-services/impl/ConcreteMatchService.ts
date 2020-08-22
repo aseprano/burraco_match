@@ -3,6 +3,8 @@ import { MatchID } from "../../value_objects/MatchID";
 import { PlayerID } from "../../value_objects/PlayerID";
 import { Team } from "../../value_objects/Team";
 import { MatchFactory } from "../../factories/MatchFactory";
+import { Card, CardList } from "../../value_objects/Card";
+import { Player } from "../../entities/Player";
 
 export class ConcreteMatchService implements MatchService {
 
@@ -20,4 +22,11 @@ export class ConcreteMatchService implements MatchService {
         return match.getId();
     } 
     
+    public async playerTakesFromStock(matchId: MatchID, player: PlayerID): Promise<Card> {
+        throw new Error("Method not implemented.");
+    }
+
+    public async playerPicksUpDiscardPile(matchId: MatchID, player: PlayerID): Promise<CardList> {
+        throw new Error("Method not implemented.");
+    }
 }

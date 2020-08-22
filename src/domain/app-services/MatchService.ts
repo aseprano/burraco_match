@@ -1,6 +1,7 @@
 import { PlayerID } from "../value_objects/PlayerID";
 import { MatchID } from "../value_objects/MatchID";
 import { Team } from "../value_objects/Team";
+import { Card, CardList } from "../value_objects/Card";
 
 export interface MatchService {
 
@@ -20,8 +21,22 @@ export interface MatchService {
      */
     start2v2(gameId: number, team1: Team, team2: Team): Promise<MatchID>;
 
-    playerPicksFromStock(matchId: MatchID, player: PlayerID): void;
+    /**
+     * @param matchId 
+     * @param player 
+     * @throws MatchNotFoundException
+     * @throws BadPlayerTurnException
+     * @throws ActionNotAllowedException
+     */
+    playerTakesFromStock(matchId: MatchID, player: PlayerID): Promise<Card>;
 
-    playerTakesDiscardPile(matchId: MatchID, player: PlayerID): void;
+    /**
+     * @param matchId 
+     * @param player 
+     * @throws MatchNotFoundException
+     * @throws BadPlayerTurnException
+     * @throws ActionNotAllowedException
+     */
+    playerPicksUpDiscardPile(matchId: MatchID, player: PlayerID): Promise<CardList>;
 
 }
