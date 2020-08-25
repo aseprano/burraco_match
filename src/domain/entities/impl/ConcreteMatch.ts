@@ -18,6 +18,7 @@ import { FirstCardThrown } from "../../events/FirstCardThrown";
 import { GameTurnToPlayer } from "../../events/GameTurnToPlayer";
 import { PlayerTookOneCardFromStock } from "../../events/PlayerTookOneCardFromStock";
 import { TeamGamingArea } from "../TeamGamingArea";
+import { PlayerPickedUpDiscardPile } from "../../events/PlayerPickedUpDiscardPile";
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
@@ -103,10 +104,6 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     private handleGameTurnToPlayerEvent(event: Event) {
         const playerId = event.getPayload().player_id;
         this.currentPlayerIndex = this.players.findIndex((player) => player.getId() === playerId);
-    }
-
-    private handlePlayerTookOneCardFromStockEvent(event: Event) {
-        this.getPlayerById(event.getPayload().player_id).applyEvent(event);
     }
 
     protected deal(targetPlayer: Player, numberOfCards = 1) {
@@ -195,10 +192,6 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
             case GameTurnToPlayer.EventName:
                 this.handleGameTurnToPlayerEvent(event);
                 break;
-
-            case PlayerTookOneCardFromStock.EventName:
-                this.handlePlayerTookOneCardFromStockEvent(event);
-                break;
         }
     }
 
@@ -236,7 +229,12 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     }
 
     public pickUpDiscardPile(player: PlayerID): CardList {
-        throw new Error("Method not implemented.");
+        const cards = this.getPlayerById(player.asString())
+            .pickUpAllCardsFromDiscardPile();
+
+        this.appendUncommittedEvent(new PlayerPickedUpDiscardPile(this.id, player, cards));
+
+        return cards;
     }
 
 }

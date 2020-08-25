@@ -14,6 +14,7 @@ import { ReadyPlayerState } from "./ReadyPlayerState";
 import { PlayerTookOneCardFromStock } from "../../events/PlayerTookOneCardFromStock";
 import { PlayingPlayerState } from "./PlayingPlayerState";
 import { TeamGamingArea } from "../TeamGamingArea";
+import { PlayerPickedUpDiscardPile } from "../../events/PlayerPickedUpDiscardPile";
 
 export class ConcretePlayer extends AbstractEntity implements Player {
     private hand: CardList = [];
@@ -48,7 +49,15 @@ export class ConcretePlayer extends AbstractEntity implements Player {
     private handlePlayerTookOneCardFromStockEvent(event: Event) {
         const card = this.cardSerializer.unserializeCard(event.getPayload().card);
         this.hand.push(card);
-        this.switchToReadyState();
+        this.switchToPlayingState();
+    }
+
+    private handlePlayerPickedUpDiscardPileEvent(event: Event) {
+        const cards = this.cardSerializer.unserializeCards(event.getPayload().cards);
+        const theOneCardFromDiscardPile = cards.length > 0 ? cards[0] : undefined;
+
+        this.hand.push(...cards);
+        this.switchToPlayingState(theOneCardFromDiscardPile);
     }
 
     protected doApplyEvent(event: Event): void {
@@ -67,6 +76,10 @@ export class ConcretePlayer extends AbstractEntity implements Player {
 
             case PlayerTookOneCardFromStock.EventName:
                 this.handlePlayerTookOneCardFromStockEvent(event);
+                break;
+
+            case PlayerPickedUpDiscardPile.EventName:
+                this.handlePlayerPickedUpDiscardPileEvent(event);
                 break;
         }
     }
