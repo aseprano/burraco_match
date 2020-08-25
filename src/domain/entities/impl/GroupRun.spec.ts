@@ -126,6 +126,6 @@ describe('GroupRun', () => {
 
         const run2 = GroupRun.withCardsAndWildcardPosition([deuceOfClubs, sevenOfClubs], 0);
         expect(run2.getValue()).toEqual(7);
-    })
+    });
 
 })

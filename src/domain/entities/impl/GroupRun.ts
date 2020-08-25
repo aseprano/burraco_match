@@ -63,4 +63,8 @@ export class GroupRun extends AbstractRun
         return this.value;
     }
 
+    public isSequence(): boolean {
+        return false;
+    }
+
 }

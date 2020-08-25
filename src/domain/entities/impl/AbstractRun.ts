@@ -187,4 +187,6 @@ export abstract class AbstractRun extends AbstractEntity implements Run
 
     protected abstract addCard(card: Card): boolean;
 
+    public abstract isSequence(): boolean;
+    
 }

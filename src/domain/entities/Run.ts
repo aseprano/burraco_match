@@ -7,6 +7,11 @@ export interface Run extends Entity {
     getId(): RunID;
     
     /**
+     * Returns true if the run is a sequence
+     */
+    isSequence(): boolean;
+    
+    /**
      * Adds one or more cards to the GameRun
      * Throws a RunException if at least one card cannot be added
      * 

@@ -153,5 +153,9 @@ export class SequenceRun extends AbstractRun
     public getSuit(): Suit {
         return this.suit;
     }
+
+    public isSequence(): boolean {
+        return true;
+    }
     
 }
