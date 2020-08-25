@@ -3,6 +3,7 @@ import { StdCardSerializer } from '../../domain-services/impl/StdCardSerializer'
 import { ConcretePlayer } from './ConcretePlayer';
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 import { Card, Suit, CardList } from "../../value_objects/Card";
+import { TeamGamingArea } from "../TeamGamingArea";
 
 describe('ConcretePlayer', () => {
     const serializer = new StdCardSerializer();
@@ -15,7 +16,7 @@ describe('ConcretePlayer', () => {
         const stock: Stock = <Stock>{};
         const discardPile: CardList = [];
 
-        const player = new ConcretePlayer('darkbyte', serializer, stock, discardPile);
+        const player = new ConcretePlayer('darkbyte', serializer, stock, discardPile, {} as TeamGamingArea);
         expect(player.getId()).toEqual('darkbyte');
         expect(player.getHand()).toEqual([], 'A player hand must be empty after initialization');
     });
@@ -24,7 +25,7 @@ describe('ConcretePlayer', () => {
         const stock: Stock = <Stock>{};
         const discardPile: CardList = [];
 
-        const player = new ConcretePlayer('darkbyte', serializer, stock, discardPile);
+        const player = new ConcretePlayer('darkbyte', serializer, stock, discardPile, {} as TeamGamingArea);
 
         player.applyEvent(new CardsDealtToPlayer(123, [deuceOfClubs, threeOfClubs], 'darkbyte')); // should be applied
         player.applyEvent(new CardsDealtToPlayer(123, [deuceOfClubs, joker], 'darkbyte')); // should be applied

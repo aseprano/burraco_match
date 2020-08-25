@@ -8,7 +8,7 @@ import { Event } from "../../../tech/events/Event";
 import { MatchPlayersException } from "../../exceptions/MatchPlayersException";
 import { MatchStarted } from "../../events/MatchStarted";
 import { Stock } from "../Stock";
-import { CardList } from "../../value_objects/Card";
+import { CardList, Card } from "../../value_objects/Card";
 import { Player } from "../Player";
 import { ConcretePlayer } from "./ConcretePlayer";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
@@ -16,6 +16,8 @@ import { CardSerializer } from "../../domain-services/CardSerializer";
 import { PotCreated } from "../../events/PotCreated";
 import { FirstCardThrown } from "../../events/FirstCardThrown";
 import { GameTurnToPlayer } from "../../events/GameTurnToPlayer";
+import { PlayerTookOneCardFromStock } from "../../events/PlayerTookOneCardFromStock";
+import { TeamGamingArea } from "../TeamGamingArea";
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
@@ -42,7 +44,8 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
             playerId,
             this.cardSerializer,
             this.stock,
-            this.discardPile
+            this.discardPile,
+            {} as TeamGamingArea
         );
     }
 
@@ -68,7 +71,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
         return this.players[index];
     }
-
+    
     private handleMatchStartedEvent(event: Event) {
         this.started = true;
         this.discardPile = [];
@@ -100,6 +103,10 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     private handleGameTurnToPlayerEvent(event: Event) {
         const playerId = event.getPayload().player_id;
         this.currentPlayerIndex = this.players.findIndex((player) => player.getId() === playerId);
+    }
+
+    private handlePlayerTookOneCardFromStockEvent(event: Event) {
+        this.getPlayerById(event.getPayload().player_id).applyEvent(event);
     }
 
     protected deal(targetPlayer: Player, numberOfCards = 1) {
@@ -160,7 +167,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
     protected propagateEvent(event: Event): void {
         this.stock.applyEvent(event);
-        this.players.forEach((p) => p.applyEvent(event));
+        this.players.forEach((player) => player.applyEvent(event));
     }
 
     protected doApplyEvent(event: Event): void {
@@ -188,6 +195,10 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
             case GameTurnToPlayer.EventName:
                 this.handleGameTurnToPlayerEvent(event);
                 break;
+
+            case PlayerTookOneCardFromStock.EventName:
+                this.handlePlayerTookOneCardFromStockEvent(event);
+                break;
         }
     }
 
@@ -213,6 +224,19 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
             [team1.getPlayer1(), team1.getPlayer2()],
             [team2.getPlayer1(), team2.getPlayer2()]
         );
+    }
+
+    public takeFromStock(playerId: PlayerID): Card {
+        const card = this.getPlayerById(playerId.asString())
+            .takeOneCardFromStock();
+
+        this.appendUncommittedEvent(new PlayerTookOneCardFromStock(this.id, playerId, card));
+
+        return card;
+    }
+
+    public pickUpDiscardPile(player: PlayerID): CardList {
+        throw new Error("Method not implemented.");
     }
 
 }
