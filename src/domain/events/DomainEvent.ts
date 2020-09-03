@@ -1,5 +1,6 @@
 import { Event, EventPayload } from "../../tech/events/Event";
 import { Card, CardList } from "../value_objects/Card";
+import { Run } from "../entities/Run";
 
 export abstract class DomainEvent implements Event {
     private payload: EventPayload = Object.freeze({});
@@ -15,6 +16,15 @@ export abstract class DomainEvent implements Event {
         return cards.map((card) => this.serializeCard(card));
     }
 
+    protected serializeRun(run: Run): any {
+        return {
+            id: run.getId().asNumber(),
+            type: run.isSequence() ? 'sequence' : 'group',
+            cards: this.serializeCardList(run.getCards()),
+            wildcard_position: run.getWildcardPosition(),
+        };
+    }
+    
     protected setPayload(payload: EventPayload): void {
         this.payload = Object.freeze(payload);
     }
