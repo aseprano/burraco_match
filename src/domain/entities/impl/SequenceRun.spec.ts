@@ -11,13 +11,13 @@ describe('SequenceRun', () => {
     }
 
     it('cannot start with a deuce or joker', () => {
-        expect(() => SequenceRun.withCard(deuceOfClubs)).toThrow();
-        expect(() => SequenceRun.withCard(joker)).toThrow();
+        expect(() => SequenceRun.startWithCard(deuceOfClubs)).toThrow();
+        expect(() => SequenceRun.startWithCard(joker)).toThrow();
     });
 
     it('can start with a non-deuce and non-joker card', () => {
         const three = getCard(3);
-        const game = SequenceRun.withCard(three);
+        const game = SequenceRun.startWithCard(three);
 
         expect(game.getSuit()).toEqual(Suit.Clubs);
         expect(game.getCards()).toEqual([ three ]);
@@ -26,7 +26,7 @@ describe('SequenceRun', () => {
 
     it('cannot add a card of a different suit', () => {
         const fourOfClubs = getCard(4);
-        const game = SequenceRun.withCard(fourOfClubs); // a run of clubs
+        const game = SequenceRun.startWithCard(fourOfClubs); // a run of clubs
 
         const fiveOfDiamonds = new Card(Suit.Diamonds, 5);
         expect(() => game.add(fiveOfDiamonds)).toThrow();
@@ -36,7 +36,7 @@ describe('SequenceRun', () => {
         const threeOfClubs = getCard(3);
         const fourOfClubs = getCard(4);
 
-        const game = SequenceRun.withCard(threeOfClubs)
+        const game = SequenceRun.startWithCard(threeOfClubs)
             .add(fourOfClubs);
 
         expect(game.getCards()).toEqual([
@@ -51,7 +51,7 @@ describe('SequenceRun', () => {
         const threeOfClubs = getCard(3);
         const fourOfClubs = getCard(4);
 
-        const game = SequenceRun.withCard(threeOfClubs)
+        const game = SequenceRun.startWithCard(threeOfClubs)
             .add(fourOfClubs);
 
         expect(game.getCards()).toEqual([
@@ -61,7 +61,7 @@ describe('SequenceRun', () => {
     });
 
     it('can be set an id', () => {
-        const run = SequenceRun.withCard(getCard(6));
+        const run = SequenceRun.startWithCard(getCard(6));
         run.setId(new RunID(10));
         expect(run.getId()).toEqual(new RunID(10));
     });
@@ -69,12 +69,12 @@ describe('SequenceRun', () => {
     it('cannot add a card that cannot be linked at bottom nor at top', () => {
         const fiveOfClubs = getCard(5);
         const aceOfClubs = getCard(1);
-        const run = SequenceRun.withCard(fiveOfClubs);
+        const run = SequenceRun.startWithCard(fiveOfClubs);
         expect(() => run.add(aceOfClubs)).toThrow();
     });
 
     it('restores the old status if cannot be modified', () => {
-        const run = SequenceRun.withCard(getCard(5))
+        const run = SequenceRun.startWithCard(getCard(5))
             .add([
                 getCard(6),
                 getCard(7)
@@ -97,7 +97,7 @@ describe('SequenceRun', () => {
         const kingOfSpades = getCard(13);
         const aceOfSpades = getCard(1);
 
-        const game = SequenceRun.withCard(kingOfSpades)
+        const game = SequenceRun.startWithCard(kingOfSpades)
             .add(aceOfSpades);
 
         expect(game.getCards()).toEqual([
@@ -110,7 +110,7 @@ describe('SequenceRun', () => {
         const kingOfSpades = getCard(13);
         const aceOfSpades = getCard(1);
 
-        const game = SequenceRun.withCard(aceOfSpades)
+        const game = SequenceRun.startWithCard(aceOfSpades)
             .add(kingOfSpades);
 
         expect(game.getCards()).toEqual([
@@ -123,7 +123,7 @@ describe('SequenceRun', () => {
         const aceOfClubs = getCard(1);
         const deuceOfClubs = getCard(2);
 
-        const game = SequenceRun.withCard(aceOfClubs)
+        const game = SequenceRun.startWithCard(aceOfClubs)
             .add(deuceOfClubs);
 
         expect(game.getCards()).toEqual([
@@ -137,7 +137,7 @@ describe('SequenceRun', () => {
     it('adds a natural deuce below the three', () => {
         const threeOfClubs = getCard(3);
 
-        const game = SequenceRun.withCard(threeOfClubs)
+        const game = SequenceRun.startWithCard(threeOfClubs)
             .add(deuceOfClubs);
 
         expect(game.getCards()).toEqual([
@@ -153,7 +153,7 @@ describe('SequenceRun', () => {
         const threeOfClubs = getCard(3);
         const fiveOfClubs = getCard(5);
 
-        const game1 = SequenceRun.withCard(fiveOfClubs)
+        const game1 = SequenceRun.startWithCard(fiveOfClubs)
             .add(deuceOfClubs);
 
         expect(game1.getCards()).toEqual([
@@ -163,7 +163,7 @@ describe('SequenceRun', () => {
 
         expect(game1.getWildcardPosition()).toBe(0);
 
-        const game2 = SequenceRun.withCard(aceOfClubs)
+        const game2 = SequenceRun.startWithCard(aceOfClubs)
             .add(deuceOfClubs)
             .add(deuceOfClubs);
 
@@ -175,7 +175,7 @@ describe('SequenceRun', () => {
 
         expect(game2.getWildcardPosition()).toBe(2);
 
-        const game3 = SequenceRun.withCard(aceOfClubs)
+        const game3 = SequenceRun.startWithCard(aceOfClubs)
             .add([deuceOfClubs, threeOfClubs])
             .add(deuceOfClubs);
 
@@ -194,7 +194,7 @@ describe('SequenceRun', () => {
         const threeOfClubs = getCard(3);
         const fiveOfClubs = getCard(5);
 
-        const game = SequenceRun.withCard(threeOfClubs)
+        const game = SequenceRun.startWithCard(threeOfClubs)
             .add([deuceOfClubs, deuceOfClubs])
             .add(fiveOfClubs);
 
@@ -213,7 +213,7 @@ describe('SequenceRun', () => {
         const fourOfClubs = getCard(4);
         const sixOfClubs = getCard(6);
 
-        const game = SequenceRun.withCardsAndWildcardPosition([deuceOfClubs, threeOfClubs, fourOfClubs], -1)
+        const game = SequenceRun.restore([deuceOfClubs, threeOfClubs, fourOfClubs], -1)
             .add(sixOfClubs);
 
         expect(game.getCards()).toEqual([
@@ -230,7 +230,7 @@ describe('SequenceRun', () => {
         const aceOfClubs = getCard(1);
         const threeOfClubs = getCard(3);
         
-        const game1 = SequenceRun.withCard(aceOfClubs)
+        const game1 = SequenceRun.startWithCard(aceOfClubs)
             .add([deuceOfClubs, deuceOfClubs])
             .add(threeOfClubs);
 
@@ -249,7 +249,7 @@ describe('SequenceRun', () => {
         const fiveOfClubs = getCard(5);
         const sixOfClubs = getCard(6);
 
-        const game2 = SequenceRun.withCard(fourOfClubs)
+        const game2 = SequenceRun.startWithCard(fourOfClubs)
             .add([deuceOfClubs, sixOfClubs])
             .add(fiveOfClubs);
 
@@ -271,7 +271,7 @@ describe('SequenceRun', () => {
         const aceOfClubs = getCard(1);
         const deuceOfClubs = getCard(2);
 
-        const game = SequenceRun.withCard(queenOfClubs)
+        const game = SequenceRun.startWithCard(queenOfClubs)
             .add([deuceOfClubs, aceOfClubs])
             .add(kingOfClubs);
 
@@ -290,7 +290,7 @@ describe('SequenceRun', () => {
         const threeOfClubs = getCard(3);
 
         const game = SequenceRun
-            .withCard(fiveOfClubs) //      5C
+            .startWithCard(fiveOfClubs) //      5C
             .add(deuceOfClubs)     //    *,5C
             .add(threeOfClubs);    // 3C,*,5C
 
@@ -309,7 +309,7 @@ describe('SequenceRun', () => {
         const fiveOfClubs = getCard(5);
 
         const game = SequenceRun
-            .withCard(aceOfClubs) // 1C
+            .startWithCard(aceOfClubs) // 1C
             .add([
                 deuceOfClubs,     // 1C,2C,3C,*
                 deuceOfClubs,
@@ -333,14 +333,14 @@ describe('SequenceRun', () => {
         const kingOfClubs = getCard(13);
 
         const game = SequenceRun
-            .withCard(aceOfClubs)
+            .startWithCard(aceOfClubs)
             .add(deuceOfClubs);
 
         expect(() => game.add(kingOfClubs)).toThrow();
     });
 
     it('inserts a deuce as wildcard at the top if the bottommost cars is an ace', () => {
-        const game = SequenceRun.withCardsAndWildcardPosition([
+        const game = SequenceRun.restore([
             getCard(1),
             getCard(2),
             getCard(3)
@@ -359,7 +359,7 @@ describe('SequenceRun', () => {
     it('inserts the deuce as wildcard as bottommost card if the sequence does not start with an ace', () => {
         const threeOfClubs = getCard(3);
 
-        const game = SequenceRun.withCardsAndWildcardPosition(
+        const game = SequenceRun.restore(
             [
                 deuceOfClubs, // natural deuce
                 threeOfClubs,
@@ -381,7 +381,7 @@ describe('SequenceRun', () => {
         const aceOfClubs = getCard(1);
 
         const game = SequenceRun
-            .withCard(queenOfClubs) //   QC
+            .startWithCard(queenOfClubs) //   QC
             .add(deuceOfClubs)      // *,QC
             .add(aceOfClubs);       //   QC,*,1C
 
@@ -397,7 +397,7 @@ describe('SequenceRun', () => {
     it('adds a joker at bottom if bottommost card is not an ace', () => {
         const sixOfClubs = getCard(6);
 
-        const run = SequenceRun.withCard(sixOfClubs);
+        const run = SequenceRun.startWithCard(sixOfClubs);
         run.add(joker);
 
         expect(run.getCards()).toEqual([joker, sixOfClubs]);
@@ -407,7 +407,7 @@ describe('SequenceRun', () => {
     it('adds a joker at top if the bottommost card is an ace', () => {
         const aceOfClubs = getCard(1);
         
-        const run = SequenceRun.withCard(aceOfClubs);
+        const run = SequenceRun.startWithCard(aceOfClubs);
         run.add(joker);
 
         expect(run.getCards()).toEqual([aceOfClubs, joker]);
@@ -417,7 +417,7 @@ describe('SequenceRun', () => {
     it('cannot add a duce as wildcard if a wildcard already has been used', () => {
         const aceOfClubs = getCard(1);
 
-        const run = SequenceRun.withCard(aceOfClubs)
+        const run = SequenceRun.startWithCard(aceOfClubs)
             .add(deuceOfClubs)
             .add(deuceOfClubs);
         
@@ -428,7 +428,7 @@ describe('SequenceRun', () => {
         const aceOfClubs = getCard(1);
         const fiveOfClubs = getCard(5);
 
-        const run = SequenceRun.withCard(aceOfClubs)
+        const run = SequenceRun.startWithCard(aceOfClubs)
             .add(deuceOfClubs)
             .add(deuceOfClubs);
 
@@ -440,7 +440,7 @@ describe('SequenceRun', () => {
         const sixOfClubs = getCard(6);
         const sevenOfClubs = getCard(7);
 
-        const run = SequenceRun.withCardsAndWildcardPosition([fiveOfClubs, joker, sevenOfClubs], 1)
+        const run = SequenceRun.restore([fiveOfClubs, joker, sevenOfClubs], 1)
             .add(sixOfClubs);
 
         expect(run.getCards()).toEqual([joker, fiveOfClubs, sixOfClubs, sevenOfClubs]);
@@ -452,7 +452,7 @@ describe('SequenceRun', () => {
         const sixOfClubs = getCard(6);
         const sevenOfClubs = getCard(7);
 
-        const run = SequenceRun.withCardsAndWildcardPosition([joker, sixOfClubs, sevenOfClubs], 0)
+        const run = SequenceRun.restore([joker, sixOfClubs, sevenOfClubs], 0)
             .add(fiveOfClubs);
 
         expect(run.getCards()).toEqual([joker, fiveOfClubs, sixOfClubs, sevenOfClubs]);
@@ -463,7 +463,7 @@ describe('SequenceRun', () => {
         const aceOfClubs = getCard(1);
         const threeOfClubs = getCard(3);
         
-        const run = SequenceRun.withCardsAndWildcardPosition([aceOfClubs, deuceOfClubs, joker], 2);
+        const run = SequenceRun.restore([aceOfClubs, deuceOfClubs, joker], 2);
         run.add(threeOfClubs);
 
         expect(run.getCards()).toEqual([aceOfClubs, deuceOfClubs, threeOfClubs, joker]);
@@ -474,7 +474,7 @@ describe('SequenceRun', () => {
         const threeOfClubs = getCard(3);
         const fourOfClubs = getCard(4);
 
-        const run = SequenceRun.withCard(threeOfClubs);
+        const run = SequenceRun.startWithCard(threeOfClubs);
         run.set([threeOfClubs, fourOfClubs, deuceOfClubs], 2);
         expect(run.getCards()).toEqual([threeOfClubs, fourOfClubs, deuceOfClubs]);
         expect(run.getWildcardPosition()).toEqual(2);

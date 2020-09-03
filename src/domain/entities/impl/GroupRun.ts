@@ -7,11 +7,7 @@ export class GroupRun extends AbstractRun
 {
     private value: number = 0;
 
-    public static withCardsAndWildcardPosition(cards: CardList, wildcardPosition: number): GroupRun {
-        return new GroupRun(cards, wildcardPosition);
-    }
-
-    public static withCard(card: Card): GroupRun
+    public static startWithCard(card: Card): GroupRun
     {
         if (card.isJoker()) {
             throw new RunException('Cannot start a gamerun with a joker');
@@ -21,21 +17,16 @@ export class GroupRun extends AbstractRun
             throw new RunException('Cannot start a group with a deuce');
         }
 
-        return new GroupRun([card], -1);
+        return new GroupRun([card]);
     }
 
-    private constructor(cards: CardList, wildcardPosition: number) {
+    public static restore(cards: CardList, wildcardPosition: number): GroupRun {
+        return new GroupRun(cards, wildcardPosition);
+    }
+
+    private constructor(cards: CardList, wildcardPosition = -1) {
         super(cards, wildcardPosition);
-
-        switch (wildcardPosition) {
-            case 0:
-                this.value = cards[1].getValue();
-                break;
-
-            default:
-                this.value = cards[0].getValue();
-                break;
-        }
+        this.value = cards[wildcardPosition === 0 ? 1 : 0].getValue();
     }
 
     protected addCard(card: Card): boolean {

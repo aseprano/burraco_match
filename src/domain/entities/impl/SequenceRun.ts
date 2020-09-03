@@ -7,19 +7,20 @@ export class SequenceRun extends AbstractRun
 {
     private suit: Suit;
 
-    public static withCard(card: Card) {
+    public static startWithCard(card: Card): SequenceRun
+    {
         if (card.isJoker()) {
             throw new RunException('Cannot start a gamerun with a joker');
         }
 
         if (card.getValue() === 2) {
-            throw new RunException('Cannot start a gamerun with a deuce');
+            throw new RunException('Cannot start a group with a deuce');
         }
 
         return new SequenceRun([card]);
     }
 
-    public static withCardsAndWildcardPosition(CardList: CardList, wildcardPosition: number) {
+    public static restore(CardList: CardList, wildcardPosition: number) {
         return new SequenceRun(CardList, wildcardPosition);
     }
 

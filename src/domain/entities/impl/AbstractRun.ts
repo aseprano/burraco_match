@@ -16,6 +16,10 @@ export abstract class AbstractRun extends AbstractEntity implements Run
         private wildcardPosition = -1
     ) {
         super();
+
+        if (wildcardPosition !== -1 && wildcardPosition >= cards.length) {
+            throw new RunException('Wildcard out of boundary');
+        }
     }
 
     private tryAddCard(card: Card): boolean {
@@ -30,8 +34,12 @@ export abstract class AbstractRun extends AbstractEntity implements Run
         }
     }
 
+    private cardsAreTooMany(newCards: CardList): boolean {
+        return newCards.length + this.cards.length > 13;
+    }
+
     private tryAddCards(newCards: CardList): void {
-        if (newCards.length + this.cards.length > 13) {
+        if (this.cardsAreTooMany(newCards)) {
             throw new RunException('GameRun would become too long, only 13 cards per run are allowed');
         }
 
