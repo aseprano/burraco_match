@@ -104,5 +104,24 @@ describe('ConcreteTeamGamingArea', () => {
             run2,
         ]);
     });
+
+    it('uses the highest run id to create the next run id', () => {
+        const gamingArea = new ConcreteTeamGamingArea(0, runFactory, serializer);
+        
+        // create a mock run with id #100
+        const fakeRun = GroupRun.restore([new Card(Suit.Clubs, 7)], -1);
+        fakeRun.setId(new RunID(100));
+        gamingArea.applyEvent(new RunCreated(123, 'darkbyte', 0, fakeRun));
+
+        // next run id should be 101
+        const newRun = gamingArea.createRun([
+            new Card(Suit.Diamonds, 2),
+            new Card(Suit.Diamonds, 3),
+            new Card(Suit.Diamonds, 4),
+            new Card(Suit.Diamonds, 5),
+        ]);
+
+        expect(newRun.getId().asNumber()).toBe(101);
+    });
     
 });
