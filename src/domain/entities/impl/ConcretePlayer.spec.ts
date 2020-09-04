@@ -4,6 +4,10 @@ import { ConcretePlayer } from './ConcretePlayer';
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 import { Card, Suit, CardList } from "../../value_objects/Card";
 import { TeamGamingArea } from "../TeamGamingArea";
+import { RunCreated } from "../../events/RunCreated";
+import { mock, when, instance } from 'ts-mockito';
+import { GroupRun } from "./GroupRun";
+import { RunID } from "../../value_objects/RunID";
 
 describe('ConcretePlayer', () => {
     const serializer = new StdCardSerializer();
@@ -32,6 +36,37 @@ describe('ConcretePlayer', () => {
         player.applyEvent(new CardsDealtToPlayer(123, [fourOfClubs], 'john')); // should be discarded
 
         expect(player.getHand()).toEqual([deuceOfClubs, threeOfClubs, deuceOfClubs, joker]);
+    });
+
+    it('removes cards from hand when applying the NewRun event', () => {
+        const player = new ConcretePlayer('darkbyte', serializer, {} as Stock, [], {} as TeamGamingArea);
+
+        const playerCards = [
+            deuceOfClubs,
+            threeOfClubs,
+            fourOfClubs,
+            joker
+        ];
+
+        player.applyEvent(new CardsDealtToPlayer(123, playerCards, 'darkbyte'));
+
+        const runCards = [
+            fourOfClubs,
+            threeOfClubs
+        ];
+
+        const fakeRun = mock(GroupRun);
+        when(fakeRun.getId()).thenReturn(new RunID(1));
+        when(fakeRun.getCards()).thenReturn(runCards);
+        when(fakeRun.getWildcardPosition()).thenReturn(-1);
+        when(fakeRun.isSequence()).thenReturn(true);
+
+        player.applyEvent(new RunCreated(123, 'darkbyte', 0, instance(fakeRun)));
+
+        expect(player.getHand()).toEqual([
+            deuceOfClubs,
+            joker,
+        ]);
     });
 
 })

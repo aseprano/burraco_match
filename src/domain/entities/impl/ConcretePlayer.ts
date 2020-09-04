@@ -35,20 +35,29 @@ export class ConcretePlayer extends AbstractEntity implements Player {
     private isEventOfMine(event: Event): boolean {
         return event.getPayload().player_id === this.playerId;
     }
+
+    private unserializeCards(eventCards: any[]): CardList {
+        return this.cardSerializer.unserializeCards(eventCards);
+    }
     
     private appendCardsFromEvent(eventCards: any[]) {
-        const cards: CardList = this.cardSerializer.unserializeCards(eventCards);
+        const cards: CardList = this.unserializeCards(eventCards);
         this.hand.push(...cards);
     }
 
-    private removeCardFromEvent(eventCards: any[]) {
+    private removeEventCardsFromHand(eventCards: any[]) {
+        this.unserializeCards(eventCards)
+            .forEach((card) => {
+                const cardIndex = this.hand.findIndex((handCard) => handCard.isEqual(card));
 
+                if (cardIndex >= 0) {
+                    this.hand.splice(cardIndex, 1);
+                }
+            });
     }
 
     private handleCardsDealtToPlayerEvent(event: Event) {
-        if (event.getPayload().player_id === this.playerId) {
-            this.appendCardsFromEvent(event.getPayload().cards);
-        }
+        this.appendCardsFromEvent(event.getPayload().cards);
     }
 
     private handlePlayerTookOneCardFromStockEvent(event: Event) {
@@ -66,12 +75,12 @@ export class ConcretePlayer extends AbstractEntity implements Player {
     }
 
     private handleRunCreatedEvent(event: Event) {
-        this.removeCardFromEvent(event.getPayload().run.cards);
-        this.gamingArea.applyEvent(event);
+        this.removeEventCardsFromHand(event.getPayload().run.cards);
     }
 
     protected doApplyEvent(event: Event): void {
         if (!this.isEventOfMine(event)) {
+            //console.debug(`Event ${event.getName()} is not of mine (I am ${this.playerId}, whereas event player is ${event.getPayload().player_id})`);
             return;
         }
         
