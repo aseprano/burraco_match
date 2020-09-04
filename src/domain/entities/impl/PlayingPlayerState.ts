@@ -24,14 +24,14 @@ export class PlayingPlayerState extends BasePlayerState {
     private ownsCards(cards: CardList): boolean {
         const playerHand = [...this.hand];
 
-        return cards.every(card => {
-            const cardIndex = playerHand.indexOf(card);
+        return cards.every(cardToRemove => {
+            const handCardIndex = playerHand.findIndex(handCard => handCard.isEqual(cardToRemove));
 
-            if (cardIndex === -1) {
+            if (handCardIndex === -1) {
                 return false;
             }
 
-            playerHand.splice(cardIndex, 1);
+            playerHand.splice(handCardIndex, 1);
             return true;
         });
     }
