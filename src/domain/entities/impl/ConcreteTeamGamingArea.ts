@@ -20,6 +20,10 @@ export class ConcreteTeamGamingArea implements  TeamGamingArea {
         private serializer: CardSerializer
     ) {}
 
+    private isEventOfMine(event: Event): boolean {
+        return event.getPayload().gaming_area_id === this.id;
+    }
+    
     private getRunById(id: RunID): Run {
         const run = this.runs.find(run => run.getId() == id);
 
@@ -74,6 +78,10 @@ export class ConcreteTeamGamingArea implements  TeamGamingArea {
     }
 
     public applyEvent(event: Event): void {
+        if (!this.isEventOfMine(event)) {
+            return;
+        }
+
         switch (event.getName()) {
             case RunCreated.EventName:
                 this.handleRunCreatedEvent(event);

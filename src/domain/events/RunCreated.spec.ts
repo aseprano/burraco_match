@@ -22,6 +22,7 @@ describe('RunCreated', () => {
         const event = new RunCreated(
             123,
             'darkbyte',
+            1,
             instance(fakeRun)
         );
 
@@ -31,6 +32,7 @@ describe('RunCreated', () => {
         expect(event.getPayload()).toEqual({
             match_id: 123,
             player_id: 'darkbyte',
+            gaming_area_id: 1,
             run: {
                 id: 18,
                 cards: [

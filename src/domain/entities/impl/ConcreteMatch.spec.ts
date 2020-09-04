@@ -2,7 +2,6 @@ import { ConcreteMatch } from "./ConcreteMatch";
 import { ConcreteStock } from "../impl/ConcreteStock";
 import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer";
 import { MatchInitialized } from "../../events/MatchInitialized";
-import { mock, when, instance } from "ts-mockito";
 import { Card, Suit, CardList } from "../../value_objects/Card";
 import { PlayerID } from "../../value_objects/PlayerID";
 import { MatchStarted } from "../../events/MatchStarted";
@@ -11,14 +10,17 @@ import { PotCreated } from "../../events/PotCreated";
 import { FirstCardThrown } from "../../events/FirstCardThrown";
 import { GameTurnToPlayer } from "../../events/GameTurnToPlayer";
 import { CardsShuffler } from "../../domain-services/CardsShuffler";
+import { ConcreteRunFactory } from "../../factories/impl/ConcreteRunFactory";
+import { ConcreteGamingAreaFactory } from "../../factories/impl/ConcreteGamingAreaFactory";
 
 describe('ConcreteMatch', () => {
     const serializer = new StdCardSerializer();
+    const gamingAreaFactory = new ConcreteGamingAreaFactory(new ConcreteRunFactory(), serializer);
 
     it('can be initialized', () => {
         const stock = new ConcreteStock(serializer, CardsShuffler.noShuffling);
 
-        const match = new ConcreteMatch(stock, [], serializer);
+        const match = new ConcreteMatch(stock, [], serializer, gamingAreaFactory);
         match.initialize(7);
 
         expect(match.commitEvents()).toEqual([
@@ -83,7 +85,7 @@ describe('ConcreteMatch', () => {
 
         const stock = new ConcreteStock(serializer, CardsShuffler.noShuffling, () => stockCards);
 
-        const match = new ConcreteMatch(stock, discardPile, serializer);
+        const match = new ConcreteMatch(stock, discardPile, serializer, gamingAreaFactory);
         match.applyEvent(new MatchInitialized(8));
 
         match.start1vs1(1981, new PlayerID('darkbyte'), new PlayerID('johndoe'));

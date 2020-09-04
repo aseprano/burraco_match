@@ -67,6 +67,20 @@ describe('ConcreteTeamGamingArea', () => {
         expect(newRun.getWildcardPosition()).toEqual(-1);
     });
     
+    it('skips events that does not match the gaming area id', () => {
+        const gamingArea = new ConcreteTeamGamingArea(2, runFactory, serializer);
+
+        const run = runFactory.build([
+            new Card(Suit.Clubs, 8),
+            new Card(Suit.Clubs, 9),
+            new Card(Suit.Clubs, 10),
+        ], new RunID(0));
+
+        gamingArea.applyEvent(new RunCreated(123, 'darkbyte', 7, run));
+
+        expect(gamingArea.getRuns()).toEqual([]);
+    });
+
     it('can restore runs from event', () => {
         const gamingArea = new ConcreteTeamGamingArea(2, runFactory, serializer);
 
@@ -82,8 +96,8 @@ describe('ConcreteTeamGamingArea', () => {
             new Card(Suit.Hearts, 8),
         ], new RunID(1));
 
-        gamingArea.applyEvent(new RunCreated(123, 'darkbyte', run1));
-        gamingArea.applyEvent(new RunCreated(123, 'darkbyte', run2));
+        gamingArea.applyEvent(new RunCreated(123, 'darkbyte', 2, run1));
+        gamingArea.applyEvent(new RunCreated(123, 'darkbyte', 2, run2));
 
         expect(gamingArea.getRuns()).toEqual([
             run1,

@@ -63,7 +63,7 @@ export class PlayingPlayerState extends BasePlayerState {
 
     public createRun(cards: CardList): Run {
         this.ensureOwnsCards(cards);
-        throw new Error('Method not implemented');
+        return this.gamingArea.createRun(cards);
     }
 
     public meldCardsToRun(cards: CardList, runId: RunID): Run {

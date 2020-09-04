@@ -19,40 +19,50 @@ import { GameTurnToPlayer } from "../../events/GameTurnToPlayer";
 import { PlayerTookOneCardFromStock } from "../../events/PlayerTookOneCardFromStock";
 import { TeamGamingArea } from "../TeamGamingArea";
 import { PlayerPickedUpDiscardPile } from "../../events/PlayerPickedUpDiscardPile";
+import { Run } from "../Run";
+import { RunCreated } from "../../events/RunCreated";
+import { GamingAreaFactory } from "../../factories/GamingAreaFactory";
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
     private started = false;
     private players: Player[] = [];
     private playersMap: Map<string, Player> = new Map();
+    private areasByPlayersMap: Map<string, TeamGamingArea> = new Map();
     private currentPlayerIndex = -1;
     private pots: CardList[] = [];
+    private gamingAreas: TeamGamingArea[];
 
     constructor(
         private stock: Stock,
         private discardPile: CardList,
-        private cardSerializer: CardSerializer
+        private cardSerializer: CardSerializer,
+        private gamingAreaFactory: GamingAreaFactory
     ) {
         super();
+
+        this.gamingAreas = [
+            this.gamingAreaFactory.build(0),
+            this.gamingAreaFactory.build(1),
+        ];
     }
 
     private handleMatchInitializedEvent(event: Event) {
         this.id = event.getPayload().id;
     }
 
-    private buildPlayer(playerId: string): Player {
-        return new ConcretePlayer(
+    private buildPlayer(playerId: string, gamingArea: TeamGamingArea) {
+        const player = new ConcretePlayer(
             playerId,
             this.cardSerializer,
             this.stock,
             this.discardPile,
-            {} as TeamGamingArea
+            gamingArea
         );
-    }
 
-    private addPlayer(player: Player) {
         this.players.push(player);
-        this.playersMap.set(player.getId(), player);
+        this.playersMap.set(playerId, player);
+        this.areasByPlayersMap.set(playerId, gamingArea);
     }
 
     private getPlayerById(playerId: string): Player {
@@ -72,6 +82,16 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
         return this.players[index];
     }
+
+    private getGamingAreaByPlayerId(playerId: string): TeamGamingArea {
+        const gamingArea = this.areasByPlayersMap.get(playerId);
+        
+        if (!gamingArea) {
+            throw new Error(`No gaming area found for player ${playerId}`);
+        }
+
+        return gamingArea;
+    }
     
     private handleMatchStartedEvent(event: Event) {
         this.started = true;
@@ -79,11 +99,11 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
         event.getPayload()
             .team1
-            .forEach((player1Id: string, index: number) => {
-                const player2Id: string = event.getPayload().team2[index];
+            .forEach((player1Id: string, playerIndex: number) => {
+                const player2Id: string = event.getPayload().team2[playerIndex];
 
-                this.addPlayer(this.buildPlayer(player1Id));
-                this.addPlayer(this.buildPlayer(player2Id));
+                this.buildPlayer(player1Id, this.gamingAreas[0]);
+                this.buildPlayer(player2Id, this.gamingAreas[1]);
             });
     }
 
@@ -146,7 +166,15 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         this.checkTeams(team1, team2);
         this.stock.shuffle();
 
-        this.appendUncommittedEvent(new MatchStarted(this.id, gameId, this.stock.getCards(), team1.map(p => p.asString()), team2.map(p => p.asString())));
+        this.appendUncommittedEvent(
+            new MatchStarted(
+                this.id,
+                gameId,
+                this.stock.getCards(),
+                team1.map(playerName => playerName.asString()),
+                team2.map(playerName => playerName.asString()),
+            )
+        );
 
         this.dealCards();
         this.createPots();
@@ -165,6 +193,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     protected propagateEvent(event: Event): void {
         this.stock.applyEvent(event);
         this.players.forEach((player) => player.applyEvent(event));
+        this.gamingAreas.forEach((gamingArea) => gamingArea.applyEvent(event));
     }
 
     protected doApplyEvent(event: Event): void {
@@ -235,6 +264,22 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         this.appendUncommittedEvent(new PlayerPickedUpDiscardPile(this.id, player, cards));
 
         return cards;
+    }
+
+    public createRun(player: PlayerID, cards: CardList): Run {
+        const newRun = this.getPlayerById(player.asString())
+            .createRun(cards);
+
+        this.appendUncommittedEvent(
+            new RunCreated(
+                this.id,
+                player.asString(),
+                this.getGamingAreaByPlayerId(player.asString()).getId(),
+                newRun
+            )
+        );
+
+        return newRun;
     }
 
 }
