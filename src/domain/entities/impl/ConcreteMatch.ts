@@ -107,10 +107,6 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
             });
     }
 
-    private handleCardsDealtToPlayerEvent(event: Event) {
-        this.getPlayerById(event.getPayload().player_id).applyEvent(event);
-    }
-
     private handlePotCreatedEvent(event: Event) {
         const potCards = this.cardSerializer.unserializeCards(event.getPayload().cards);
         this.pots.push(potCards);
@@ -204,10 +200,6 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
             case MatchStarted.EventName:
                 this.handleMatchStartedEvent(event);
-                break;
-
-            case CardsDealtToPlayer.EventName:
-                this.handleCardsDealtToPlayerEvent(event);
                 break;
 
             case PotCreated.EventName:
