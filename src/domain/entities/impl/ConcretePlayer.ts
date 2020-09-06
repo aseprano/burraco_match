@@ -135,8 +135,16 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         return this.hand.slice(0);
     }
 
+    public setHand(hand: CardList): void {
+        this.hand = hand;
+    }
+
     public setState(newState: PlayerState) {
         this.state = newState;
+    }
+
+    public getState(): PlayerState {
+        return this.state;
     }
 
     public switchToIdleState() {
