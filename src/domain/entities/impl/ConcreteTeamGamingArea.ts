@@ -10,6 +10,7 @@ import { DuplicatedRunException } from "../../exceptions/DuplicatedRunException"
 import { RunCreated } from "../../events/RunCreated";
 import { CardSerializer } from "../../domain-services/CardSerializer";
 import { SequenceRun } from "./SequenceRun";
+import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 
 export class ConcreteTeamGamingArea implements  TeamGamingArea {
     private runs: Run[] = [];
@@ -52,6 +53,16 @@ export class ConcreteTeamGamingArea implements  TeamGamingArea {
         this.runs.push(run);
     }
 
+    private overwriteRun(newRun: Run) {
+        const runIndex = this.runs.findIndex(run => run.getId().asNumber() === newRun.getId().asNumber());
+
+        if (runIndex === -1) {
+            this.appendRun(newRun);
+        } else {
+            this.runs[runIndex] = newRun;
+        }
+    }
+
     private restoreRunFromEvent(event: Event): Run {
         const cards = this.serializer.unserializeCards(event.getPayload().run.cards);
         const wildcardPosition: number = event.getPayload().run.wildcard_position;
@@ -67,6 +78,10 @@ export class ConcreteTeamGamingArea implements  TeamGamingArea {
 
     private handleRunCreatedEvent(event: Event) {
         this.appendRun(this.restoreRunFromEvent(event));
+    }
+
+    private handleCardsMeldedToRunEvent(event: Event) {
+        this.overwriteRun(this.restoreRunFromEvent(event));
     }
 
     private groupAlreadyExists(newRun: GroupRun): boolean {
@@ -85,6 +100,10 @@ export class ConcreteTeamGamingArea implements  TeamGamingArea {
         switch (event.getName()) {
             case RunCreated.EventName:
                 this.handleRunCreatedEvent(event);
+                break;
+
+            case CardsMeldedToRun.EventName:
+                this.handleCardsMeldedToRunEvent(event);
                 break;
         }
     }

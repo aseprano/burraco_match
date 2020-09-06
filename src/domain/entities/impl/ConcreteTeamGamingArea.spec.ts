@@ -6,6 +6,8 @@ import { SequenceRun } from "./SequenceRun";
 import { GroupRun } from "./GroupRun";
 import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer";
 import { RunCreated } from "../../events/RunCreated";
+import { RunNotFoundException } from "../../exceptions/RunNotFoundException";
+import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 
 describe('ConcreteTeamGamingArea', () => {
     const runFactory = new ConcreteRunFactory();
@@ -122,6 +124,36 @@ describe('ConcreteTeamGamingArea', () => {
         ]);
 
         expect(newRun.getId().asNumber()).toBe(101);
+    });
+
+    it('throws an error when adding cards to a non-existing run', () => {
+        const gamingArea = new ConcreteTeamGamingArea(0, runFactory, serializer);
+
+        expect(() => gamingArea.addCardsToRun([], new RunID(123))).toThrow(new RunNotFoundException());
+    });
+
+    it('replaces an existing run when applying the CardsMeldedToRun event', () => {
+        const gamingArea = new ConcreteTeamGamingArea(0, runFactory, serializer);
+
+        const existingRun = GroupRun.restore([new Card(Suit.Clubs, 7)], -1);
+        existingRun.setId(new RunID(18));
+
+        gamingArea.applyEvent(new RunCreated(123, 'darkbyte', 0, existingRun));
+
+        const newRun = GroupRun.restore([new Card(Suit.Clubs, 7), new Card(Suit.Diamonds, 7)], -1)
+        newRun.setId(new RunID(18));
+
+        gamingArea.applyEvent(
+            new CardsMeldedToRun(
+                123,
+                'john',
+                0,
+                [],
+                newRun
+            )
+        );
+
+        expect(gamingArea.getRuns()).toEqual([newRun]);
     });
     
 });
