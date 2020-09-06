@@ -1,5 +1,6 @@
 import { GroupRun } from './GroupRun';
 import { Suit, Card } from "../../value_objects/Card";
+import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
 
 describe('GroupRun', () => {
     const joker = Card.Joker();
@@ -128,4 +129,10 @@ describe('GroupRun', () => {
         expect(run2.getValue()).toEqual(7);
     });
 
-})
+    it('throws an error when trying to add an empty list of cards', () => {
+        const run = GroupRun.restore([new Card(Suit.Clubs, 7)], -1);
+        
+        expect(() => run.add([])).toThrow(new InvalidCardListException());
+    });
+
+});

@@ -1,6 +1,8 @@
 import { SequenceRun } from "./SequenceRun";
 import { Suit, Card } from "../../value_objects/Card";
 import { RunID } from "../../value_objects/RunID";
+import { RunException } from "../../exceptions/RunException";
+import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
 
 describe('SequenceRun', () => {
     const joker = Card.Joker();
@@ -478,6 +480,12 @@ describe('SequenceRun', () => {
         run.set([threeOfClubs, fourOfClubs, deuceOfClubs], 2);
         expect(run.getCards()).toEqual([threeOfClubs, fourOfClubs, deuceOfClubs]);
         expect(run.getWildcardPosition()).toEqual(2);
+    });
+
+    it('throws an error when trying to add an empty list of cards', () => {
+        const run = SequenceRun.restore([new Card(Suit.Clubs, 7)], -1);
+
+        expect(() => run.add([])).toThrow(new InvalidCardListException());
     });
 
 });

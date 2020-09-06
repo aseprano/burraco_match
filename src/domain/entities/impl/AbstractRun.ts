@@ -6,6 +6,7 @@ import { WildcardException } from "../../exceptions/WildcardException";
 import { SnapshotState } from "../../../tech/Snapshot";
 import { AbstractEntity } from "./AbstractEntity";
 import { Event } from "../../../tech/events/Event";
+import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
 
 export abstract class AbstractRun extends AbstractEntity implements Run
 {
@@ -39,6 +40,10 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     private tryAddCards(newCards: CardList): void {
+        if (!newCards.length) {
+            throw new InvalidCardListException();
+        }
+
         if (this.cardsAreTooMany(newCards)) {
             throw new RunException('GameRun would become too long, only 13 cards per run are allowed');
         }
