@@ -1,6 +1,5 @@
 import { CardsDealtToPlayer } from "./CardsDealtToPlayer";
 import { Card, Suit } from "../value_objects/Card";
-import { PlayerID } from "../value_objects/PlayerID";
 
 describe('CardsDealtToPlayer', () => {
 
@@ -8,7 +7,7 @@ describe('CardsDealtToPlayer', () => {
         const event = new CardsDealtToPlayer(
             10,
             [Card.Joker(), new Card(Suit.Clubs, 8)],
-            new PlayerID('darkbyte')
+            'darkbyte'
         );
 
         expect(event.getName()).toEqual('com.herrdoktor.buraco.events.CardsDealtToPlayer');
