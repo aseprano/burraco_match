@@ -1,8 +1,9 @@
 import { DomainEvent } from "./DomainEvent";
-import { CardList } from "../value_objects/Card";
+
+const EventName = 'com.herrdoktor.buraco.events.MatchInitialized';
 
 export class MatchInitialized extends DomainEvent {
-    public static EventName = 'com.herrdoktor.buraco.events.MatchInitialized';
+    public static readonly EventName = EventName;
 
     constructor(matchId: number) {
         super();
@@ -13,7 +14,7 @@ export class MatchInitialized extends DomainEvent {
     }
 
     public getName(): string {
-        return MatchInitialized.EventName;
+        return EventName;
     }
     
 }

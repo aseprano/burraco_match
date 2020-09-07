@@ -2,7 +2,10 @@ import { MatchStarted } from "./MatchStarted";
 import { Card, Suit } from "../value_objects/Card";
 
 describe('MatchStarted', () => {
+
     it('builds the proper payload', () => {
+        expect(MatchStarted.EventName).toBe('com.herrdoktor.buraco.events.MatchStarted');
+
         const event = new MatchStarted(
             123,
             7,
@@ -11,7 +14,7 @@ describe('MatchStarted', () => {
             ['foo', 'bar']
         );
 
-        expect(event.getName()).toEqual('com.herrdoktor.buraco.events.MatchStarted');
+        expect(event.getName()).toEqual(MatchStarted.EventName);
         
         expect(event.getPayload()).toEqual({
             id: 123,
@@ -20,5 +23,6 @@ describe('MatchStarted', () => {
             team1: ['john', 'mike'],
             team2: ['foo', 'bar'],
         });
-    })
-})
+    });
+
+});

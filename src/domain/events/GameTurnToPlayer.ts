@@ -3,7 +3,7 @@ import { DomainEvent } from "./DomainEvent";
 const EventName = 'com.herrdoktor.buraco.events.GameTurnToPlayer';
 
 export class GameTurnToPlayer extends DomainEvent {
-    public static EventName = EventName;
+    public static readonly EventName = EventName;
 
     constructor(matchId: number, playerId: string) {
         super();

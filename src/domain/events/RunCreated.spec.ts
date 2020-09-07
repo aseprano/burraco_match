@@ -7,6 +7,8 @@ import { mock, when, instance } from "ts-mockito";
 describe('RunCreated', () => {
 
     it('returns the proper payload', () => {
+        expect(RunCreated.EventName).toBe('com.herrdoktor.buraco.events.RunCreated');
+        
         const runCards = [
             new Card(Suit.Clubs, 8),
             new Card(Suit.Diamonds, 9),
@@ -26,7 +28,6 @@ describe('RunCreated', () => {
             instance(fakeRun)
         );
 
-        expect(RunCreated.EventName).toBe('com.herrdoktor.buraco.events.RunCreated');
         expect(event.getName()).toEqual(RunCreated.EventName);
 
         expect(event.getPayload()).toEqual({

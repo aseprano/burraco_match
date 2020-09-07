@@ -4,7 +4,7 @@ import { Card } from "../value_objects/Card";
 const EventName = 'com.herrdoktor.buraco.events.FirstCardThrown';
 
 export class FirstCardThrown extends DomainEvent {
-    public static EventName = EventName;
+    public static readonly EventName = EventName;
 
     constructor(matchId: number, card: Card) {
         super();

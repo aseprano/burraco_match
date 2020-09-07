@@ -4,13 +4,15 @@ import { Card, Suit } from "../value_objects/Card";
 describe('CardsDealtToPlayer', () => {
 
     it('builds the proper payload', () => {
+        expect(CardsDealtToPlayer.EventName).toEqual('com.herrdoktor.buraco.events.CardsDealtToPlayer');
+
         const event = new CardsDealtToPlayer(
             10,
             [Card.Joker(), new Card(Suit.Clubs, 8)],
             'darkbyte'
         );
 
-        expect(event.getName()).toEqual('com.herrdoktor.buraco.events.CardsDealtToPlayer');
+        expect(event.getName()).toEqual(CardsDealtToPlayer.EventName);
         
         expect(event.getPayload()).toEqual({
             match_id: 10,

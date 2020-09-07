@@ -4,6 +4,8 @@ import { CardList, Card, Suit } from "../value_objects/Card";
 describe('PotCreated', () => {
 
     it('builds the proper payload', () => {
+        expect(PotCreated.EventName).toBe('com.herrdoktor.buraco.events.PotCreated');
+
         const potCards: CardList = [
             new Card(Suit.Clubs, 2),
             new Card(Suit.Clubs, 3),
@@ -12,7 +14,7 @@ describe('PotCreated', () => {
 
         const event = new PotCreated(123, potCards);
         
-        expect(event.getName()).toEqual('com.herrdoktor.buraco.events.PotCreated');
+        expect(event.getName()).toEqual(PotCreated.EventName);
 
         expect(event.getPayload()).toEqual({
             match_id: 123,

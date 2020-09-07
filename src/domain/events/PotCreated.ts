@@ -4,7 +4,7 @@ import { CardList } from "../value_objects/Card";
 const EventName = 'com.herrdoktor.buraco.events.PotCreated';
 
 export class PotCreated extends DomainEvent {
-    public static EventName = EventName;
+    public static readonly EventName = EventName;
 
     constructor(matchId: number, potCards: CardList) {
         super();
