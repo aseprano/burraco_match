@@ -1,5 +1,4 @@
 import { DomainEvent } from "./DomainEvent";
-import { PlayerID } from "../value_objects/PlayerID";
 import { CardList } from "../value_objects/Card";
 
 const EventName = 'com.herrdoktor.buraco.events.PlayerPickedUpDiscardPile';
@@ -7,12 +6,12 @@ const EventName = 'com.herrdoktor.buraco.events.PlayerPickedUpDiscardPile';
 export class PlayerPickedUpDiscardPile extends DomainEvent {
     public static readonly EventName = EventName;
 
-    constructor(matchId: number, playerId: PlayerID, discardPile: CardList) {
+    constructor(matchId: number, playerId: string, discardPile: CardList) {
         super();
 
         this.setPayload({
             match_id: matchId,
-            player_id: playerId.asString(),
+            player_id: playerId,
             cards: this.serializeCardList(discardPile)
         });
     }

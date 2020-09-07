@@ -256,7 +256,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         const cards = this.getPlayerById(player.asString())
             .pickUpAllCardsFromDiscardPile();
 
-        this.appendUncommittedEvent(new PlayerPickedUpDiscardPile(this.id, player, cards));
+        this.appendUncommittedEvent(new PlayerPickedUpDiscardPile(this.id, player.asString(), cards));
 
         return cards;
     }

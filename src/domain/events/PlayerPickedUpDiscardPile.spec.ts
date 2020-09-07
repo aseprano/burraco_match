@@ -1,21 +1,20 @@
 import { PlayerPickedUpDiscardPile } from './PlayerPickedUpDiscardPile';
-import { PlayerID } from "../value_objects/PlayerID";
 import { Card, Suit } from "../value_objects/Card";
-import e from "express";
 
 describe('PlayerPickedUpDiscardPile', () => {
 
     it('builds the proper payload', () => {
+        expect(PlayerPickedUpDiscardPile.EventName).toBe('com.herrdoktor.buraco.events.PlayerPickedUpDiscardPile');
+
         const event = new PlayerPickedUpDiscardPile(
             123,
-            new PlayerID('ariastark'),
+            'ariastark',
             [
                 new Card(Suit.Clubs, 8),
                 Card.Joker()
             ]
         );
 
-        expect(PlayerPickedUpDiscardPile.EventName).toBe('com.herrdoktor.buraco.events.PlayerPickedUpDiscardPile');
 
         expect(event.getName()).toEqual(PlayerPickedUpDiscardPile.EventName);
 

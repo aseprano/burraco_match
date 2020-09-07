@@ -75,7 +75,7 @@ describe('ConcretePlayer', () => {
         player.applyEvent(
             new PlayerPickedUpDiscardPile(
                 123,
-                new PlayerID('darkbyte'),
+                'darkbyte',
                 [
                     new Card(Suit.Diamonds, 9),
                     new Card(Suit.Hearts, 11),
@@ -100,7 +100,7 @@ describe('ConcretePlayer', () => {
 
     it('switches to the Playing state after picking up the discard pile', () => {
         const player = new ConcretePlayer('darkbyte', serializer, {} as Stock, [], {} as TeamGamingArea);
-        player.applyEvent(new PlayerPickedUpDiscardPile(123, new PlayerID('darkbyte'), []));
+        player.applyEvent(new PlayerPickedUpDiscardPile(123, 'darkbyte', []));
         expect(player.getState()).toBeInstanceOf(PlayingPlayerState);
     });
 
