@@ -4,7 +4,7 @@ import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer"
 import { PlayingPlayerState } from "./PlayingPlayerState";
 import { Card, Suit } from "../../value_objects/Card";
 import { CardNotOwnedException } from "../../exceptions/CardNotOwnedException";
-import { CannotDiscardCardException } from "../../exceptions/CannotDiscardCardException";
+import { CannotThrowCardException } from "../../exceptions/CannotThrowCardException";
 import { TeamGamingArea } from "../TeamGamingArea";
 import { ActionNotAllowedException } from "../../exceptions/ActionNotAllowedException";
 import { mock, when, instance } from "ts-mockito";
@@ -76,7 +76,7 @@ describe('PlayingPlayerState', () => {
             new Card(Suit.Clubs, 8)
         );
 
-        expect(() => playerState.discard(new Card(Suit.Clubs, 8))).toThrow(new CannotDiscardCardException());
+        expect(() => playerState.discard(new Card(Suit.Clubs, 8))).toThrow(new CannotThrowCardException());
     });
 
     it('does not allow to discard a card not in the hand', () => {

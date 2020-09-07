@@ -5,7 +5,7 @@ import { RunID } from "../../value_objects/RunID";
 import { TeamGamingArea } from "../TeamGamingArea";
 import { ActionNotAllowedException } from "../../exceptions/ActionNotAllowedException";
 import { CardNotOwnedException } from "../../exceptions/CardNotOwnedException";
-import { CannotDiscardCardException } from "../../exceptions/CannotDiscardCardException";
+import { CannotThrowCardException } from "../../exceptions/CannotThrowCardException";
 
 export class PlayingPlayerState extends BasePlayerState {
 
@@ -75,7 +75,7 @@ export class PlayingPlayerState extends BasePlayerState {
         this.ensureOwnsCards([card]);
 
         if (this.isLastCardTakenFromDiscardPile(card)) {
-            throw new CannotDiscardCardException();
+            throw new CannotThrowCardException();
         }
     }
 
