@@ -7,6 +7,7 @@ import { CardsShuffler } from "../../domain-services/CardsShuffler";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 import { PotCreated } from "../../events/PotCreated";
 import { FirstCardThrown } from "../../events/FirstCardThrown";
+import { PlayerID } from "../../value_objects/PlayerID";
 
 describe("ConcreteStock", () => {
     const deuceOfClubs = new Card(Suit.Clubs, 2);
@@ -109,7 +110,7 @@ describe("ConcreteStock", () => {
         const stock = new ConcreteStock(serializer, () => {}, () => cards);
         stock.shuffle();
 
-        stock.applyEvent(new CardsDealtToPlayer(123, [deuceOfClubs, threeOfClubs], 'johndoe'));
+        stock.applyEvent(new CardsDealtToPlayer(123, [deuceOfClubs, threeOfClubs], new PlayerID('johndoe')));
 
         expect(stock.getCards()).toEqual([deuceOfClubs, joker]);
     });

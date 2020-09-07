@@ -127,7 +127,10 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
     protected deal(targetPlayer: Player, numberOfCards = 1) {
         const cardsDealt = this.stock.take(numberOfCards);
-        this.appendUncommittedEvent(new CardsDealtToPlayer(this.id, cardsDealt, targetPlayer.getId()));
+
+        this.appendUncommittedEvent(
+            new CardsDealtToPlayer(this.id, cardsDealt, new PlayerID(targetPlayer.getId()))
+        );
     }
 
     private dealCards(): void {

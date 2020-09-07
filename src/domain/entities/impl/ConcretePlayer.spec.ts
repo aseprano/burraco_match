@@ -46,9 +46,9 @@ describe('ConcretePlayer', () => {
 
         const player = new ConcretePlayer('darkbyte', serializer, stock, discardPile, {} as TeamGamingArea);
 
-        player.applyEvent(new CardsDealtToPlayer(123, [deuceOfClubs, threeOfClubs], 'darkbyte')); // should be applied
-        player.applyEvent(new CardsDealtToPlayer(123, [deuceOfClubs, joker], 'darkbyte')); // should be applied
-        player.applyEvent(new CardsDealtToPlayer(123, [fourOfClubs], 'john')); // should be discarded
+        player.applyEvent(new CardsDealtToPlayer(123, [deuceOfClubs, threeOfClubs], new PlayerID('darkbyte'))); // should be applied
+        player.applyEvent(new CardsDealtToPlayer(123, [deuceOfClubs, joker], new PlayerID('darkbyte'))); // should be applied
+        player.applyEvent(new CardsDealtToPlayer(123, [fourOfClubs], new PlayerID('john'))); // should be discarded
 
         expect(player.getHand()).toEqual([deuceOfClubs, threeOfClubs, deuceOfClubs, joker]);
     });
@@ -114,7 +114,7 @@ describe('ConcretePlayer', () => {
             joker
         ];
 
-        player.applyEvent(new CardsDealtToPlayer(123, playerCards, 'darkbyte'));
+        player.applyEvent(new CardsDealtToPlayer(123, playerCards, new PlayerID('darkbyte')));
 
         const runCards = [
             fourOfClubs,
@@ -145,7 +145,7 @@ describe('ConcretePlayer', () => {
             joker
         ];
 
-        player.applyEvent(new CardsDealtToPlayer(123, playerCards, 'darkbyte'));
+        player.applyEvent(new CardsDealtToPlayer(123, playerCards, new PlayerID('darkbyte')));
 
         const runCards = [
             fourOfClubs,
@@ -182,7 +182,7 @@ describe('ConcretePlayer', () => {
             joker
         ];
 
-        player.applyEvent(new CardsDealtToPlayer(123, playerCards, 'darkbyte'));
+        player.applyEvent(new CardsDealtToPlayer(123, playerCards, new PlayerID('darkbyte')));
 
         player.applyEvent(new PlayerThrewCardToDiscardPile(
             123,
