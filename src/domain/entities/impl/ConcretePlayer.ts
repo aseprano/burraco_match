@@ -136,8 +136,8 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         return this.state.meldCardsToRun(cards, runId);
     }
 
-    public discard(card: Card): void {
-        return this.state.discard(card);
+    public throwCardToDiscardPile(card: Card): void {
+        return this.state.throwCardToDiscardPile(card);
     }
 
     public getHand(): CardList {

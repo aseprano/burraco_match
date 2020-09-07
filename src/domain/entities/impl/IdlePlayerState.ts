@@ -22,7 +22,7 @@ export class IdlePlayerState extends BasePlayerState {
         throw new BadPlayerTurnException();
     }
 
-    public discard(card: Card): void {
+    public throwCardToDiscardPile(card: Card): void {
         throw new BadPlayerTurnException();
     }
 

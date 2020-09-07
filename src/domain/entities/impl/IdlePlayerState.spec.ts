@@ -17,7 +17,7 @@ describe('IdlePlayerState', () => {
         expect(() => playerState.createRun([]))
             .toThrow(new BadPlayerTurnException());
 
-        expect(() => playerState.discard(Card.Joker()))
+        expect(() => playerState.throwCardToDiscardPile(Card.Joker()))
             .toThrow(new BadPlayerTurnException());
 
         expect(() => playerState.meldCardsToRun([], new RunID(1233)))

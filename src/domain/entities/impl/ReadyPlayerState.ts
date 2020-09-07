@@ -30,7 +30,7 @@ export class ReadyPlayerState extends BasePlayerState {
         throw new ActionNotAllowedException();
     }
 
-    public discard(card: Card): void {
+    public throwCardToDiscardPile(card: Card): void {
         throw new ActionNotAllowedException();
     }
 

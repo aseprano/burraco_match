@@ -71,7 +71,7 @@ export class PlayingPlayerState extends BasePlayerState {
         return this.gamingArea.addCardsToRun(cards, runId);
     }
 
-    public discard(card: Card): void {
+    public throwCardToDiscardPile(card: Card): void {
         this.ensureOwnsCards([card]);
 
         if (this.isLastCardTakenFromDiscardPile(card)) {

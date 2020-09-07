@@ -36,6 +36,6 @@ export interface Player extends Entity {
      * @throws CardNotOwnedException if the provided card is not found in the player's hand
      * @throws CannotDiscardCardException if the provided card cannot be discarded
      */
-    discard(card: Card): void;
+    throwCardToDiscardPile(card: Card): void;
 
 }

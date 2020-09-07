@@ -12,6 +12,6 @@ export interface PlayerState {
 
     meldCardsToRun(cards: CardList, runId: RunID): Run;
 
-    discard(card: Card): void;
+    throwCardToDiscardPile(card: Card): void;
     
 }

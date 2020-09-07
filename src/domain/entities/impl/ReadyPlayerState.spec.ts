@@ -60,7 +60,7 @@ describe('ReadyPlayerState', () => {
         expect(() => state.meldCardsToRun([], new RunID(123)))
             .toThrow(new ActionNotAllowedException());
 
-        expect(() => state.discard(Card.Joker()))
+        expect(() => state.throwCardToDiscardPile(Card.Joker()))
             .toThrow(new ActionNotAllowedException());
     });
 

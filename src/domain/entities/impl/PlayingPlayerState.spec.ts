@@ -76,7 +76,8 @@ describe('PlayingPlayerState', () => {
             new Card(Suit.Clubs, 8)
         );
 
-        expect(() => playerState.discard(new Card(Suit.Clubs, 8))).toThrow(new CannotThrowCardException());
+        expect(() => playerState.throwCardToDiscardPile(new Card(Suit.Clubs, 8)))
+            .toThrow(new CannotThrowCardException());
     });
 
     it('does not allow to discard a card not in the hand', () => {
@@ -87,7 +88,8 @@ describe('PlayingPlayerState', () => {
             {} as TeamGamingArea
         );
 
-        expect(() => playerState.discard(new Card(Suit.Clubs, 8))).toThrow(new CardNotOwnedException());
+        expect(() => playerState.throwCardToDiscardPile(new Card(Suit.Clubs, 8)))
+            .toThrow(new CardNotOwnedException());
     });
 
     it('allows to discard the last card taken if another identical card exists in the hand', () => {
@@ -102,7 +104,8 @@ describe('PlayingPlayerState', () => {
             new Card(Suit.Clubs, 7)
         );
 
-        expect(() => playerState.discard(new Card(Suit.Clubs, 7))).not.toThrow();
+        expect(() => playerState.throwCardToDiscardPile(new Card(Suit.Clubs, 7)))
+            .not.toThrow();
     });
 
     it('allows to discard a card different from the last card taken', () => {
@@ -115,7 +118,8 @@ describe('PlayingPlayerState', () => {
             new Card(Suit.Clubs, 7), // last card taken
         );
 
-        expect(() => playerState.discard(new Card(Suit.Clubs, 8))).not.toThrow();
+        expect(() => playerState.throwCardToDiscardPile(new Card(Suit.Clubs, 8)))
+            .not.toThrow();
     });
 
     it('delegates the TeamGamingArea for the creation of a run', () => {
