@@ -17,6 +17,7 @@ import { TeamGamingArea } from "../TeamGamingArea";
 import { PlayerPickedUpDiscardPile } from "../../events/PlayerPickedUpDiscardPile";
 import { RunCreated } from "../../events/RunCreated";
 import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
+import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
 
 export class ConcretePlayer extends AbstractEntity implements Player {
     private hand: CardList = [];
@@ -83,6 +84,11 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         this.removeEventCardsFromHand(event.getPayload().cards);
     }
 
+    private handleCardThrownToDiscardPileEvent(event: Event) {
+        this.removeEventCardsFromHand([event.getPayload().card]);
+        this.switchToIdleState();
+    }
+
     protected doApplyEvent(event: Event): void {
         if (!this.isEventOfMine(event)) {
             //console.debug(`Event ${event.getName()} is not of mine (I am ${this.playerId}, whereas event player is ${event.getPayload().player_id})`);
@@ -112,6 +118,10 @@ export class ConcretePlayer extends AbstractEntity implements Player {
 
             case CardsMeldedToRun.EventName:
                 this.handleCardsMeldedToRunEvent(event);
+                break;
+
+            case PlayerThrewCardToDiscardPile.EventName:
+                this.handleCardThrownToDiscardPileEvent(event);
                 break;
         }
     }

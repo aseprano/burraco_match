@@ -24,6 +24,7 @@ import { RunCreated } from "../../events/RunCreated";
 import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 import { GamingAreaFactory } from "../../factories/GamingAreaFactory";
 import { RunID } from "../../value_objects/RunID";
+import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
@@ -291,6 +292,19 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         );
 
         return updatedRun;
+    }
+
+    public throwCardToDiscardPile(playerId: PlayerID, card: Card): void {
+        this.getPlayerById(playerId.asString())
+            .throwCardToDiscardPile(card);
+
+        this.appendUncommittedEvent(
+            new PlayerThrewCardToDiscardPile(
+                this.id,
+                playerId.asString(),
+                card
+            )
+        );
     }
 
 }

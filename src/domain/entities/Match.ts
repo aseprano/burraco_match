@@ -32,4 +32,15 @@ export interface Match extends RootEntity {
      */
     meldCardsToRun(player: PlayerID, cards: CardList, runId: RunID): Run;
     
+    /**
+     * Throws a card to the discard pile
+     * 
+     * @param player The player that wants to throw the card
+     * @param card The card to throw
+     * @throws ActionNotAllowedException
+     * @throws CardsNotOwnedException
+     * @throws CannotThrowCardException
+     */
+    throwCardToDiscardPile(player: PlayerID, card: Card): void;
+
 }

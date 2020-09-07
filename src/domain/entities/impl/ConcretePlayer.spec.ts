@@ -17,6 +17,7 @@ import { IdlePlayerState } from "./IdlePlayerState";
 import { GameTurnToPlayer } from "../../events/GameTurnToPlayer";
 import { ReadyPlayerState } from "./ReadyPlayerState";
 import { PlayingPlayerState } from "./PlayingPlayerState";
+import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
 
 describe('ConcretePlayer', () => {
     const serializer = new StdCardSerializer();
@@ -169,6 +170,37 @@ describe('ConcretePlayer', () => {
             deuceOfClubs,
             joker,
         ]);
+    });
+
+    it('removes cards from hand when applying the PlayerThrewCardToDiscardPile event', () => {
+        const player = new ConcretePlayer('darkbyte', serializer, {} as Stock, [], {} as TeamGamingArea);
+
+        const playerCards = [
+            deuceOfClubs,
+            threeOfClubs,
+            fourOfClubs,
+            joker
+        ];
+
+        player.applyEvent(new CardsDealtToPlayer(123, playerCards, 'darkbyte'));
+
+        player.applyEvent(new PlayerThrewCardToDiscardPile(
+            123,
+            'darkbyte',
+            threeOfClubs
+        ));
+
+        expect(player.getHand()).toEqual([
+            deuceOfClubs,
+            fourOfClubs,
+            joker,
+        ]);
+    });
+    
+    it('switches to Idle state after throwning a card', () => {
+        const player = new ConcretePlayer('darkbyte', serializer, {} as Stock, [], {} as TeamGamingArea);
+        player.applyEvent(new PlayerThrewCardToDiscardPile(123, 'darkbyte', Card.Joker()));
+        expect(player.getState()).toBeInstanceOf(IdlePlayerState);
     });
 
 });
