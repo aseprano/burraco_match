@@ -62,7 +62,7 @@ describe('ConcretePlayer', () => {
 
     it('adds cards to the hand on PlayerTookOneCardFromStock event', () => {
         const player = new ConcretePlayer('darkbyte', serializer, {} as Stock, [], {} as TeamGamingArea);
-        player.applyEvent(new PlayerTookOneCardFromStock(123, new PlayerID('darkbyte'), new Card(Suit.Diamonds, 9)));
+        player.applyEvent(new PlayerTookOneCardFromStock(123, 'darkbyte', new Card(Suit.Diamonds, 9)));
 
         expect(player.getHand()).toEqual([
             new Card(Suit.Diamonds, 9),
@@ -93,7 +93,7 @@ describe('ConcretePlayer', () => {
 
     it('switches to the Playing state after picking from the stock', () => {
         const player = new ConcretePlayer('darkbyte', serializer, {} as Stock, [], {} as TeamGamingArea);
-        player.applyEvent(new PlayerTookOneCardFromStock(123, new PlayerID('darkbyte'), new Card(Suit.Diamonds, 9)));
+        player.applyEvent(new PlayerTookOneCardFromStock(123, 'darkbyte', new Card(Suit.Diamonds, 9)));
 
         expect(player.getState()).toBeInstanceOf(PlayingPlayerState);
     });
