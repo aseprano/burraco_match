@@ -1,4 +1,3 @@
-import { Entity } from "./Entity";
 import { PlayerID } from "../value_objects/PlayerID";
 import { Team } from "../value_objects/Team";
 import { RootEntity } from "./RootEntity";
