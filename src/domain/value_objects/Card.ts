@@ -37,6 +37,10 @@ export class Card {
         return this.suit === Suit.Joker;
     }
 
+    isDeuce(): boolean {
+        return this.getValue() === 2;
+    }
+
     isEqual(otherCard: Card): boolean {
         return this === otherCard || (this.suit === otherCard.suit && this.value === otherCard.value);
     }

@@ -13,7 +13,7 @@ export class GroupRun extends AbstractRun
             throw new RunException('Cannot start a gamerun with a joker');
         }
 
-        if (card.getValue() === 2) {
+        if (card.isDeuce()) {
             throw new RunException('Cannot start a group with a deuce');
         }
 
@@ -30,7 +30,7 @@ export class GroupRun extends AbstractRun
     }
 
     protected addCard(card: Card): boolean {
-        if (card.getValue() === 2) {
+        if (card.isDeuce()) {
             if (this.hasWildcard()) {
                 throw new WildcardException();
             }

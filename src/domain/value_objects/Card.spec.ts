@@ -46,5 +46,13 @@ describe('Card', () => {
         expect(sevenOfClubs.isEqual(sevenOfDiamonds)).toBeFalse();
         expect(sevenOfClubs.isEqual(sixOfClubs)).toBeFalse();
     });
+
+    it('is deuce only if value is 2', () => {
+        const nonDeuce = new Card(Suit.Clubs, 3);
+        expect(nonDeuce.isDeuce()).toBeFalse();
+
+        const deuce = new Card(Suit.Clubs, 2);
+        expect(deuce.isDeuce()).toBeTrue();
+    });
     
 })

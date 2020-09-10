@@ -13,7 +13,7 @@ export class SequenceRun extends AbstractRun
             throw new RunException('Cannot start a gamerun with a joker');
         }
 
-        if (card.getValue() === 2) {
+        if (card.isDeuce()) {
             throw new RunException('Cannot start a group with a deuce');
         }
 
@@ -52,7 +52,7 @@ export class SequenceRun extends AbstractRun
         ) {
             this.insertCardAtTop(newCard);
             return true;
-        } else if (this.getBottomCard().getValue() === 2 && this.getWildcardPosition() <= 0 && (newCard.getValue() === this.getTopCard().getValue() + 2 || newCard.getValue() === 1 && this.getTopCard().getValue() === 12)) {
+        } else if (this.getBottomCard().isDeuce() && this.getWildcardPosition() <= 0 && (newCard.getValue() === this.getTopCard().getValue() + 2 || newCard.getValue() === 1 && this.getTopCard().getValue() === 12)) {
             const bottomDeuce = this.removeCardAtBottom();
             this.insertWildcardAtTop(bottomDeuce);
             this.insertCardAtTop(newCard);
@@ -140,9 +140,9 @@ export class SequenceRun extends AbstractRun
     }
 
     protected addCard(newCard: Card): boolean {
-        if (newCard.getValue() === 2) {
+        if (newCard.isDeuce()) {
             return this.addDeuce(newCard);
-        } else if (newCard.getValue() !== 2 && newCard.getSuit() !== this.suit) {
+        } else if (!newCard.isDeuce() && newCard.getSuit() !== this.suit) {
             throw new RunException('Bad suit');
         }
 
