@@ -1,6 +1,7 @@
 import { Entity } from "./Entity";
 import { RunID } from "../value_objects/RunID";
-import { CardList, Card } from "../value_objects/Card";
+import { Card } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
 
 export interface Run extends Entity {
 
@@ -23,6 +24,11 @@ export interface Run extends Entity {
      * Returns the list of cards that the run is made of, from the lowest to the highest
      */
     getCards(): CardList;
+
+    /**
+     * Returns the list of cards that the run is made of, from the lowest to the highest, as a readonly array
+     */
+    asArray(): ReadonlyArray<Card>;
 
     /**
      * Returns the position of the wildcard

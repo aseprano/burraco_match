@@ -1,16 +1,17 @@
 import { PotCreated } from './PotCreated';
-import { CardList, Card, Suit } from "../value_objects/Card";
+import { Card, Suit } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
 
 describe('PotCreated', () => {
 
     it('builds the proper payload', () => {
         expect(PotCreated.EventName).toBe('com.herrdoktor.buraco.events.PotCreated');
 
-        const potCards: CardList = [
+        const potCards: CardList = new CardList([
             new Card(Suit.Clubs, 2),
             new Card(Suit.Clubs, 3),
             new Card(Suit.Spades, 4),
-        ];
+        ]);
 
         const event = new PotCreated(123, potCards);
         

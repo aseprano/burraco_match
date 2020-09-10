@@ -1,5 +1,6 @@
 import { StdCardSerializer } from "./StdCardSerializer";
 import { Card, Suit } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 
 describe("StdCardSerializer", () => {
     const serializer = new StdCardSerializer();
@@ -15,7 +16,9 @@ describe("StdCardSerializer", () => {
     });
 
     it("serializes a list of cards", () => {
-        expect(serializer.serializeCards([deuceOfClubs, joker]))
+        const serializedCards = serializer.serializeCards(new CardList([deuceOfClubs, joker]));
+        
+        expect(serializedCards)
             .toEqual([
                 { suit: Suit.Clubs, value: 2 },
                 { suit: Suit.Joker, value: 0 },
@@ -31,7 +34,7 @@ describe("StdCardSerializer", () => {
         expect(serializer.unserializeCards([
             { suit: Suit.Clubs, value: 2 },
             { suit: Suit.Joker, value: 0 }
-        ])).toEqual([ deuceOfClubs, joker ]);
+        ]).cards).toEqual([ deuceOfClubs, joker ]);
     });
     
 });

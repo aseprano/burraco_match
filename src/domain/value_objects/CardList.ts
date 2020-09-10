@@ -1,11 +1,21 @@
 import { Card } from "./Card";
-import e from "express";
 
 export class CardList {
     public readonly length: number;
+    public readonly cards: ReadonlyArray<Card>;
 
-    constructor(public readonly cards: ReadonlyArray<Card>) {
-        this.length = cards.length;
+    public static empty(): CardList {
+        return new CardList();
+    }
+
+    constructor(cards: Card|ReadonlyArray<Card> = []) {
+        if (cards instanceof Card) {
+            this.cards = [cards];
+        } else {
+            this.cards = cards;
+        }
+
+        this.length = this.cards.length;
     }
 
     /**
@@ -63,8 +73,30 @@ export class CardList {
         return new CardList(newCards);
     }
 
+    public removeRange(from: number, length: number): CardList {
+        return new CardList([...this.cards].splice(from, length));
+    }
+
+    public add(newCards: Card|CardList|ReadonlyArray<Card>): CardList {
+        if (newCards instanceof Card) {
+            return this.add([newCards]);
+        } else if (newCards instanceof CardList) {
+            return this.add(newCards.cards);
+        } else {
+            return new CardList([...this.cards, ...newCards]);
+        }
+    }
+
+    public clear(): CardList {
+        return new CardList();
+    }
+
     public isEqual(otherList: CardList): boolean {
         return this === otherList || (this.length === otherList.length && this.contains(otherList.cards));
+    }
+
+    public slice(start: number, end: number): CardList {
+        return new CardList(this.cards.slice(start, end));
     }
 
 }

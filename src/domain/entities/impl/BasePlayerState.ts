@@ -1,7 +1,8 @@
 import { PlayerState } from "../PlayerState";
-import { CardList, Card } from "../../value_objects/Card";
-import { Run } from "../Run";
+import { Card } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { RunID } from "../../value_objects/RunID";
+import { Run } from "../Run";
 
 export abstract class BasePlayerState implements PlayerState {
 

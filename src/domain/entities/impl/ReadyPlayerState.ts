@@ -1,5 +1,6 @@
 import { BasePlayerState } from "./BasePlayerState";
-import { Card, CardList } from "../../value_objects/Card";
+import { Card } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { Run } from "../Run";
 import { RunID } from "../../value_objects/RunID";
 import { ActionNotAllowedException } from "../../exceptions/ActionNotAllowedException";

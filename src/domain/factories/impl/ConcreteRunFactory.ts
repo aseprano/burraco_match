@@ -1,5 +1,6 @@
 import { RunFactory } from "../RunFactory";
-import { CardList, Card } from "../../value_objects/Card";
+import { Card } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { RunID } from "../../value_objects/RunID";
 import { Run } from "../../entities/Run";
 import { GroupRun } from "../../entities/impl/GroupRun";
@@ -27,22 +28,27 @@ export class ConcreteRunFactory implements RunFactory {
     }
 
     private buildRun(cards: CardList): AbstractRun {
-        const firstNonWildcard = cards.findIndex(this.isNonWildcard);
+        const firstNonWildcardIndex = cards.cards.findIndex(this.isNonWildcard);
 
-        if (firstNonWildcard === -1) {
+        if (firstNonWildcardIndex === -1) {
             throw new RunException('Invalid cards for a run');
         }
 
-        const firstCard = cards.splice(firstNonWildcard, 1)[0];
+        const firstNonWildcard = cards.cards[firstNonWildcardIndex];
+        cards = cards.remove(firstNonWildcard);
 
         try {
-            return this.createGroupRun(firstCard, cards);
+            return this.createGroupRun(firstNonWildcard, cards);
         } catch (e) {
-            return this.createSequenceRun(firstCard, cards);
+            return this.createSequenceRun(firstNonWildcard, cards);
         }
     }
 
-    public build(cards: CardList, id: RunID): Run {
+    public build(cards: ReadonlyArray<Card>|CardList, id: RunID): Run {
+        if (!(cards instanceof CardList)) {
+            return this.build(new CardList(cards), id);
+        }
+        
         try {
             const run = this.buildRun(cards);
             run.setId(id);

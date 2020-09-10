@@ -22,7 +22,7 @@ describe('ConcreteRunFactory', () => {
         expect(run).toBeInstanceOf(SequenceRun);
         expect(run.getId()).toEqual(new RunID(123));
 
-        expect(run.getCards()).toEqual([
+        expect(run.getCards().cards).toEqual([
             Card.Joker(),
             new Card(Suit.Clubs, 7),
             new Card(Suit.Clubs, 8),
@@ -46,7 +46,7 @@ describe('ConcreteRunFactory', () => {
         expect(run).toBeInstanceOf(GroupRun);
         expect(run.getId()).toEqual(new RunID(123));
 
-        expect(run.getCards()).toEqual([
+        expect(run.getCards().cards).toEqual([
             Card.Joker(),
             new Card(Suit.Clubs, 7),
             new Card(Suit.Diamonds, 7),

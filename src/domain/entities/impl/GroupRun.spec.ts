@@ -1,6 +1,7 @@
 import { GroupRun } from './GroupRun';
 import { Suit, Card } from "../../value_objects/Card";
 import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
+import { CardList } from "../../value_objects/CardList";
 
 describe('GroupRun', () => {
     const joker = Card.Joker();
@@ -22,7 +23,7 @@ describe('GroupRun', () => {
         const game = GroupRun.startWithCard(sevenOfClubs);
         game.add(sevenOfDiamonds);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             sevenOfClubs,
             sevenOfDiamonds,
         ]);
@@ -41,10 +42,10 @@ describe('GroupRun', () => {
         const game = GroupRun.startWithCard(sevenOfClubs);
 
         game.add(
-            Array(12).fill(new Card(Suit.Diamonds, 7))
+            new CardList(Array(12).fill(new Card(Suit.Diamonds, 7)))
         );
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             new Card(Suit.Clubs, 7),
             new Card(Suit.Diamonds, 7),
             new Card(Suit.Diamonds, 7),
@@ -62,7 +63,7 @@ describe('GroupRun', () => {
     });
 
     it('cannot be made of more than 13 cards', () => {
-        const listOfSevens = Array(13).fill(new Card(Suit.Diamonds, 7));
+        const listOfSevens = new CardList(Array(13).fill(new Card(Suit.Diamonds, 7)));
 
         const game = GroupRun.startWithCard(sevenOfClubs);
         expect(() => game.add(listOfSevens)).toThrow();
@@ -72,7 +73,7 @@ describe('GroupRun', () => {
         const game = GroupRun.startWithCard(sevenOfClubs)
             .add(joker);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             joker,
             sevenOfClubs
         ]);
@@ -84,7 +85,7 @@ describe('GroupRun', () => {
         const game = GroupRun.startWithCard(sevenOfClubs)
             .add(deuceOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             deuceOfClubs,
             sevenOfClubs,
         ]);
@@ -110,11 +111,11 @@ describe('GroupRun', () => {
 
     it('builds a GroupRun by cards and wildcard position', () => {
         const run = GroupRun.restore(
-            [sevenOfClubs, sevenOfClubs, sevenOfClubs, deuceOfClubs],
+            new CardList([sevenOfClubs, sevenOfClubs, sevenOfClubs, deuceOfClubs]),
             3
         );
 
-        expect(run.getCards()).toEqual([
+        expect(run.getCards().cards).toEqual([
             sevenOfClubs, sevenOfClubs, sevenOfClubs, deuceOfClubs
         ]);
 
@@ -122,17 +123,17 @@ describe('GroupRun', () => {
     });
 
     it('sets the value depending on the wildcard position', () => {
-        const run1 = GroupRun.restore([sevenOfClubs, deuceOfClubs], 1);
+        const run1 = GroupRun.restore(new CardList([sevenOfClubs, deuceOfClubs]), 1);
         expect(run1.getValue()).toEqual(7);
 
-        const run2 = GroupRun.restore([deuceOfClubs, sevenOfClubs], 0);
+        const run2 = GroupRun.restore(new CardList([deuceOfClubs, sevenOfClubs]), 0);
         expect(run2.getValue()).toEqual(7);
     });
 
     it('throws an error when trying to add an empty list of cards', () => {
-        const run = GroupRun.restore([new Card(Suit.Clubs, 7)], -1);
+        const run = GroupRun.restore(new CardList([new Card(Suit.Clubs, 7)]), -1);
         
-        expect(() => run.add([])).toThrow(new InvalidCardListException());
+        expect(() => run.add(CardList.empty())).toThrow(new InvalidCardListException());
     });
 
 });

@@ -1,5 +1,6 @@
 import { PlayerTookPot } from './PlayerTookPot';
 import { Card, Suit } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
 
 describe('PlayerTookPot', () => {
 
@@ -9,10 +10,10 @@ describe('PlayerTookPot', () => {
         const event = new PlayerTookPot(
             123,
             'darkbyte',
-            [
+            new CardList([
                 new Card(Suit.Clubs, 9),
                 new Card(Suit.Diamonds, 2),
-            ]
+            ])
         );
 
         expect(event.getName()).toEqual(PlayerTookPot.EventName);

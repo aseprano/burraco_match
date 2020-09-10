@@ -1,6 +1,7 @@
 import { Run } from "../Run";
 import { RunID } from "../../value_objects/RunID";
-import { Card, CardList } from "../../value_objects/Card";
+import { Card } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { RunException } from "../../exceptions/RunException";
 import { WildcardException } from "../../exceptions/WildcardException";
 import { SnapshotState } from "../../../tech/Snapshot";
@@ -48,7 +49,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
             throw new RunException('GameRun would become too long, only 13 cards per run are allowed');
         }
 
-        const remainingCards = [...newCards];
+        let remainingCards = newCards;
 
         while (remainingCards.length > 0) {
             const addedCardIndex = this.addAnyOf(remainingCards);
@@ -57,16 +58,16 @@ export abstract class AbstractRun extends AbstractEntity implements Run
                 throw new RunException(`Cards cannot be added`);
             }
 
-            remainingCards.splice(addedCardIndex, 1);
+            remainingCards = remainingCards.removeRange(addedCardIndex, 1);
         }
     }
 
     private addAnyOf(cards: CardList): number {
-        return cards.findIndex((card) => this.tryAddCard(card));
+        return cards.cards.findIndex((card) => this.tryAddCard(card));
     }
 
     protected insertCardAt(newCard: Card, position: number) {
-        this.cards.splice(position, 0, newCard);
+        this.cards = new CardList([...this.cards.cards].splice(position, 0, newCard));
 
         if (this.wildcardPosition >= position) {
             this.wildcardPosition++;
@@ -82,7 +83,9 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     protected removeCardAt(index: number): Card {
-        return this.cards.splice(index, 1)[0];
+        const cardRemoved = this.cards.cards[index];
+        this.cards = new CardList([...this.cards.cards].splice(index, 1));
+        return cardRemoved;
     }
 
     protected removeCardAtBottom(): Card {
@@ -90,7 +93,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     protected insertWildcardAt(wildcard: Card, position: number) {
-        this.cards.splice(position, 0, wildcard);
+        this.cards = new CardList([...this.cards.cards].splice(position, 0, wildcard));
         this.wildcardPosition = position;
     }
 
@@ -107,7 +110,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     protected getCardAt(pos: number): Card {
-        return this.cards[pos];
+        return this.cards.cards[pos];
     }
 
     protected getBottomCard(): Card {
@@ -128,7 +131,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
 
     protected replaceWildcard(replacementCard: Card): Card {
         const wildcard = this.getCardAt(this.getWildcardPosition());
-        this.cards.splice(this.getWildcardPosition(), 1, replacementCard);
+        this.cards = new CardList([...this.cards.cards].splice(this.getWildcardPosition(), 1, replacementCard));
         this.wildcardPosition = -1;
         return wildcard;
     }
@@ -140,7 +143,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     protected buildSnapshot(): SnapshotState {
         return {
             entityId: this.id.asNumber(),
-            cards: this.cards.map((card) => {
+            cards: this.cards.cards.map((card) => {
                 return { suit: card.getSuit(), value: card.getValue() };
             }),
             wildcardPosition: this.wildcardPosition,
@@ -150,10 +153,10 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     protected applySnapshot(snapshot: SnapshotState): void {
         this.setId(new RunID(snapshot.entityId));
 
-        const cards: CardList = snapshot['cards']
+        const cards = snapshot['cards']
             .map((card: {[key: string]: any}) => new Card(card['suit'], card['value']));
 
-        this.set(cards, snapshot['wildcardPosition']);
+        this.set(new CardList(cards), snapshot['wildcardPosition']);
     }
 
     public setId(newId: RunID): void {
@@ -165,7 +168,11 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     public getCards(): CardList {
-        return [...this.cards];
+        return this.cards;
+    }
+
+    public asArray(): ReadonlyArray<Card> {
+        return this.cards.cards;
     }
 
     public getWildcardPosition(): number {
@@ -174,12 +181,12 @@ export abstract class AbstractRun extends AbstractEntity implements Run
 
     public add(newCards: Card|CardList): Run {
         const memento = {
-            cards: [...this.cards],
+            cards: this.cards,
             wildcardPosition: this.wildcardPosition
         };
 
         try {
-            this.tryAddCards(Array.isArray(newCards) ? newCards : [newCards]);
+            this.tryAddCards(newCards instanceof CardList ? newCards : new CardList(newCards));
             return this;
         } catch (exception) {
             this.cards = memento.cards;
@@ -189,7 +196,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     public set(cards: CardList, wildcardPosition: number): void {
-        this.cards = [...cards];
+        this.cards = cards;
         this.wildcardPosition = wildcardPosition;
     }
 

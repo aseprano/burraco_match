@@ -3,6 +3,7 @@ import { Suit, Card } from "../../value_objects/Card";
 import { RunID } from "../../value_objects/RunID";
 import { RunException } from "../../exceptions/RunException";
 import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
+import { CardList } from "../../value_objects/CardList";
 
 describe('SequenceRun', () => {
     const joker = Card.Joker();
@@ -22,7 +23,7 @@ describe('SequenceRun', () => {
         const game = SequenceRun.startWithCard(three);
 
         expect(game.getSuit()).toEqual(Suit.Clubs);
-        expect(game.getCards()).toEqual([ three ]);
+        expect(game.getCards().cards).toEqual([ three ]);
         expect(game.getWildcardPosition()).toEqual(-1);
     });
 
@@ -41,7 +42,7 @@ describe('SequenceRun', () => {
         const game = SequenceRun.startWithCard(threeOfClubs)
             .add(fourOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             threeOfClubs,
             fourOfClubs,
         ]);
@@ -56,7 +57,7 @@ describe('SequenceRun', () => {
         const game = SequenceRun.startWithCard(threeOfClubs)
             .add(fourOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             threeOfClubs,
             fourOfClubs
         ]);
@@ -77,18 +78,18 @@ describe('SequenceRun', () => {
 
     it('restores the old status if cannot be modified', () => {
         const run = SequenceRun.startWithCard(getCard(5))
-            .add([
+            .add(new CardList([
                 getCard(6),
                 getCard(7)
-            ]);
+            ]));
 
-        expect(() => run.add([
+        expect(() => run.add(new CardList([
             getCard(8),
             getCard(9),
             getCard(13)
-        ])).toThrow();
+        ]))).toThrow();
 
-        expect(run.getCards()).toEqual([
+        expect(run.getCards().cards).toEqual([
             getCard(5),
             getCard(6),
             getCard(7)
@@ -102,7 +103,7 @@ describe('SequenceRun', () => {
         const game = SequenceRun.startWithCard(kingOfSpades)
             .add(aceOfSpades);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             kingOfSpades,
             aceOfSpades
         ]);
@@ -115,7 +116,7 @@ describe('SequenceRun', () => {
         const game = SequenceRun.startWithCard(aceOfSpades)
             .add(kingOfSpades);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             kingOfSpades,
             aceOfSpades
         ]);
@@ -128,7 +129,7 @@ describe('SequenceRun', () => {
         const game = SequenceRun.startWithCard(aceOfClubs)
             .add(deuceOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             aceOfClubs,
             deuceOfClubs
         ]);
@@ -142,7 +143,7 @@ describe('SequenceRun', () => {
         const game = SequenceRun.startWithCard(threeOfClubs)
             .add(deuceOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             deuceOfClubs,
             threeOfClubs
         ]);
@@ -158,7 +159,7 @@ describe('SequenceRun', () => {
         const game1 = SequenceRun.startWithCard(fiveOfClubs)
             .add(deuceOfClubs);
 
-        expect(game1.getCards()).toEqual([
+        expect(game1.getCards().cards).toEqual([
             deuceOfClubs,
             fiveOfClubs
         ]);
@@ -169,7 +170,7 @@ describe('SequenceRun', () => {
             .add(deuceOfClubs)
             .add(deuceOfClubs);
 
-        expect(game2.getCards()).toEqual([
+        expect(game2.getCards().cards).toEqual([
             aceOfClubs,
             deuceOfClubs,
             deuceOfClubs
@@ -178,10 +179,10 @@ describe('SequenceRun', () => {
         expect(game2.getWildcardPosition()).toBe(2);
 
         const game3 = SequenceRun.startWithCard(aceOfClubs)
-            .add([deuceOfClubs, threeOfClubs])
+            .add(new CardList([deuceOfClubs, threeOfClubs]))
             .add(deuceOfClubs);
 
-        expect(game3.getCards())
+        expect(game3.getCards().cards)
             .toEqual([
                 aceOfClubs,
                 deuceOfClubs,
@@ -197,10 +198,10 @@ describe('SequenceRun', () => {
         const fiveOfClubs = getCard(5);
 
         const game = SequenceRun.startWithCard(threeOfClubs)
-            .add([deuceOfClubs, deuceOfClubs])
+            .add(new CardList([deuceOfClubs, deuceOfClubs]))
             .add(fiveOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             deuceOfClubs,
             threeOfClubs,
             deuceOfClubs,
@@ -218,7 +219,7 @@ describe('SequenceRun', () => {
         const game = SequenceRun.restore([deuceOfClubs, threeOfClubs, fourOfClubs], -1)
             .add(sixOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             threeOfClubs,
             fourOfClubs,
             deuceOfClubs,
@@ -233,10 +234,10 @@ describe('SequenceRun', () => {
         const threeOfClubs = getCard(3);
         
         const game1 = SequenceRun.startWithCard(aceOfClubs)
-            .add([deuceOfClubs, deuceOfClubs])
+            .add(new CardList([deuceOfClubs, deuceOfClubs]))
             .add(threeOfClubs);
 
-        expect(game1.getCards())
+        expect(game1.getCards().cards)
             .toEqual([
                 aceOfClubs,
                 deuceOfClubs,
@@ -252,10 +253,10 @@ describe('SequenceRun', () => {
         const sixOfClubs = getCard(6);
 
         const game2 = SequenceRun.startWithCard(fourOfClubs)
-            .add([deuceOfClubs, sixOfClubs])
+            .add(new CardList([deuceOfClubs, sixOfClubs]))
             .add(fiveOfClubs);
 
-        expect(game2.getCards())
+        expect(game2.getCards().cards)
             .toEqual([
                 deuceOfClubs,
                 fourOfClubs,
@@ -274,10 +275,10 @@ describe('SequenceRun', () => {
         const deuceOfClubs = getCard(2);
 
         const game = SequenceRun.startWithCard(queenOfClubs)
-            .add([deuceOfClubs, aceOfClubs])
+            .add(new CardList([deuceOfClubs, aceOfClubs]))
             .add(kingOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             deuceOfClubs,
             queenOfClubs,
             kingOfClubs,
@@ -296,7 +297,7 @@ describe('SequenceRun', () => {
             .add(deuceOfClubs)     //    *,5C
             .add(threeOfClubs);    // 3C,*,5C
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             threeOfClubs,
             deuceOfClubs,
             fiveOfClubs
@@ -312,14 +313,14 @@ describe('SequenceRun', () => {
 
         const game = SequenceRun
             .startWithCard(aceOfClubs) // 1C
-            .add([
+            .add(new CardList([
                 deuceOfClubs,     // 1C,2C,3C,*
                 deuceOfClubs,
                 threeOfClubs
-            ])
+            ]))
             .add(fiveOfClubs);    // 1C,2C,3C,*,5C
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             aceOfClubs,
             deuceOfClubs,
             threeOfClubs,
@@ -342,13 +343,13 @@ describe('SequenceRun', () => {
     });
 
     it('inserts a deuce as wildcard at the top if the bottommost cars is an ace', () => {
-        const game = SequenceRun.restore([
+        const game = SequenceRun.restore(new CardList([
             getCard(1),
             getCard(2),
             getCard(3)
-        ], -1).add(deuceOfClubs);
+        ]), -1).add(deuceOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             getCard(1),
             getCard(2),
             getCard(3),
@@ -369,7 +370,7 @@ describe('SequenceRun', () => {
             -1
         ).add(deuceOfClubs);
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             deuceOfClubs,
             deuceOfClubs,
             threeOfClubs,
@@ -387,7 +388,7 @@ describe('SequenceRun', () => {
             .add(deuceOfClubs)      // *,QC
             .add(aceOfClubs);       //   QC,*,1C
 
-        expect(game.getCards()).toEqual([
+        expect(game.getCards().cards).toEqual([
             queenOfClubs,
             deuceOfClubs,
             aceOfClubs
@@ -402,7 +403,7 @@ describe('SequenceRun', () => {
         const run = SequenceRun.startWithCard(sixOfClubs);
         run.add(joker);
 
-        expect(run.getCards()).toEqual([joker, sixOfClubs]);
+        expect(run.getCards().cards).toEqual([joker, sixOfClubs]);
         expect(run.getWildcardPosition()).toEqual(0);
     });
 
@@ -412,7 +413,7 @@ describe('SequenceRun', () => {
         const run = SequenceRun.startWithCard(aceOfClubs);
         run.add(joker);
 
-        expect(run.getCards()).toEqual([aceOfClubs, joker]);
+        expect(run.getCards().cards).toEqual([aceOfClubs, joker]);
         expect(run.getWildcardPosition()).toEqual(1);
     });
 
@@ -445,7 +446,7 @@ describe('SequenceRun', () => {
         const run = SequenceRun.restore([fiveOfClubs, joker, sevenOfClubs], 1)
             .add(sixOfClubs);
 
-        expect(run.getCards()).toEqual([joker, fiveOfClubs, sixOfClubs, sevenOfClubs]);
+        expect(run.getCards().cards).toEqual([joker, fiveOfClubs, sixOfClubs, sevenOfClubs]);
         expect(run.getWildcardPosition()).toEqual(0);
     });
 
@@ -457,7 +458,7 @@ describe('SequenceRun', () => {
         const run = SequenceRun.restore([joker, sixOfClubs, sevenOfClubs], 0)
             .add(fiveOfClubs);
 
-        expect(run.getCards()).toEqual([joker, fiveOfClubs, sixOfClubs, sevenOfClubs]);
+        expect(run.getCards().cards).toEqual([joker, fiveOfClubs, sixOfClubs, sevenOfClubs]);
         expect(run.getWildcardPosition()).toEqual(0);
     });
 
@@ -468,7 +469,7 @@ describe('SequenceRun', () => {
         const run = SequenceRun.restore([aceOfClubs, deuceOfClubs, joker], 2);
         run.add(threeOfClubs);
 
-        expect(run.getCards()).toEqual([aceOfClubs, deuceOfClubs, threeOfClubs, joker]);
+        expect(run.getCards().cards).toEqual([aceOfClubs, deuceOfClubs, threeOfClubs, joker]);
         expect(run.getWildcardPosition()).toEqual(3);
     });
 
@@ -477,15 +478,15 @@ describe('SequenceRun', () => {
         const fourOfClubs = getCard(4);
 
         const run = SequenceRun.startWithCard(threeOfClubs);
-        run.set([threeOfClubs, fourOfClubs, deuceOfClubs], 2);
-        expect(run.getCards()).toEqual([threeOfClubs, fourOfClubs, deuceOfClubs]);
+        run.set(new CardList([threeOfClubs, fourOfClubs, deuceOfClubs]), 2);
+        expect(run.getCards().cards).toEqual([threeOfClubs, fourOfClubs, deuceOfClubs]);
         expect(run.getWildcardPosition()).toEqual(2);
     });
 
     it('throws an error when trying to add an empty list of cards', () => {
         const run = SequenceRun.restore([new Card(Suit.Clubs, 7)], -1);
 
-        expect(() => run.add([])).toThrow(new InvalidCardListException());
+        expect(() => run.add(CardList.empty())).toThrow(new InvalidCardListException());
     });
 
 });

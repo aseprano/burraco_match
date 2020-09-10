@@ -8,6 +8,7 @@ import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer"
 import { RunCreated } from "../../events/RunCreated";
 import { RunNotFoundException } from "../../exceptions/RunNotFoundException";
 import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
+import { CardList } from "../../value_objects/CardList";
 
 describe('ConcreteTeamGamingArea', () => {
     const runFactory = new ConcreteRunFactory();
@@ -26,17 +27,17 @@ describe('ConcreteTeamGamingArea', () => {
     it('can build sequence runs', () => {
         const gamingArea = new ConcreteTeamGamingArea(1, runFactory, serializer);
 
-        const newRun = gamingArea.createRun([
+        const newRun = gamingArea.createRun(new CardList([
             new Card(Suit.Diamonds, 3),
             new Card(Suit.Diamonds, 2),
             new Card(Suit.Diamonds, 4),
             new Card(Suit.Diamonds, 5),
-        ]);
+        ]));
 
         expect(newRun).toBeInstanceOf(SequenceRun);
         expect(newRun.getId()).toEqual(new RunID(0));
 
-        expect(newRun.getCards()).toEqual([
+        expect(newRun.asArray()).toEqual([
             new Card(Suit.Diamonds, 2),
             new Card(Suit.Diamonds, 3),
             new Card(Suit.Diamonds, 4),
@@ -49,17 +50,17 @@ describe('ConcreteTeamGamingArea', () => {
     it('can build group runs', () => {
         const gamingArea = new ConcreteTeamGamingArea(1, runFactory, serializer);
 
-        const newRun = gamingArea.createRun([
+        const newRun = gamingArea.createRun(new CardList([
             new Card(Suit.Diamonds, 3),
             new Card(Suit.Clubs, 3),
             new Card(Suit.Hearts, 3),
             new Card(Suit.Hearts, 3),
-        ]);
+        ]));
 
         expect(newRun).toBeInstanceOf(GroupRun);
         expect(newRun.getId()).toEqual(new RunID(0));
 
-        expect(newRun.getCards()).toEqual([
+        expect(newRun.asArray()).toEqual([
             new Card(Suit.Diamonds, 3),
             new Card(Suit.Clubs, 3),
             new Card(Suit.Hearts, 3),
@@ -111,17 +112,17 @@ describe('ConcreteTeamGamingArea', () => {
         const gamingArea = new ConcreteTeamGamingArea(0, runFactory, serializer);
         
         // create a mock run with id #100
-        const fakeRun = GroupRun.restore([new Card(Suit.Clubs, 7)], -1);
+        const fakeRun = GroupRun.restore(new CardList([new Card(Suit.Clubs, 7)]), -1);
         fakeRun.setId(new RunID(100));
         gamingArea.applyEvent(new RunCreated(123, 'darkbyte', 0, fakeRun));
 
         // next run id should be 101
-        const newRun = gamingArea.createRun([
+        const newRun = gamingArea.createRun(new CardList([
             new Card(Suit.Diamonds, 2),
             new Card(Suit.Diamonds, 3),
             new Card(Suit.Diamonds, 4),
             new Card(Suit.Diamonds, 5),
-        ]);
+        ]));
 
         expect(newRun.getId().asNumber()).toBe(101);
     });
@@ -129,18 +130,18 @@ describe('ConcreteTeamGamingArea', () => {
     it('throws an error when adding cards to a non-existing run', () => {
         const gamingArea = new ConcreteTeamGamingArea(0, runFactory, serializer);
 
-        expect(() => gamingArea.addCardsToRun([], new RunID(123))).toThrow(new RunNotFoundException());
+        expect(() => gamingArea.addCardsToRun(new CardList(), new RunID(123))).toThrow(new RunNotFoundException());
     });
 
     it('replaces an existing run when applying the CardsMeldedToRun event', () => {
         const gamingArea = new ConcreteTeamGamingArea(0, runFactory, serializer);
 
-        const existingRun = GroupRun.restore([new Card(Suit.Clubs, 7)], -1);
+        const existingRun = GroupRun.restore(new CardList([new Card(Suit.Clubs, 7)]), -1);
         existingRun.setId(new RunID(18));
 
         gamingArea.applyEvent(new RunCreated(123, 'darkbyte', 0, existingRun));
 
-        const newRun = GroupRun.restore([new Card(Suit.Clubs, 7), new Card(Suit.Diamonds, 7)], -1)
+        const newRun = GroupRun.restore(new CardList([new Card(Suit.Clubs, 7), new Card(Suit.Diamonds, 7)]), -1)
         newRun.setId(new RunID(18));
 
         gamingArea.applyEvent(
@@ -148,7 +149,7 @@ describe('ConcreteTeamGamingArea', () => {
                 123,
                 'john',
                 0,
-                [],
+                CardList.empty(),
                 newRun
             )
         );

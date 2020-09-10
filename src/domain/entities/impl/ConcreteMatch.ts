@@ -8,7 +8,8 @@ import { Event } from "../../../tech/events/Event";
 import { MatchPlayersException } from "../../exceptions/MatchPlayersException";
 import { MatchStarted } from "../../events/MatchStarted";
 import { Stock } from "../Stock";
-import { CardList, Card } from "../../value_objects/Card";
+import { Card } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { Player } from "../Player";
 import { ConcretePlayer } from "./ConcretePlayer";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
@@ -98,7 +99,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     
     private handleMatchStartedEvent(event: Event) {
         this.started = true;
-        this.discardPile = [];
+        this.discardPile = this.discardPile.clear();
 
         event.getPayload()
             .team1
@@ -117,7 +118,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
     private handleFirstCardThrownEvent(event: Event) {
         const cardThrown = this.cardSerializer.unserializeCard(event.getPayload().card);
-        this.discardPile = [cardThrown];
+        this.discardPile = this.discardPile.add(cardThrown);
     }
 
     private handleGameTurnToPlayerEvent(event: Event) {

@@ -9,6 +9,7 @@ import { TeamGamingArea } from "../TeamGamingArea";
 import { ActionNotAllowedException } from "../../exceptions/ActionNotAllowedException";
 import { mock, when, instance } from "ts-mockito";
 import { SequenceRun } from "./SequenceRun";
+import { CardList } from "../../value_objects/CardList";
 
 describe('PlayingPlayerState', () => {
     const runFactory = new ConcreteRunFactory();
@@ -23,55 +24,61 @@ describe('PlayingPlayerState', () => {
     }
 
     it('does not allow to take one card from the stock', () => {
-        const playerState = new PlayingPlayerState([], {} as TeamGamingArea);
-        expect(() => playerState.takeOneCardFromStock()).toThrow(new ActionNotAllowedException());
+        const playerState = new PlayingPlayerState(CardList.empty(), {} as TeamGamingArea);
+
+        expect(() => playerState.takeOneCardFromStock())
+            .toThrow(new ActionNotAllowedException());
     });
 
     it('does not allow to pick up the discard pile', () => {
-        const playerState = new PlayingPlayerState([], {} as TeamGamingArea);
-        expect(() => playerState.pickUpAllCardsFromDiscardPile()).toThrow(new ActionNotAllowedException());
+        const playerState = new PlayingPlayerState(CardList.empty(), {} as TeamGamingArea);
+
+        expect(() => playerState.pickUpAllCardsFromDiscardPile())
+            .toThrow(new ActionNotAllowedException());
     });
 
     it('does not allow to create a run with cards not in the hand', () => {
         const playerState = new PlayingPlayerState(
-            [
+            new CardList([
                 new Card(Suit.Clubs, 7)
-            ],
+            ]),
             {} as TeamGamingArea
         );
 
-        const runCards = [
+        const runCards = new CardList([
             new Card(Suit.Clubs, 7),
             new Card(Suit.Clubs, 8)
-        ];
+        ]);
 
-        expect(() => playerState.createRun(runCards)).toThrow(new CardNotOwnedException());
+        expect(() => playerState.createRun(runCards))
+            .toThrow(new CardNotOwnedException());
     });
 
     it('does not allow to create a run by using the same card multiple times', () => {
         const playerState = new PlayingPlayerState(
-            [
+            new CardList([
                 new Card(Suit.Clubs, 7)
-            ],
+            ]),
             {} as TeamGamingArea
         );
 
-        const runCards = [
+        const runCards = new CardList([
             new Card(Suit.Clubs, 7),
             new Card(Suit.Clubs, 7),
             new Card(Suit.Clubs, 7),
-        ];
+        ]);
 
-        expect(() => playerState.createRun(runCards)).toThrow(new CardNotOwnedException());
+        expect(() => playerState.createRun(runCards))
+            .toThrow(new CardNotOwnedException());
     });
 
     it('does not allow to discard the last card taken', () => {
         const playerState = new PlayingPlayerState(
-            [
+            new CardList([
                 new Card(Suit.Clubs, 7),
                 new Card(Suit.Clubs, 8),
                 new Card(Suit.Clubs, 9),
-            ],
+            ]),
             {} as TeamGamingArea,
             new Card(Suit.Clubs, 8)
         );
@@ -82,9 +89,9 @@ describe('PlayingPlayerState', () => {
 
     it('does not allow to discard a card not in the hand', () => {
         const playerState = new PlayingPlayerState(
-            [
+            new CardList([
                 new Card(Suit.Clubs, 7)
-            ],
+            ]),
             {} as TeamGamingArea
         );
 
@@ -96,10 +103,10 @@ describe('PlayingPlayerState', () => {
         const gamingArea = buildGamingArea();
 
         const playerState = new PlayingPlayerState(
-            [
+            new CardList([
                 new Card(Suit.Clubs, 7),
                 new Card(Suit.Clubs, 7),
-            ],
+            ]),
             gamingArea,
             new Card(Suit.Clubs, 7)
         );
@@ -110,10 +117,10 @@ describe('PlayingPlayerState', () => {
 
     it('allows to discard a card different from the last card taken', () => {
         const playerState = new PlayingPlayerState(
-            [
+            new CardList([
                 new Card(Suit.Clubs, 8),
                 new Card(Suit.Clubs, 7),
-            ],
+            ]),
             {} as TeamGamingArea,
             new Card(Suit.Clubs, 7), // last card taken
         );
@@ -123,11 +130,11 @@ describe('PlayingPlayerState', () => {
     });
 
     it('delegates the TeamGamingArea for the creation of a run', () => {
-        const playerCards = [
+        const playerCards = new CardList([
             new Card(Suit.Clubs, 7),
             new Card(Suit.Clubs, 9),
             new Card(Suit.Clubs, 8),
-        ];
+        ]);
 
         const fakeRun = SequenceRun.restore(playerCards, -1);
 
