@@ -118,7 +118,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
     private handleFirstCardThrownEvent(event: Event) {
         const cardThrown = this.cardSerializer.unserializeCard(event.getPayload().card);
-        this.discardPile = this.discardPile.add(cardThrown);
+        this.discardPile = this.discardPile.append(cardThrown);
     }
 
     private handleGameTurnToPlayerEvent(event: Event) {

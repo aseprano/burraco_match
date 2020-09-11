@@ -6,7 +6,7 @@ import { RunException } from "../../exceptions/RunException";
 
 export class GroupRun extends AbstractRun
 {
-    private value: number = 0;
+    public readonly value: number;
 
     public static startWithCard(card: Card): GroupRun
     {

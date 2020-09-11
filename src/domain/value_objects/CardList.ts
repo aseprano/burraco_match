@@ -74,16 +74,36 @@ export class CardList {
     }
 
     public removeRange(from: number, length: number): CardList {
-        return new CardList([...this.cards].splice(from, length));
+        const newCards = [...this.cards];
+        newCards.splice(from, length);
+        return new CardList(newCards);
     }
 
-    public add(newCards: Card|CardList|ReadonlyArray<Card>): CardList {
+    public append(newCards: Card|CardList|ReadonlyArray<Card>): CardList {
         if (newCards instanceof Card) {
-            return this.add([newCards]);
+            return this.append([newCards]);
         } else if (newCards instanceof CardList) {
-            return this.add(newCards.cards);
+            return this.append(newCards.cards);
         } else {
             return new CardList([...this.cards, ...newCards]);
+        }
+    }
+
+    /**
+     * Inserts one or more cards starting from a specified index
+     * 
+     * @param newCards The card or the cards to insert
+     * @param position The index at which the card will be inserted
+     */
+    public insert(newCards: Card|CardList|ReadonlyArray<Card>, position: number): CardList {
+        if (newCards instanceof Card) {
+            return this.insert([newCards], position);
+        } else if (newCards instanceof CardList) {
+            return this.insert(newCards.asArray(), position);
+        } else {
+            const cards = [...this.cards];
+            cards.splice(position, 0, ...newCards);
+            return new CardList(cards);
         }
     }
 
@@ -93,6 +113,10 @@ export class CardList {
 
     public isEqual(otherList: CardList): boolean {
         return this === otherList || (this.length === otherList.length && this.contains(otherList.cards));
+    }
+
+    public asArray(): ReadonlyArray<Card> {
+        return this.cards;
     }
 
     public slice(start: number, end: number): CardList {

@@ -24,6 +24,10 @@ export abstract class AbstractRun extends AbstractEntity implements Run
         }
     }
 
+    private cardsAreTooMany(newCards: CardList): boolean {
+        return newCards.length + this.cards.length > 13;
+    }
+
     private tryAddCard(card: Card): boolean {
         if (card.isJoker()) {
             if (this.hasWildcard()) {
@@ -34,10 +38,6 @@ export abstract class AbstractRun extends AbstractEntity implements Run
         } else {
             return this.addCard(card);
         }
-    }
-
-    private cardsAreTooMany(newCards: CardList): boolean {
-        return newCards.length + this.cards.length > 13;
     }
 
     private tryAddCards(newCards: CardList): void {
@@ -63,11 +63,15 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     private addAnyOf(cards: CardList): number {
+        // returns the index of the first card
+        // for which tryAddCard(card) returns true
         return cards.cards.findIndex((card) => this.tryAddCard(card));
     }
 
     protected insertCardAt(newCard: Card, position: number) {
-        this.cards = new CardList([...this.cards.cards].splice(position, 0, newCard));
+        const cards = [...this.cards.asArray()];
+        cards.splice(position, 0, newCard);
+        this.cards = new CardList(cards);
 
         if (this.wildcardPosition >= position) {
             this.wildcardPosition++;
@@ -83,8 +87,9 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     protected removeCardAt(index: number): Card {
-        const cardRemoved = this.cards.cards[index];
-        this.cards = new CardList([...this.cards.cards].splice(index, 1));
+        const newCards = [...this.cards.asArray()];
+        const cardRemoved = newCards.splice(0, 1)[0];
+        this.cards = new CardList(newCards);
         return cardRemoved;
     }
 
@@ -93,7 +98,9 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     protected insertWildcardAt(wildcard: Card, position: number) {
-        this.cards = new CardList([...this.cards.cards].splice(position, 0, wildcard));
+        const newCards = [...this.cards.cards];
+        newCards.splice(position, 0, wildcard);
+        this.cards = new CardList(newCards);
         this.wildcardPosition = position;
     }
 
@@ -131,7 +138,9 @@ export abstract class AbstractRun extends AbstractEntity implements Run
 
     protected replaceWildcard(replacementCard: Card): Card {
         const wildcard = this.getCardAt(this.getWildcardPosition());
-        this.cards = new CardList([...this.cards.cards].splice(this.getWildcardPosition(), 1, replacementCard));
+        const newCards = [...this.cards.asArray()];
+        newCards.splice(this.getWildcardPosition(), 1, replacementCard);
+        this.cards = new CardList(newCards);
         this.wildcardPosition = -1;
         return wildcard;
     }

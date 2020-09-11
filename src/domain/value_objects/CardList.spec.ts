@@ -154,4 +154,21 @@ describe('CardList', () => {
         expect(emptyList1.isEqual(emptyList2)).toBeTrue();
     });
 
+    it('can remove a subset of the list', () => {
+        const list = new CardList([
+            new Card(Suit.Clubs, 2),
+            new Card(Suit.Diamonds, 7),
+            new Card(Suit.Hearts, 1),
+            new Card(Suit.Spades, 2)
+        ]);
+
+        const sublist = list.removeRange(1, 1);
+
+        expect(sublist.cards).toEqual([
+            new Card(Suit.Clubs, 2),
+            new Card(Suit.Hearts, 1),
+            new Card(Suit.Spades, 2)
+        ]);
+    });
+
 });

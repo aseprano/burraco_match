@@ -107,7 +107,7 @@ describe("ConcreteStock", () => {
             joker
         ];
 
-        const stock = new ConcreteStock(serializer, () => {}, () => new CardList(cards));
+        const stock = new ConcreteStock(serializer, (cards) => cards, () => new CardList(cards));
         stock.shuffle();
 
         stock.applyEvent(new CardsDealtToPlayer(123, new CardList([deuceOfClubs, threeOfClubs]), 'johndoe'));
@@ -123,7 +123,7 @@ describe("ConcreteStock", () => {
             joker
         ];
 
-        const stock = new ConcreteStock(serializer, () => {}, () => new CardList(stockCards));
+        const stock = new ConcreteStock(serializer, cards => cards, () => new CardList(stockCards));
         stock.shuffle();
 
         stock.applyEvent(new PotCreated(123, new CardList([deuceOfClubs, joker])));
@@ -139,7 +139,7 @@ describe("ConcreteStock", () => {
             joker
         ];
 
-        const stock = new ConcreteStock(serializer, () => {}, () => new CardList(stockCards));
+        const stock = new ConcreteStock(serializer, cards => cards, () => new CardList(stockCards));
         stock.shuffle();
 
         stock.applyEvent(new FirstCardThrown(8, deuceOfClubs));

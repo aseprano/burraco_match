@@ -1,7 +1,6 @@
 import { SequenceRun } from "./SequenceRun";
 import { Suit, Card } from "../../value_objects/Card";
 import { RunID } from "../../value_objects/RunID";
-import { RunException } from "../../exceptions/RunException";
 import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
 import { CardList } from "../../value_objects/CardList";
 
@@ -458,7 +457,9 @@ describe('SequenceRun', () => {
         const run = SequenceRun.restore([joker, sixOfClubs, sevenOfClubs], 0)
             .add(fiveOfClubs);
 
-        expect(run.getCards().cards).toEqual([joker, fiveOfClubs, sixOfClubs, sevenOfClubs]);
+        expect(run.getCards().asArray())
+            .toEqual([joker, fiveOfClubs, sixOfClubs, sevenOfClubs]);
+
         expect(run.getWildcardPosition()).toEqual(0);
     });
 

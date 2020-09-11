@@ -57,7 +57,7 @@ export class SequenceRun extends AbstractRun
         ) {
             this.insertCardAtTop(newCard);
             return true;
-        } else if (this.getBottomCard().isDeuce() && this.getWildcardPosition() <= 0 && (newCard.getValue() === this.getTopCard().getValue() + 2 || newCard.getValue() === 1 && this.getTopCard().getValue() === 12)) {
+        } else if (this.getBottomCard().isDeuce() && this.getWildcardPosition() <= 0 && (newCard.getValue() === this.getTopCard().getValue() + 2 || newCard.getValue() === 1 && topmostCard.getValue() === 12)) {
             const bottomDeuce = this.removeCardAtBottom();
             this.insertWildcardAtTop(bottomDeuce);
             this.insertCardAtTop(newCard);

@@ -7,18 +7,18 @@ import { MatchStarted } from "../../events/MatchStarted";
 import { CardSerializer } from "../../domain-services/CardSerializer";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 import { Provider } from "../../../lib/Provider";
-import { Consumer } from "../../../lib/Conumer";
 import { CardsShuffler } from "../../domain-services/CardsShuffler";
 import { PotCreated } from "../../events/PotCreated";
 import { FirstCardThrown } from "../../events/FirstCardThrown";
 import { AbstractEntity } from "./AbstractEntity";
+import { Function } from "../../../lib/Function";
 
 export class ConcreteStock extends AbstractEntity implements Stock {
     private cards = new CardList();
 
     constructor(
         private serializer: CardSerializer,
-        private shuffler: Consumer<CardList> = CardsShuffler.randomShuffling,
+        private shuffler: Function<CardList,CardList> = CardsShuffler.randomShuffling,
         private deckProvider?: Provider<CardList>,
     ) {
         super();
@@ -107,9 +107,7 @@ export class ConcreteStock extends AbstractEntity implements Stock {
     }
 
     public shuffle(): void {
-        const deck = this.getNewDeckOfCards();
-        this.shuffler(deck);
-        this.setCards(deck);
+        this.setCards(this.shuffler(this.getNewDeckOfCards()));
     }
 
     public take(n: number): CardList {

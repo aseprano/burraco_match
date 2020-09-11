@@ -1,7 +1,7 @@
 import { GroupRun } from './GroupRun';
 import { Suit, Card } from "../../value_objects/Card";
-import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
 import { CardList } from "../../value_objects/CardList";
+import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
 
 describe('GroupRun', () => {
     const joker = Card.Joker();
@@ -17,18 +17,28 @@ describe('GroupRun', () => {
         expect(() => GroupRun.startWithCard(deuceOfClubs)).toThrow();
     });
 
+    it('can start with a card', () => {
+        const run = GroupRun.startWithCard(sevenOfClubs);
+
+        expect(run.value).toEqual(7);
+        
+        expect(run.getCards().cards).toEqual([
+            sevenOfClubs,
+        ]);
+    });
+
     it('accepts cards of same value', () => {
         const sevenOfDiamonds = new Card(Suit.Diamonds, 7);
 
-        const game = GroupRun.startWithCard(sevenOfClubs);
-        game.add(sevenOfDiamonds);
+        const run = GroupRun.startWithCard(sevenOfClubs);
+        run.add(sevenOfDiamonds);
 
-        expect(game.getCards().cards).toEqual([
+        expect(run.getCards().asArray()).toEqual([
             sevenOfClubs,
             sevenOfDiamonds,
         ]);
 
-        expect(game.getWildcardPosition()).toEqual(-1);
+        expect(run.getWildcardPosition()).toEqual(-1);
     });
 
     it('does not accept cards of different values', () => {
@@ -39,13 +49,13 @@ describe('GroupRun', () => {
     });
 
     it('can be made of up to 13 cards', () => {
-        const game = GroupRun.startWithCard(sevenOfClubs);
+        const run = GroupRun.startWithCard(sevenOfClubs);
 
-        game.add(
+        run.add(
             new CardList(Array(12).fill(new Card(Suit.Diamonds, 7)))
         );
 
-        expect(game.getCards().cards).toEqual([
+        expect(run.getCards().cards).toEqual([
             new Card(Suit.Clubs, 7),
             new Card(Suit.Diamonds, 7),
             new Card(Suit.Diamonds, 7),

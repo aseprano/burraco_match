@@ -44,7 +44,7 @@ export class ConcretePlayer extends AbstractEntity implements Player {
     }
     
     private appendCardsFromEvent(eventCards: any[]) {
-        this.hand = this.hand.add(this.unserializeCards(eventCards));
+        this.hand = this.hand.append(this.unserializeCards(eventCards));
     }
 
     private removeEventCardsFromHand(eventCards: any[]) {
@@ -57,7 +57,7 @@ export class ConcretePlayer extends AbstractEntity implements Player {
 
     private handlePlayerTookOneCardFromStockEvent(event: Event) {
         const card = this.cardSerializer.unserializeCard(event.getPayload().card);
-        this.hand = this.hand.add(card);
+        this.hand = this.hand.append(card);
         this.switchToPlayingState();
     }
 
@@ -65,7 +65,7 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         const cards = this.cardSerializer.unserializeCards(event.getPayload().cards);
         const theOneCardFromDiscardPile = cards.length > 0 ? cards.cards[0] : undefined;
 
-        this.hand = this.hand.add(cards);
+        this.hand = this.hand.append(cards);
         this.switchToPlayingState(theOneCardFromDiscardPile);
     }
 
