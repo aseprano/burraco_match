@@ -1,7 +1,8 @@
 import { PlayerID } from "../value_objects/PlayerID";
 import { MatchID } from "../value_objects/MatchID";
 import { Team } from "../value_objects/Team";
-import { Card, CardList } from "../value_objects/Card";
+import { Card } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
 import { Run } from "../entities/Run";
 import { RunID } from "../value_objects/RunID";
 

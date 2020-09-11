@@ -5,6 +5,7 @@ import { ConcreteMatch } from "../../entities/impl/ConcreteMatch";
 import { ConcreteStock } from "../../entities/impl/ConcreteStock";
 import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer";
 import { GamingAreaFactory } from "../GamingAreaFactory";
+import { CardList } from "../../value_objects/CardList";
 
 export class ConcreteMatchFactory implements MatchFactory {
 
@@ -16,7 +17,7 @@ export class ConcreteMatchFactory implements MatchFactory {
     private createMatch(): ConcreteMatch {
         return new ConcreteMatch(
             new ConcreteStock(new StdCardSerializer()),
-            [],
+            new CardList(),
             new StdCardSerializer(),
             this.gamingAreaFactory
         );
