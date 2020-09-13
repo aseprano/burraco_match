@@ -18,6 +18,10 @@ export class CardList {
         this.length = this.cards.length;
     }
 
+    public at(index: number): Card {
+        return this.cards[index];
+    }
+
     /**
      * Returns true if the current object contains each and all of the provided cards
      * 

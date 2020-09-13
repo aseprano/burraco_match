@@ -21,6 +21,7 @@ export interface Player extends Entity {
      * @throws ActionNotAllowedException
      * @throws CardNotOwnedException if at least one of the provided cards is not found in the player's hand
      * @throws CannotBuildRunException if the provided card cannot be used to create a Run
+     * @throws ActionPreventedException
      */
     createRun(cards: CardList): Run;
 

@@ -7,19 +7,17 @@ import { TeamGamingArea } from "../TeamGamingArea";
 import { ActionNotAllowedException } from "../../exceptions/ActionNotAllowedException";
 import { CardNotOwnedException } from "../../exceptions/CardNotOwnedException";
 import { CannotThrowCardException } from "../../exceptions/CannotThrowCardException";
+import { ActionPreventedException } from "../../exceptions/ActionPreventedException";
 
 export class PlayingPlayerState extends BasePlayerState {
 
     constructor(
-        private hand: CardList,
+        public readonly hand: CardList,
         private gamingArea: TeamGamingArea,
-        private lastCardTakenFromDiscardPile?: Card
+        public readonly potTaken: boolean,
+        public readonly lastCardTakenFromDiscardPile?: Card,
     ) {
         super();
-
-        if (lastCardTakenFromDiscardPile !== undefined && this.countOf(lastCardTakenFromDiscardPile) > 1) {
-            this.lastCardTakenFromDiscardPile = undefined;
-        }
     }
 
     private getHandWithoutCards(cardsToRemove: CardList): CardList {
@@ -47,13 +45,6 @@ export class PlayingPlayerState extends BasePlayerState {
         });
     }
 
-    private countOf(card: Card): number {
-        return this.hand
-            .cards
-            .filter(handCard => handCard.isEqual(card))
-            .length;
-    }
-
     private isLastCardTakenFromDiscardPile(card: Card): boolean {
         return this.lastCardTakenFromDiscardPile !== undefined &&
             this.lastCardTakenFromDiscardPile.isEqual(card);
@@ -63,10 +54,6 @@ export class PlayingPlayerState extends BasePlayerState {
         if (!this.ownsCards(cards)) {
             throw new CardNotOwnedException();
         }
-    }
-
-    private potHasBeenTaken(): boolean {
-        return false;
     }
 
     private hasAtLeastOneBuraco(): boolean {
@@ -91,7 +78,7 @@ export class PlayingPlayerState extends BasePlayerState {
         const newHand = this.getHandWithoutCards(cards);
 
         if (
-            (this.potHasBeenTaken() && newHand.length === 0)
+            (this.potTaken && newHand.length === 0)
             ||
             newHand.length === 1 && (
                 this.isLastCardTakenFromDiscardPile(newHand.cards[0])
@@ -103,7 +90,7 @@ export class PlayingPlayerState extends BasePlayerState {
                 !this.hasAtLeastOneBuraco()
             )
         ) {
-            //throw new 
+            throw new ActionPreventedException();
         }
     }
 

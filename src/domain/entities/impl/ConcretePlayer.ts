@@ -23,6 +23,8 @@ import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDisc
 export class ConcretePlayer extends AbstractEntity implements Player {
     private hand = new CardList();
     private state: PlayerState;
+    private lastCardTaken?: Card;
+    private potTaken = false;
 
     public constructor(
         private playerId: string,
@@ -58,23 +60,26 @@ export class ConcretePlayer extends AbstractEntity implements Player {
     private handlePlayerTookOneCardFromStockEvent(event: Event) {
         const card = this.cardSerializer.unserializeCard(event.getPayload().card);
         this.hand = this.hand.append(card);
+        this.lastCardTaken = undefined;
         this.switchToPlayingState();
     }
 
     private handlePlayerPickedUpDiscardPileEvent(event: Event) {
         const cards = this.cardSerializer.unserializeCards(event.getPayload().cards);
-        const theOneCardFromDiscardPile = cards.length > 0 ? cards.cards[0] : undefined;
+        this.lastCardTaken = cards.length === 1 && !this.hand.contains(cards.at(0)) ? cards.at(0) : undefined;
 
         this.hand = this.hand.append(cards);
-        this.switchToPlayingState(theOneCardFromDiscardPile);
+        this.switchToPlayingState();
     }
 
     private handleRunCreatedEvent(event: Event) {
         this.removeEventCardsFromHand(event.getPayload().run.cards);
+        this.switchToPlayingState();
     }
 
     private handleCardsMeldedToRunEvent(event: Event) {
         this.removeEventCardsFromHand(event.getPayload().cards);
+        this.switchToPlayingState();
     }
 
     private handleCardThrownToDiscardPileEvent(event: Event) {
@@ -159,6 +164,10 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         return this.state;
     }
 
+    public setLastCardTaken(card?: Card) {
+        this.lastCardTaken = card;
+    }
+
     public switchToIdleState() {
         this.setState(new IdlePlayerState());
     }
@@ -167,8 +176,8 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         this.setState(new ReadyPlayerState(this.stock, this.discardPile));
     }
 
-    public switchToPlayingState(cardTakenFromDiscardPile?: Card) {
-        this.setState(new PlayingPlayerState(this.hand, this.gamingArea, cardTakenFromDiscardPile));
+    public switchToPlayingState() {
+        this.setState(new PlayingPlayerState(this.hand, this.gamingArea, this.potTaken, this.lastCardTaken));
     }
 
 }

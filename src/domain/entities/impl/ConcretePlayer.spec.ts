@@ -104,6 +104,50 @@ describe('ConcretePlayer', () => {
         expect(player.getState()).toBeInstanceOf(PlayingPlayerState);
     });
 
+    it('switches to the Playing state after creating a run', () => {
+        const player = new ConcretePlayer(
+            'darkbyte',
+            serializer,
+            {} as Stock,
+            new CardList(),
+            {} as TeamGamingArea,
+        );
+
+        player.setLastCardTaken(new Card(Suit.Clubs, 9));
+        player.setHand(new CardList([
+            new Card(Suit.Clubs, 9),
+            new Card(Suit.Clubs, 10),
+            new Card(Suit.Clubs, 11),
+            new Card(Suit.Clubs, 12),
+            new Card(Suit.Clubs, 13),
+        ]));
+
+        player.applyEvent(new RunCreated(
+            123,
+            'darkbyte',
+            0,
+            SequenceRun.restore(
+                [
+                    new Card(Suit.Clubs, 9),
+                    new Card(Suit.Clubs, 10),
+                    new Card(Suit.Clubs, 11),
+                ],
+                -1
+            )
+        ));
+
+        expect(player.getState()).toBeInstanceOf(PlayingPlayerState);
+        
+        const state = player.getState() as PlayingPlayerState;
+
+        expect(state.hand).toEqual(new CardList([
+            new Card(Suit.Clubs, 12),
+            new Card(Suit.Clubs, 13),
+        ]));
+
+        expect(state.lastCardTakenFromDiscardPile).toEqual(new Card(Suit.Clubs, 9));
+    });
+
     it('removes cards from hand when applying the RunCreated event', () => {
         const player = new ConcretePlayer('darkbyte', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
 
