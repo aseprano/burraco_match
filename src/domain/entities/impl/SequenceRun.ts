@@ -31,7 +31,7 @@ export class SequenceRun extends AbstractRun
 
     private constructor(cards: CardList, wildcardPosition = -1) {
         super(cards, wildcardPosition);
-        this.suit = cards.cards[wildcardPosition === 0 ? 1 : 0].getSuit();
+        this.suit = cards.at(wildcardPosition === 0 ? 1 : 0).getSuit();
     }
 
     private getWildcardValue(): number {

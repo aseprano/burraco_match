@@ -28,7 +28,7 @@ export class PlayingPlayerState extends BasePlayerState {
         if (cards instanceof Card) {
             return this.ownsCards([cards]);
         } else if (cards instanceof CardList) {
-            return this.ownsCards(cards.cards);
+            return this.ownsCards(cards.asArray());
         }
 
         const playerHand = [...this.hand.cards];

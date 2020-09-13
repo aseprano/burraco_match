@@ -65,7 +65,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     private addAnyOf(cards: CardList): number {
         // returns the index of the first card
         // for which tryAddCard(card) returns true
-        return cards.cards.findIndex((card) => this.tryAddCard(card));
+        return cards.asArray().findIndex((card) => this.tryAddCard(card));
     }
 
     protected insertCardAt(newCard: Card, position: number) {
@@ -98,7 +98,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     protected insertWildcardAt(wildcard: Card, position: number) {
-        const newCards = [...this.cards.cards];
+        const newCards = [...this.cards.asArray()];
         newCards.splice(position, 0, wildcard);
         this.cards = new CardList(newCards);
         this.wildcardPosition = position;
@@ -116,8 +116,8 @@ export abstract class AbstractRun extends AbstractEntity implements Run
         return this.wildcardPosition >= 0;
     }
 
-    protected getCardAt(pos: number): Card {
-        return this.cards.cards[pos];
+    protected getCardAt(index: number): Card {
+        return this.cards.at(index);
     }
 
     protected getBottomCard(): Card {
@@ -152,7 +152,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     protected buildSnapshot(): SnapshotState {
         return {
             entityId: this.id.asNumber(),
-            cards: this.cards.cards.map((card) => {
+            cards: this.cards.asArray().map((card) => {
                 return { suit: card.getSuit(), value: card.getValue() };
             }),
             wildcardPosition: this.wildcardPosition,
@@ -181,7 +181,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     }
 
     public asArray(): ReadonlyArray<Card> {
-        return this.cards.cards;
+        return this.cards.asArray();
     }
 
     public getWildcardPosition(): number {

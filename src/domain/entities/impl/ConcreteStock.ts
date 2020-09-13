@@ -127,7 +127,7 @@ export class ConcreteStock extends AbstractEntity implements Stock {
     }
 
     public asArray(): ReadonlyArray<Card> {
-        return this.cards.cards;
+        return this.cards.asArray();
     }
     
 }

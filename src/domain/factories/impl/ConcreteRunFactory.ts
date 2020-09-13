@@ -28,13 +28,13 @@ export class ConcreteRunFactory implements RunFactory {
     }
 
     private buildRun(cards: CardList): AbstractRun {
-        const firstNonWildcardIndex = cards.cards.findIndex(this.isNonWildcard);
+        const firstNonWildcardIndex = cards.asArray().findIndex(this.isNonWildcard);
 
         if (firstNonWildcardIndex === -1) {
             throw new RunException('Invalid cards for a run');
         }
 
-        const firstNonWildcard = cards.cards[firstNonWildcardIndex];
+        const firstNonWildcard = cards.at(firstNonWildcardIndex);
         cards = cards.remove(firstNonWildcard);
 
         try {

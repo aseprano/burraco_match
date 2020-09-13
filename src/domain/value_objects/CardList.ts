@@ -32,7 +32,7 @@ export class CardList {
         if (cards instanceof Card) {
             return this.contains([cards]);
         } else if (cards instanceof CardList) {
-            return this.contains(cards.cards);
+            return this.contains(cards.asArray());
         } else if (!cards.length) {
             return true;
         }
@@ -61,7 +61,7 @@ export class CardList {
         if (cards instanceof Card) {
             return this.remove([cards]);
         } else if (cards instanceof CardList) {
-            return this.remove(cards.cards);
+            return this.remove(cards.asArray());
         }
 
         const newCards = [...this.cards];
@@ -87,7 +87,7 @@ export class CardList {
         if (newCards instanceof Card) {
             return this.append([newCards]);
         } else if (newCards instanceof CardList) {
-            return this.append(newCards.cards);
+            return this.append(newCards.asArray());
         } else {
             return new CardList([...this.cards, ...newCards]);
         }

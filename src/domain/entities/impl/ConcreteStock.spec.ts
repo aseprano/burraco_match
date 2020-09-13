@@ -40,7 +40,7 @@ describe("ConcreteStock", () => {
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
         const cards = stock.take(2);
-        expect(cards.cards).toEqual([deuceOfClubs, threeOfClubs]);
+        expect(cards.asArray()).toEqual([deuceOfClubs, threeOfClubs]);
         expect(stock.getCards().length).toBe(3, 'Cards must not be removed from stock when picked');
     });
 

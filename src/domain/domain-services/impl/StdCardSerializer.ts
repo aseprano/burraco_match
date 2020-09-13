@@ -12,7 +12,7 @@ export class StdCardSerializer implements CardSerializer {
     }
 
     serializeCards(cards: CardList): any[] {
-        return cards.cards.map(this.serializeCard);
+        return cards.asArray().map(this.serializeCard);
     }
 
     unserializeCard(card: any): Card {

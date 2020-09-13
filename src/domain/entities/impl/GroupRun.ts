@@ -27,7 +27,7 @@ export class GroupRun extends AbstractRun
 
     private constructor(cards: CardList, wildcardPosition = -1) {
         super(cards, wildcardPosition);
-        this.value = cards.cards[wildcardPosition === 0 ? 1 : 0].getValue();
+        this.value = cards.at(wildcardPosition === 0 ? 1 : 0).getValue();
     }
 
     protected addCard(card: Card): boolean {

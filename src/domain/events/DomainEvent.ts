@@ -14,7 +14,7 @@ export abstract class DomainEvent implements Event {
     }
 
     protected serializeCardList(cards: CardList): any[] {
-        return cards.cards.map((card) => this.serializeCard(card));
+        return cards.asArray().map((card) => this.serializeCard(card));
     }
 
     protected serializeRun(run: Run): any {
