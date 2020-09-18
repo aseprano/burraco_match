@@ -1,6 +1,7 @@
 import { Player } from "../Player";
 import { Event } from "../../../tech/events/Event";
-import { Card, CardList } from "../../value_objects/Card";
+import { Card } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { Run } from "../Run";
 import { RunID } from "../../value_objects/RunID";
 import { Stock } from "../Stock";
@@ -20,8 +21,10 @@ import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
 
 export class ConcretePlayer extends AbstractEntity implements Player {
-    private hand: CardList = [];
+    private hand = new CardList();
     private state: PlayerState;
+    private lastCardTaken?: Card;
+    private potTaken = false;
 
     public constructor(
         private playerId: string,
@@ -43,19 +46,11 @@ export class ConcretePlayer extends AbstractEntity implements Player {
     }
     
     private appendCardsFromEvent(eventCards: any[]) {
-        const cards: CardList = this.unserializeCards(eventCards);
-        this.hand.push(...cards);
+        this.hand = this.hand.append(this.unserializeCards(eventCards));
     }
 
     private removeEventCardsFromHand(eventCards: any[]) {
-        this.unserializeCards(eventCards)
-            .forEach((card) => {
-                const cardIndex = this.hand.findIndex((handCard) => handCard.isEqual(card));
-
-                if (cardIndex >= 0) {
-                    this.hand.splice(cardIndex, 1);
-                }
-            });
+        this.hand = this.hand.remove(this.unserializeCards(eventCards));
     }
 
     private handleCardsDealtToPlayerEvent(event: Event) {
@@ -64,24 +59,27 @@ export class ConcretePlayer extends AbstractEntity implements Player {
 
     private handlePlayerTookOneCardFromStockEvent(event: Event) {
         const card = this.cardSerializer.unserializeCard(event.getPayload().card);
-        this.hand.push(card);
+        this.hand = this.hand.append(card);
+        this.lastCardTaken = undefined;
         this.switchToPlayingState();
     }
 
     private handlePlayerPickedUpDiscardPileEvent(event: Event) {
         const cards = this.cardSerializer.unserializeCards(event.getPayload().cards);
-        const theOneCardFromDiscardPile = cards.length > 0 ? cards[0] : undefined;
+        this.lastCardTaken = cards.length === 1 && !this.hand.contains(cards.at(0)) ? cards.at(0) : undefined;
 
-        this.hand.push(...cards);
-        this.switchToPlayingState(theOneCardFromDiscardPile);
+        this.hand = this.hand.append(cards);
+        this.switchToPlayingState();
     }
 
     private handleRunCreatedEvent(event: Event) {
         this.removeEventCardsFromHand(event.getPayload().run.cards);
+        this.switchToPlayingState();
     }
 
     private handleCardsMeldedToRunEvent(event: Event) {
         this.removeEventCardsFromHand(event.getPayload().cards);
+        this.switchToPlayingState();
     }
 
     private handleCardThrownToDiscardPileEvent(event: Event) {
@@ -151,11 +149,11 @@ export class ConcretePlayer extends AbstractEntity implements Player {
     }
 
     public getHand(): CardList {
-        return this.hand.slice(0);
+        return this.hand;
     }
 
-    public setHand(hand: CardList): void {
-        this.hand = hand;
+    public setHand(newHand: CardList): void {
+        this.hand = newHand;
     }
 
     public setState(newState: PlayerState) {
@@ -166,6 +164,10 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         return this.state;
     }
 
+    public setLastCardTaken(card?: Card) {
+        this.lastCardTaken = card;
+    }
+
     public switchToIdleState() {
         this.setState(new IdlePlayerState());
     }
@@ -174,8 +176,8 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         this.setState(new ReadyPlayerState(this.stock, this.discardPile));
     }
 
-    public switchToPlayingState(cardTakenFromDiscardPile?: Card) {
-        this.setState(new PlayingPlayerState(this.hand, this.gamingArea, cardTakenFromDiscardPile));
+    public switchToPlayingState() {
+        this.setState(new PlayingPlayerState(this.hand, this.gamingArea, this.potTaken, this.lastCardTaken));
     }
 
 }

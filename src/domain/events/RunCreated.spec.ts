@@ -3,6 +3,7 @@ import { GroupRun } from "../entities/impl/GroupRun";
 import { Card, Suit } from "../value_objects/Card";
 import { RunID } from "../value_objects/RunID";
 import { mock, when, instance } from "ts-mockito";
+import { CardList } from "../value_objects/CardList";
 
 describe('RunCreated', () => {
 
@@ -17,7 +18,7 @@ describe('RunCreated', () => {
 
         const fakeRun = mock(GroupRun);
         when(fakeRun.getId()).thenReturn(new RunID(18));
-        when(fakeRun.getCards()).thenReturn(runCards);
+        when(fakeRun.getCards()).thenReturn(new CardList(runCards));
         when(fakeRun.isSequence()).thenReturn(true);
         when(fakeRun.getWildcardPosition()).thenReturn(8);
 

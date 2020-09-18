@@ -1,5 +1,6 @@
 import { CardSerializer } from "../CardSerializer";
-import { Card, CardList } from "../../value_objects/Card";
+import { Card } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 
 export class StdCardSerializer implements CardSerializer {
 
@@ -11,7 +12,7 @@ export class StdCardSerializer implements CardSerializer {
     }
 
     serializeCards(cards: CardList): any[] {
-        return cards.map(this.serializeCard);
+        return cards.asArray().map(this.serializeCard);
     }
 
     unserializeCard(card: any): Card {
@@ -19,7 +20,7 @@ export class StdCardSerializer implements CardSerializer {
     }
 
     unserializeCards(cards: any[]): CardList {
-        return cards.map(this.unserializeCard);
+        return new CardList(cards.map(this.unserializeCard));
     }
 
 }

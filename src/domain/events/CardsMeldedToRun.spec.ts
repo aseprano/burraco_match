@@ -2,6 +2,7 @@ import { CardsMeldedToRun } from "./CardsMeldedToRun";
 import { Card, Suit } from "../value_objects/Card";
 import { SequenceRun } from "../entities/impl/SequenceRun";
 import { RunID } from "../value_objects/RunID";
+import { CardList } from "../value_objects/CardList";
 
 describe('CardsMeldedToRun', () => {
 
@@ -9,13 +10,13 @@ describe('CardsMeldedToRun', () => {
         expect(CardsMeldedToRun.EventName).toEqual('com.herrdoktor.buraco.events.CardsMeldedToRun');
 
         const theRun = SequenceRun.restore(
-            [
+            new CardList([
                 new Card(Suit.Clubs, 5),
                 new Card(Suit.Clubs, 6),
                 new Card(Suit.Clubs, 7),
                 new Card(Suit.Clubs, 8),
                 new Card(Suit.Clubs, 9),
-            ],
+            ]),
             -1
         );
 
@@ -25,10 +26,10 @@ describe('CardsMeldedToRun', () => {
             123,
             'darkbyte',
             1,
-            [
+            new CardList([
                 new Card(Suit.Clubs, 8),
                 new Card(Suit.Clubs, 9),
-            ],
+            ]),
             theRun
         );
 

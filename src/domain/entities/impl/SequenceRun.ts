@@ -1,5 +1,6 @@
 import { AbstractRun } from './AbstractRun';
-import { Card, CardList, Suit } from "../../value_objects/Card";
+import { Card, Suit } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { RunException } from "../../exceptions/RunException";
 import { WildcardException } from "../../exceptions/WildcardException";
 
@@ -17,16 +18,20 @@ export class SequenceRun extends AbstractRun
             throw new RunException('Cannot start a group with a deuce');
         }
 
-        return new SequenceRun([card]);
+        return new SequenceRun(new CardList(card));
     }
 
-    public static restore(CardList: CardList, wildcardPosition: number) {
-        return new SequenceRun(CardList, wildcardPosition);
+    public static restore(cards: CardList|ReadonlyArray<Card>, wildcardPosition: number) {
+        if (cards instanceof CardList) {
+            return new SequenceRun(cards, wildcardPosition);
+        } else {
+            return new SequenceRun(new CardList(cards), wildcardPosition);
+        }
     }
 
     private constructor(cards: CardList, wildcardPosition = -1) {
         super(cards, wildcardPosition);
-        this.suit = cards[wildcardPosition === 0 ? 1 : 0].getSuit();
+        this.suit = cards.at(wildcardPosition === 0 ? 1 : 0).getSuit();
     }
 
     private getWildcardValue(): number {
@@ -52,7 +57,7 @@ export class SequenceRun extends AbstractRun
         ) {
             this.insertCardAtTop(newCard);
             return true;
-        } else if (this.getBottomCard().isDeuce() && this.getWildcardPosition() <= 0 && (newCard.getValue() === this.getTopCard().getValue() + 2 || newCard.getValue() === 1 && this.getTopCard().getValue() === 12)) {
+        } else if (this.getBottomCard().isDeuce() && this.getWildcardPosition() <= 0 && (newCard.getValue() === this.getTopCard().getValue() + 2 || newCard.getValue() === 1 && topmostCard.getValue() === 12)) {
             const bottomDeuce = this.removeCardAtBottom();
             this.insertWildcardAtTop(bottomDeuce);
             this.insertCardAtTop(newCard);

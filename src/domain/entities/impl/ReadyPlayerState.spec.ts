@@ -1,6 +1,7 @@
 import { ReadyPlayerState } from './ReadyPlayerState';
 import { ConcreteStock  } from './ConcreteStock';
-import { Card, Suit, CardList } from "../../value_objects/Card";
+import { Card, Suit } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer";
 import { CardsShuffler } from "../../domain-services/CardsShuffler";
 import { Stock } from "../Stock";
@@ -25,12 +26,12 @@ describe('ReadyPlayerState', () => {
         new Card(Suit.Hearts, 9),
     ];
 
-    const discardPile: CardList = [
+    const discardPile = new CardList([
         new Card(Suit.Clubs, 2),
         new Card(Suit.Diamonds, 7)
-    ];
+    ]);
 
-    const stock = createStock(stockCards);
+    const stock = createStock(new CardList(stockCards));
 
     const state = new ReadyPlayerState(stock, discardPile);
 
@@ -47,17 +48,17 @@ describe('ReadyPlayerState', () => {
     it('does not alter the discard pile', () => {
         state.pickUpAllCardsFromDiscardPile();
 
-        expect(discardPile).toEqual([
+        expect(discardPile.cards).toEqual([
             new Card(Suit.Clubs, 2),
             new Card(Suit.Diamonds, 7),
         ]);
     });
 
     it('does not allow any action other than picking cards', () => {
-        expect(() => state.createRun([]))
+        expect(() => state.createRun(CardList.empty()))
             .toThrow(new ActionNotAllowedException());
 
-        expect(() => state.meldCardsToRun([], new RunID(123)))
+        expect(() => state.meldCardsToRun(CardList.empty(), new RunID(123)))
             .toThrow(new ActionNotAllowedException());
 
         expect(() => state.throwCardToDiscardPile(Card.Joker()))

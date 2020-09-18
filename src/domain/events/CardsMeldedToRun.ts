@@ -1,5 +1,5 @@
 import { DomainEvent } from "./DomainEvent";
-import { CardList } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
 import { Run } from "../entities/Run";
 
 const EventName = "com.herrdoktor.buraco.events.CardsMeldedToRun";

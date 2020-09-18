@@ -1,5 +1,6 @@
 import { Event, EventPayload } from "../../tech/events/Event";
-import { Card, CardList } from "../value_objects/Card";
+import { Card } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
 import { Run } from "../entities/Run";
 
 export abstract class DomainEvent implements Event {
@@ -13,7 +14,7 @@ export abstract class DomainEvent implements Event {
     }
 
     protected serializeCardList(cards: CardList): any[] {
-        return cards.map((card) => this.serializeCard(card));
+        return cards.asArray().map((card) => this.serializeCard(card));
     }
 
     protected serializeRun(run: Run): any {

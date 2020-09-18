@@ -1,23 +1,24 @@
 import { Stock } from "../Stock";
-import { Card, CardList, Suit } from "../../value_objects/Card";
+import { Card, Suit } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { InsufficientCardsInStockException } from "../../exceptions/InsufficientCardsInStockException";
 import { Event } from "../../../tech/events/Event";
 import { MatchStarted } from "../../events/MatchStarted";
 import { CardSerializer } from "../../domain-services/CardSerializer";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 import { Provider } from "../../../lib/Provider";
-import { Consumer } from "../../../lib/Conumer";
 import { CardsShuffler } from "../../domain-services/CardsShuffler";
 import { PotCreated } from "../../events/PotCreated";
 import { FirstCardThrown } from "../../events/FirstCardThrown";
 import { AbstractEntity } from "./AbstractEntity";
+import { Function } from "../../../lib/Function";
 
 export class ConcreteStock extends AbstractEntity implements Stock {
-    private cards: CardList = [];
+    private cards = new CardList();
 
     constructor(
         private serializer: CardSerializer,
-        private shuffler: Consumer<CardList> = CardsShuffler.randomShuffling,
+        private shuffler: Function<CardList,CardList> = CardsShuffler.randomShuffling,
         private deckProvider?: Provider<CardList>,
     ) {
         super();
@@ -25,10 +26,10 @@ export class ConcreteStock extends AbstractEntity implements Stock {
 
     private getNewDeckOfCards(): CardList {
         if (this.deckProvider) {
-            return this.deckProvider().slice(0);
+            return this.deckProvider();
         }
 
-        const newDeck: CardList = [];
+        const newDeck: Array<Card> = [];
 
         [...Array(2)].forEach(() => {
             [Suit.Clubs, Suit.Diamonds, Suit.Hearts, Suit.Spades].forEach((suit) => {
@@ -40,7 +41,7 @@ export class ConcreteStock extends AbstractEntity implements Stock {
             newDeck.push(Card.Joker(), Card.Joker());
         });
 
-        return newDeck;
+        return new CardList(newDeck);
     }
 
     private hasLessCardsThan(n: number): boolean {
@@ -48,20 +49,11 @@ export class ConcreteStock extends AbstractEntity implements Stock {
     }
 
     private setCards(newCards: CardList) {
-        this.cards = newCards.slice(0);
-    }
-
-    private removeFirstOccurrenceOf(cardToRemove: Card) {
-        const firstOccurrence = this.cards.findIndex((card) => card.isEqual(cardToRemove));
-
-        if (firstOccurrence !== -1) {
-            this.cards.splice(firstOccurrence, 1);
-        }
+        this.cards = newCards;
     }
 
     private removeCardsFromEvent(cards: any[]) {
-        this.serializer.unserializeCards(cards)
-            .forEach((card) => this.removeFirstOccurrenceOf(card))
+        this.cards = this.cards.remove(this.serializer.unserializeCards(cards));
     }
 
     /**
@@ -115,9 +107,7 @@ export class ConcreteStock extends AbstractEntity implements Stock {
     }
 
     public shuffle(): void {
-        const deck = this.getNewDeckOfCards();
-        this.shuffler(deck);
-        this.setCards(deck);
+        this.setCards(this.shuffler(this.getNewDeckOfCards()));
     }
 
     public take(n: number): CardList {
@@ -129,11 +119,15 @@ export class ConcreteStock extends AbstractEntity implements Stock {
     }
     
     public takeOne(): Card {
-        return this.take(1)[0];
+        return this.take(1).cards[0];
     }
 
     public getCards(): CardList {
-        return this.cards.slice(0);
+        return this.cards;
+    }
+
+    public asArray(): ReadonlyArray<Card> {
+        return this.cards.asArray();
     }
     
 }

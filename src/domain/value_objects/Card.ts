@@ -6,8 +6,6 @@ export enum Suit {
     Hearts
 };
 
-export type CardList = Card[];
-
 export class Card {
 
     public static Joker(): Card {

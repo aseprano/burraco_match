@@ -1,5 +1,6 @@
 import { ConcreteStock } from "./ConcreteStock";
-import { Card, Suit, CardList } from "../../value_objects/Card";
+import { Card, Suit } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { InsufficientCardsInStockException } from "../../exceptions/InsufficientCardsInStockException";
 import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer";
 import { MatchStarted } from "../../events/MatchStarted";
@@ -17,14 +18,14 @@ describe("ConcreteStock", () => {
     it("can be initialized from MatchStarted event", () => {
         const stock = new ConcreteStock(serializer);
 
-        const stockCards = [deuceOfClubs, threeOfClubs, joker];
+        const stockCards = new CardList([deuceOfClubs, threeOfClubs, joker]);
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
-        expect(stock.getCards()).toEqual(stockCards);
+        expect(stock.getCards().isEqual(stockCards)).toBeTrue();
     });
 
     it('can be used to pick one card when non empty', () => {
-        const stockCards = [deuceOfClubs, threeOfClubs, joker];
+        const stockCards = new CardList([deuceOfClubs, threeOfClubs, joker]);
         const stock = new ConcreteStock(serializer);
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
@@ -34,12 +35,12 @@ describe("ConcreteStock", () => {
     });
 
     it('can be used to pick more than one card', () => {
-        const stockCards = [deuceOfClubs, threeOfClubs, joker];
+        const stockCards = new CardList([deuceOfClubs, threeOfClubs, joker]);
         const stock = new ConcreteStock(serializer);
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
-        const card = stock.take(2);
-        expect(card).toEqual([deuceOfClubs, threeOfClubs]);
+        const cards = stock.take(2);
+        expect(cards.asArray()).toEqual([deuceOfClubs, threeOfClubs]);
         expect(stock.getCards().length).toBe(3, 'Cards must not be removed from stock when picked');
     });
 
@@ -49,7 +50,7 @@ describe("ConcreteStock", () => {
     });
 
     it('throws an exception when trying to pick too many cards', () => {
-        const stockCards = [deuceOfClubs, threeOfClubs, joker];
+        const stockCards = new CardList([deuceOfClubs, threeOfClubs, joker]);
         const stock = new ConcreteStock(serializer);
         stock.applyEvent(new MatchStarted(1, 1, stockCards, [], []));
 
@@ -71,7 +72,7 @@ describe("ConcreteStock", () => {
         } = {};
 
         // counting how many times each card appears
-        stock.getCards().map((card) => card.isJoker() ? 'JOKER' : JSON.stringify(serializer.serializeCard(card)))
+        stock.getCards().cards.map((card) => card.isJoker() ? 'JOKER' : JSON.stringify(serializer.serializeCard(card)))
             .forEach((strCard) => {
                 pairs[strCard] = (pairs[strCard] || 0) + 1;
             });
@@ -87,7 +88,7 @@ describe("ConcreteStock", () => {
         let numberOfSequencialCards = 0;
         let previousCard: Card;
 
-        stock.getCards().forEach((card) => {
+        stock.getCards().cards.forEach((card) => {
             if (previousCard && previousCard.getSuit() === card.getSuit() && Math.abs(previousCard.getValue() - card.getValue()) === 1) {
                 numberOfSequencialCards++;
             }
@@ -106,12 +107,12 @@ describe("ConcreteStock", () => {
             joker
         ];
 
-        const stock = new ConcreteStock(serializer, () => {}, () => cards);
+        const stock = new ConcreteStock(serializer, (cards) => cards, () => new CardList(cards));
         stock.shuffle();
 
-        stock.applyEvent(new CardsDealtToPlayer(123, [deuceOfClubs, threeOfClubs], 'johndoe'));
+        stock.applyEvent(new CardsDealtToPlayer(123, new CardList([deuceOfClubs, threeOfClubs]), 'johndoe'));
 
-        expect(stock.getCards()).toEqual([deuceOfClubs, joker]);
+        expect(stock.getCards().cards).toEqual([deuceOfClubs, joker]);
     });
 
     it('removes as many cards as used to create the pot', () => {
@@ -122,12 +123,12 @@ describe("ConcreteStock", () => {
             joker
         ];
 
-        const stock = new ConcreteStock(serializer, () => {}, () => stockCards);
+        const stock = new ConcreteStock(serializer, cards => cards, () => new CardList(stockCards));
         stock.shuffle();
 
-        stock.applyEvent(new PotCreated(123, [deuceOfClubs, joker]));
+        stock.applyEvent(new PotCreated(123, new CardList([deuceOfClubs, joker])));
 
-        expect(stock.getCards()).toEqual([deuceOfClubs, threeOfClubs]);
+        expect(stock.getCards().cards).toEqual([deuceOfClubs, threeOfClubs]);
     });
 
     it('removes the first card thrown', () => {
@@ -138,33 +139,33 @@ describe("ConcreteStock", () => {
             joker
         ];
 
-        const stock = new ConcreteStock(serializer, () => {}, () => stockCards);
+        const stock = new ConcreteStock(serializer, cards => cards, () => new CardList(stockCards));
         stock.shuffle();
 
         stock.applyEvent(new FirstCardThrown(8, deuceOfClubs));
 
-        expect(stock.getCards()).toEqual([deuceOfClubs, threeOfClubs, joker]);
+        expect(stock.asArray()).toEqual([deuceOfClubs, threeOfClubs, joker]);
     });
 
     it('uses the injected provider to rebuild the deck', () => {
-        const expectedCards: CardList = [
+        const stockCards = new CardList([
             deuceOfClubs,
             threeOfClubs,
             joker
-        ];
+        ]);
 
-        const stock = new ConcreteStock(serializer, CardsShuffler.noShuffling, () => expectedCards);
+        const stock = new ConcreteStock(serializer, CardsShuffler.noShuffling, () => stockCards);
         stock.shuffle();
         
-        const stockCards = stock.getCards()
+        const sortedStockCards = stock.asArray()
             .map((card) => serializer.serializeCard(card))
             .sort((c1, c2) => c1.suit - c2.suit || c1.value - c2.value);
 
-        expect(stockCards).toEqual([
+        expect(sortedStockCards).toEqual([
             { suit: Suit.Joker, value: 0 },
             { suit: Suit.Clubs, value: 2 },
             { suit: Suit.Clubs, value: 3 },
         ]); 
-    })
+    });
 
 });

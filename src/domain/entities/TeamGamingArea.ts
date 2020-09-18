@@ -1,5 +1,5 @@
 import { Entity } from "./Entity";
-import { CardList } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
 import { Run } from "./Run";
 import { RunID } from "../value_objects/RunID";
 

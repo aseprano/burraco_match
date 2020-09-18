@@ -1,18 +1,22 @@
-import { CardList } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
+import { Card } from "../value_objects/Card";
+
 
 export class CardsShuffler {
 
-    public static randomShuffling(deck: CardList): void {
-        const shuffledCards: CardList = [];
+    public static randomShuffling(source: CardList): CardList {
+        const shuffledCards: Array<Card> = [];
+        const sourceCards = [...source.cards];
 
-        while (deck.length) {
-            shuffledCards.push(...deck.splice(Math.floor(Math.random()*deck.length), 1));
+        while (sourceCards.length) {
+            shuffledCards.push(...sourceCards.splice(Math.floor(Math.random()*sourceCards.length), 1));
         }
     
-        deck.splice(0);
-        deck.push(...shuffledCards);
+        return new CardList(shuffledCards);
     }
     
-    public static noShuffling(deck: CardList): void {}
+    public static noShuffling(source: CardList): CardList {
+        return source;
+    }
 
 }

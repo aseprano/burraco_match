@@ -1,11 +1,12 @@
 import { AbstractRun } from './AbstractRun';
-import { Card, CardList } from "../../value_objects/Card";
+import { Card } from "../../value_objects/Card";
+import { CardList } from "../../value_objects/CardList";
 import { WildcardException } from "../../exceptions/WildcardException";
 import { RunException } from "../../exceptions/RunException";
 
 export class GroupRun extends AbstractRun
 {
-    private value: number = 0;
+    public readonly value: number;
 
     public static startWithCard(card: Card): GroupRun
     {
@@ -17,7 +18,7 @@ export class GroupRun extends AbstractRun
             throw new RunException('Cannot start a group with a deuce');
         }
 
-        return new GroupRun([card]);
+        return new GroupRun(new CardList([card]));
     }
 
     public static restore(cards: CardList, wildcardPosition: number): GroupRun {
@@ -26,7 +27,7 @@ export class GroupRun extends AbstractRun
 
     private constructor(cards: CardList, wildcardPosition = -1) {
         super(cards, wildcardPosition);
-        this.value = cards[wildcardPosition === 0 ? 1 : 0].getValue();
+        this.value = cards.at(wildcardPosition === 0 ? 1 : 0).getValue();
     }
 
     protected addCard(card: Card): boolean {

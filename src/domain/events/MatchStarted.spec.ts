@@ -1,5 +1,6 @@
 import { MatchStarted } from "./MatchStarted";
 import { Card, Suit } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
 
 describe('MatchStarted', () => {
 
@@ -9,7 +10,7 @@ describe('MatchStarted', () => {
         const event = new MatchStarted(
             123,
             7,
-            [Card.Joker(), new Card(Suit.Clubs, 2)],
+            new CardList([Card.Joker(), new Card(Suit.Clubs, 2)]),
             ['john', 'mike'],
             ['foo', 'bar']
         );

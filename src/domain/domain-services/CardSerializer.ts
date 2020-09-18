@@ -1,4 +1,5 @@
-import { Card, CardList } from "../value_objects/Card";
+import { Card } from "../value_objects/Card";
+import { CardList } from "../value_objects/CardList";
 
 export interface CardSerializer {
 
