@@ -26,15 +26,18 @@ import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 import { GamingAreaFactory } from "../../factories/GamingAreaFactory";
 import { RunID } from "../../value_objects/RunID";
 import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
+import { PlayerTookPot } from "../../events/PlayerTookPot";
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
     private started = false;
     private players: Player[] = [];
     private playersMap: Map<string, Player> = new Map();
+    private players2TeamMap: Map<string, number> = new Map();
     private areasByPlayersMap: Map<string, TeamGamingArea> = new Map();
     private currentPlayerIndex = -1;
     private pots: CardList[] = [];
+    private potsTaken: Array<number> = []; // list of team ids that has taken the pot
     private gamingAreas: TeamGamingArea[];
 
     constructor(
@@ -55,9 +58,10 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         this.id = event.getPayload().id;
     }
 
-    private buildPlayer(playerId: string, gamingArea: TeamGamingArea) {
+    private buildPlayer(playerId: string, teammmateId: string, gamingArea: TeamGamingArea) {
         const player = new ConcretePlayer(
             playerId,
+            teammmateId,
             this.cardSerializer,
             this.stock,
             this.discardPile,
@@ -69,7 +73,11 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         this.areasByPlayersMap.set(playerId, gamingArea);
     }
 
-    private getPlayerById(playerId: string): Player {
+    private getPlayerById(playerId: string|PlayerID): Player {
+        if (playerId instanceof PlayerID) {
+            return this.getPlayerById(playerId.asString());
+        }
+
         const player = this.playersMap.get(playerId);
 
         if (!player) {
@@ -97,18 +105,34 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         return gamingArea;
     }
     
+    private getTeamIdFor(playerId: string|PlayerID): number {
+        if (playerId instanceof PlayerID) {
+            return this.getTeamIdFor(playerId.asString());
+        }
+
+        const teamId = this.players2TeamMap.get(playerId);
+
+        if (teamId === undefined) {
+            throw new Error(`Player not found: ${playerId}`);
+        }
+
+        return teamId;
+    }
+
     private handleMatchStartedEvent(event: Event) {
         this.started = true;
         this.discardPile = this.discardPile.clear();
+        const team1: Array<string> = event.getPayload().team1;
+        const team2: Array<string> = event.getPayload().team2;
 
-        event.getPayload()
-            .team1
-            .forEach((player1Id: string, playerIndex: number) => {
-                const player2Id: string = event.getPayload().team2[playerIndex];
+        team1.forEach((player1Id: string, playerIndex: number) => {
+            const player2Id: string = event.getPayload().team2[playerIndex];
 
-                this.buildPlayer(player1Id, this.gamingAreas[0]);
-                this.buildPlayer(player2Id, this.gamingAreas[1]);
-            });
+            this.buildPlayer(player1Id, team1[1-playerIndex], this.gamingAreas[0]);
+            this.buildPlayer(player2Id, team2[1-playerIndex], this.gamingAreas[1]);
+            this.players2TeamMap.set(player1Id, 0);
+            this.players2TeamMap.set(player2Id, 1);
+        });
     }
 
     private handlePotCreatedEvent(event: Event) {
@@ -124,6 +148,15 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     private handleGameTurnToPlayerEvent(event: Event) {
         const playerId = event.getPayload().player_id;
         this.currentPlayerIndex = this.players.findIndex((player) => player.getId() === playerId);
+    }
+
+    private handlePlayerTookPotEvent(event: Event) {
+        this.pots.pop();
+
+        const playerId: string = event.getPayload().player_id;
+        const teamId = this.getTeamIdFor(playerId);
+        
+        this.potsTaken.push(teamId);
     }
 
     protected deal(targetPlayer: Player, numberOfCards = 1) {
@@ -217,7 +250,46 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
             case GameTurnToPlayer.EventName:
                 this.handleGameTurnToPlayerEvent(event);
                 break;
+
+            case PlayerTookPot.EventName:
+                this.handlePlayerTookPotEvent(event);
+                break;
         }
+    }
+
+    private playerHandIsEmpty(playerId: PlayerID): boolean {
+        return this.getPlayerById(playerId).hasNoMoreCards();
+    }
+
+    private potHasBeenTakenByTeam(teamId: number): boolean {
+        return this.potsTaken.findIndex(id => id === teamId) !== -1;
+    }
+
+    private potHasBeenTakenByPlayerTeam(playerId: PlayerID): boolean {
+        return this.potHasBeenTakenByTeam(this.getTeamIdFor(playerId));
+    }
+
+    private checkIfPotCanBeTaken(playerId: PlayerID)
+    {
+        if (!this.playerHandIsEmpty(playerId) || this.potHasBeenTakenByPlayerTeam(playerId)) {
+            return;
+        }
+
+        const pot: CardList = this.pots.slice(-1, 1)[0];
+
+        this.appendUncommittedEvent(new PlayerTookPot(
+            this.id,
+            playerId.asString(),
+            pot
+        ));
+    }
+
+    private checkIfPlayerEndedMatch(playerId: PlayerID) {
+        if (!this.playerHandIsEmpty(playerId) || !this.potHasBeenTakenByPlayerTeam(playerId)) {
+            return;
+        }
+
+        // append the event
     }
 
     public getId() {
@@ -275,6 +347,8 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
             )
         );
 
+        this.checkIfPotCanBeTaken(player);
+
         return newRun;
     }
 
@@ -292,6 +366,8 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
             )
         );
 
+        this.checkIfPotCanBeTaken(playerId);
+
         return updatedRun;
     }
 
@@ -306,6 +382,9 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
                 card
             )
         );
+
+        this.checkIfPlayerEndedMatch(playerId);
+        this.checkIfPotCanBeTaken(playerId);
     }
 
 }

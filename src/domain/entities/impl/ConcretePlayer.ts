@@ -19,15 +19,18 @@ import { PlayerPickedUpDiscardPile } from "../../events/PlayerPickedUpDiscardPil
 import { RunCreated } from "../../events/RunCreated";
 import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
+import { PlayerTookPot } from "../../events/PlayerTookPot";
 
 export class ConcretePlayer extends AbstractEntity implements Player {
     private hand = new CardList();
     private state: PlayerState;
     private lastCardTaken?: Card;
     private potTaken = false;
+    private isMyTurn = false;
 
     public constructor(
         private playerId: string,
+        private teammateId: string,
         private cardSerializer: CardSerializer,
         private stock: Stock,
         private discardPile: CardList,
@@ -37,8 +40,21 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         this.state = new IdlePlayerState();
     }
 
-    private isEventOfMine(event: Event): boolean {
-        return event.getPayload().player_id === this.playerId;
+    private eventIsAboutUser(playerId: string, event: Event): boolean {
+        return event.getPayload().player_id === playerId;
+    }
+
+    private eventIsAboutMe(event: Event): boolean {
+        return this.eventIsAboutUser(this.playerId, event);
+    }
+
+    private eventIs(expectedName: string, event: Event): boolean {
+        return event.getName() === expectedName;
+    }
+
+    private eventIsRelevantToMe(event: Event): boolean {
+        return this.eventIsAboutMe(event) ||
+            (this.eventIs(PlayerTookPot.EventName, event) && this.eventIsAboutUser(this.teammateId, event));
     }
 
     private unserializeCards(eventCards: any[]): CardList {
@@ -51,6 +67,10 @@ export class ConcretePlayer extends AbstractEntity implements Player {
 
     private removeEventCardsFromHand(eventCards: any[]) {
         this.hand = this.hand.remove(this.unserializeCards(eventCards));
+
+        if (this.hasNoMoreCards()) {
+            this.lastCardTaken = undefined;
+        }
     }
 
     private handleCardsDealtToPlayerEvent(event: Event) {
@@ -87,8 +107,20 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         this.switchToIdleState();
     }
 
+    private handlePlayerTookPotEvent(event: Event) {
+        if (this.eventIsAboutMe(event)) {
+            this.appendCardsFromEvent(event.getPayload().cards);
+        }
+
+        this.potTaken = true;
+
+        if (this.isMyTurn) {
+            this.switchToPlayingState();
+        }
+    }
+
     protected doApplyEvent(event: Event): void {
-        if (!this.isEventOfMine(event)) {
+        if (!this.eventIsRelevantToMe(event)) {
             //console.debug(`Event ${event.getName()} is not of mine (I am ${this.playerId}, whereas event player is ${event.getPayload().player_id})`);
             return;
         }
@@ -121,11 +153,19 @@ export class ConcretePlayer extends AbstractEntity implements Player {
             case PlayerThrewCardToDiscardPile.EventName:
                 this.handleCardThrownToDiscardPileEvent(event);
                 break;
+
+            case PlayerTookPot.EventName:
+                this.handlePlayerTookPotEvent(event);
+                break;
         }
     }
 
     public getId() {
         return this.playerId;
+    }
+
+    public hasNoMoreCards(): boolean {
+        return this.hand.length === 0;
     }
 
     public takeOneCardFromStock(): Card {
@@ -156,6 +196,10 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         this.hand = newHand;
     }
 
+    public getPotTaken(): boolean {
+        return this.potTaken;
+    }
+
     public setState(newState: PlayerState) {
         this.state = newState;
     }
@@ -170,10 +214,12 @@ export class ConcretePlayer extends AbstractEntity implements Player {
 
     public switchToIdleState() {
         this.setState(new IdlePlayerState());
+        this.isMyTurn = false;
     }
 
     public switchToReadyState() {
         this.setState(new ReadyPlayerState(this.stock, this.discardPile));
+        this.isMyTurn = true;
     }
 
     public switchToPlayingState() {

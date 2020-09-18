@@ -6,6 +6,8 @@ import { Entity } from "./Entity";
 
 export interface Player extends Entity {
 
+    hasNoMoreCards(): boolean;
+    
     /**
      * @throws ActionNotAllowedException
      * @throws InsufficientCardsInStockException
