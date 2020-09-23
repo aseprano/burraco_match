@@ -13,15 +13,27 @@ import { GameTurnToPlayer } from "../../events/GameTurnToPlayer";
 import { CardsShuffler } from "../../domain-services/CardsShuffler";
 import { ConcreteRunFactory } from "../../factories/impl/ConcreteRunFactory";
 import { ConcreteGamingAreaFactory } from "../../factories/impl/ConcreteGamingAreaFactory";
+import { EventScoreCalculator } from "../../domain-services/impl/EventScoreCalculator";
+import { CardsValueCalculator } from "../../domain-services/impl/CardsValueCalculator";
+import { StandardRunScoringPolicy } from "../../domain-services/impl/StandardRunScoringPolicy";
 
 describe('ConcreteMatch', () => {
     const serializer = new StdCardSerializer();
     const gamingAreaFactory = new ConcreteGamingAreaFactory(new ConcreteRunFactory(), serializer);
 
+    const scoreCalculatorProvider = (teamNumber: number) => {
+        return new EventScoreCalculator(
+            teamNumber,
+            serializer,
+            new CardsValueCalculator(),
+            new StandardRunScoringPolicy()
+        );
+    };
+
     it('can be initialized', () => {
         const stock = new ConcreteStock(serializer, CardsShuffler.noShuffling);
 
-        const match = new ConcreteMatch(stock, new CardList(), serializer, gamingAreaFactory);
+        const match = new ConcreteMatch(stock, new CardList(), serializer, gamingAreaFactory, scoreCalculatorProvider);
         match.initialize(7);
 
         expect(match.commitEvents()).toEqual([
@@ -86,7 +98,7 @@ describe('ConcreteMatch', () => {
 
         const stock = new ConcreteStock(serializer, CardsShuffler.noShuffling, () => stockCards);
 
-        const match = new ConcreteMatch(stock, discardPile, serializer, gamingAreaFactory);
+        const match = new ConcreteMatch(stock, discardPile, serializer, gamingAreaFactory, scoreCalculatorProvider);
         match.applyEvent(new MatchInitialized(8));
 
         match.start1vs1(1981, new PlayerID('darkbyte'), new PlayerID('johndoe'));

@@ -27,6 +27,9 @@ import { GamingAreaFactory } from "../../factories/GamingAreaFactory";
 import { RunID } from "../../value_objects/RunID";
 import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
 import { PlayerTookPot } from "../../events/PlayerTookPot";
+import { ScoreCalculator } from "../../domain-services/ScoreCalculator";
+import { Function } from "../../../lib/Function";
+import { MatchEnded } from "../../events/MatchEnded";
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
@@ -39,14 +42,20 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     private pots: CardList[] = [];
     private potsTaken: Array<number> = []; // list of team ids that has taken the pot
     private gamingAreas: TeamGamingArea[];
+    private team1ScoreCalculator: ScoreCalculator;
+    private team2ScoreCalculator: ScoreCalculator;
 
     constructor(
         private stock: Stock,
         private discardPile: CardList,
         private cardSerializer: CardSerializer,
-        private gamingAreaFactory: GamingAreaFactory
+        private gamingAreaFactory: GamingAreaFactory,
+        private scoreCalculatorProvider: Function<number, ScoreCalculator>
     ) {
         super();
+
+        this.team1ScoreCalculator = scoreCalculatorProvider(0);
+        this.team2ScoreCalculator = scoreCalculatorProvider(1);
 
         this.gamingAreas = [
             this.gamingAreaFactory.build(0),
@@ -227,6 +236,8 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         this.stock.applyEvent(event);
         this.players.forEach((player) => player.applyEvent(event));
         this.gamingAreas.forEach((gamingArea) => gamingArea.applyEvent(event));
+        this.team1ScoreCalculator.applyEvent(event);
+        this.team2ScoreCalculator.applyEvent(event);
     }
 
     protected doApplyEvent(event: Event): void {
@@ -289,7 +300,13 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
             return;
         }
 
-        // append the event
+        this.appendUncommittedEvent(
+            new MatchEnded(
+                this.id,
+                this.team1ScoreCalculator.getScore(),
+                this.team2ScoreCalculator.getScore()
+            )
+        );
     }
 
     public getId() {
