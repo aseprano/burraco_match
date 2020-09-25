@@ -12,6 +12,12 @@ export interface Match extends RootEntity {
     
     start2vs2(gameId: number, team1: Team, team2: Team): void;
     
+    /**
+     * 
+     * @param player 
+     * @throws PlayerNotFoundExcpetion if the provided player is not a player of the match
+     * @throws 
+     */
     takeFromStock(player: PlayerID): Card;
 
     pickUpDiscardPile(player: PlayerID): CardList;

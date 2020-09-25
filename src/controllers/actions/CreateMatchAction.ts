@@ -16,10 +16,10 @@ import { Team } from "../../domain/value_objects/Team";
  * @parameter players [array[PlayerID], required] The list of player, starting from NORTH, clockwise
  * @parameter game_id [number, required] The id of the game that the match belongs to
  * 
- * @status 1002 Invalid game id
- * @status 1003 Bad players format
- * @status 1004 Invalid number of players
- * @status 1005 Duplicated players
+ * @status 2001 Invalid game id
+ * @status 2002 Bad players format
+ * @status 2003 Invalid number of players
+ * @status 2004 Duplicated players
  */
 export class CreateMatchAction extends AbstractAction {
 
@@ -27,7 +27,7 @@ export class CreateMatchAction extends AbstractAction {
         const gameId = this.request.body.game_id;
 
         if (!(typeof gameId === 'number')) {
-            throw new MicroserviceApiError(400, 1002, 'Invalid game id');
+            throw new MicroserviceApiError(400, 2001, 'Invalid game id');
         }
 
         return gameId;
@@ -37,7 +37,7 @@ export class CreateMatchAction extends AbstractAction {
         const players = this.request.body.players;
 
         if (!Array.isArray(players)) {
-            throw new MicroserviceApiError(400, 1003, 'Bad players format');
+            throw new MicroserviceApiError(400, 2002, 'Bad players format');
         }
 
         return players.map((playerId) => new PlayerID(playerId));
@@ -55,7 +55,7 @@ export class CreateMatchAction extends AbstractAction {
         const players = this.parsePlayers();
 
         if (players.length !== 2 && players.length !== 4) {
-            return new MicroserviceApiError(400, 1004, 'Invalid number of players');
+            return new MicroserviceApiError(400, 2003, 'Invalid number of players');
         }
 
         try {
@@ -88,9 +88,9 @@ export class CreateMatchAction extends AbstractAction {
             });
         } catch (e) {
             if (e instanceof MatchPlayersException) {
-                return new MicroserviceApiError(400, 1003, 'Bad players format');
+                return new MicroserviceApiError(400, 2002, 'Bad players format');
             } else if (e instanceof BadPlayerIDException) {
-                return new MicroserviceApiError(400, 1005, 'Duplicated players')
+                return new MicroserviceApiError(400, 2004, 'Duplicated players')
             } else {
                 throw e;
             }

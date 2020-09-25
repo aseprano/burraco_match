@@ -30,6 +30,7 @@ import { PlayerTookPot } from "../../events/PlayerTookPot";
 import { ScoreCalculator } from "../../domain-services/ScoreCalculator";
 import { Function } from "../../../lib/Function";
 import { MatchEnded } from "../../events/MatchEnded";
+import { PlayerNotFoundException } from "../../exceptions/PlayerNotFoundException";
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
@@ -90,7 +91,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         const player = this.playersMap.get(playerId);
 
         if (!player) {
-            throw new Error(`Player not found: ${playerId}`);
+            throw new PlayerNotFoundException(`Player not found: ${playerId}`);
         }
 
         return player;

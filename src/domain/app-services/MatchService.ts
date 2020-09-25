@@ -28,6 +28,7 @@ export interface MatchService {
      * @param matchId
      * @param player
      * @throws MatchNotFoundException
+     * @throws PlayerNotFoundException
      * @throws BadPlayerTurnException
      * @throws ActionNotAllowedException
      */
