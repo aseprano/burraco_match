@@ -27,8 +27,6 @@ export class SnapshotRepositoryImpl implements SnapshotRepository {
                 if (data.fields && data.fields.length) {
                     return this.reconstituteSnapshot(data.fields[0]);
                 }
-            }).catch((err) => {
-                return err;
             });
     }
     
