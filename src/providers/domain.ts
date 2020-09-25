@@ -11,6 +11,18 @@ import { ProjectionistLogger } from "../tech/impl/projections/ProjectionistLogge
 import { ProjectionistProxy } from "../tech/impl/projections/ProjectionistProxy";
 import { AMQPMessagingSystem } from "@darkbyte/messaging";
 import { ProjectorRegistrationService } from "../domain/app-services/ProjectorRegistrationService";
+import { ConcreteMatchService } from "../domain/app-services/impl/ConcreteMatchService";
+import { ConcreteMatchFactory } from "../domain/factories/impl/ConcreteMatchFactory";
+import { MatchesRepositoryImpl } from "../domain/repositories/impl/MatchesRepositoryImpl";
+import { MySQLIDGenerator } from "../domain/domain-services/impl/MySQLIDGenerator";
+import { ConcreteGamingAreaFactory } from "../domain/factories/impl/ConcreteGamingAreaFactory";
+import { ConcreteRunFactory } from "../domain/factories/impl/ConcreteRunFactory";
+import { StdCardSerializer } from "../domain/domain-services/impl/StdCardSerializer";
+import { EventScoreCalculator } from "../domain/domain-services/impl/EventScoreCalculator";
+import { CardsValueCalculator } from "../domain/domain-services/impl/CardsValueCalculator";
+import { StandardRunScoringPolicy } from "../domain/domain-services/impl/StandardRunScoringPolicy";
+import { DomainEvent } from "../domain/events/DomainEvent";
+import { StringCardSerializer } from "../domain/domain-services/impl/StringCardSerializer";
 
 const mysql = require('mysql');
 const uuid = require('uuidv4').default;
@@ -31,7 +43,8 @@ module.exports = (container: ServiceContainer) => {
             const compositeCfg = new CompositeConfig(redisConfig).addConfigAtEnd(envConfig);
             return new CacheConfigDecorator(compositeCfg, 600);
         }
-    ).declare(
+    )
+    .declare(
         'EventStore',
         async (container: ServiceContainer) => {
             const config: Config = await container.get('Config');
@@ -60,7 +73,8 @@ module.exports = (container: ServiceContainer) => {
                 );
             });
         }
-    ).declare(
+    )
+    .declare(
         'DB',
         async (c: ServiceContainer) => {
             return c.get('Config')
@@ -68,8 +82,8 @@ module.exports = (container: ServiceContainer) => {
                     return Promise.all([
                         config.get('DB_HOST', 'localhost'),
                         config.get('DB_USER', 'root'),
-                        config.get('DB_PASS', 'test'),
-                        config.get('DB_NAME', 'balances')
+                        config.get('DB_PASS', 'root'),
+                        config.get('DB_NAME', 'buraco')
                     ]).then((values) => {
                         const pool = mysql.createPool({
                             connectionLimit : 5,
@@ -83,24 +97,28 @@ module.exports = (container: ServiceContainer) => {
                     });
                 });
         }
-    ).declare(
+    )
+    .declare(
         'SnapshotRepository',
         async (c: ServiceContainer) => {
             return c.get('DB')
                 .then((db) => new SnapshotRepositoryImpl(db, 'snapshots'));
         }
-    ).declare(
+    )
+    .declare(
         'ProjectorsRegistrationService',
         async (container: ServiceContainer) => {
             return new ConcreteProjectorRegistrationService();
         }
-    ).declare(
+    )
+    .declare(
         'ProjectionService',
         async (container: ServiceContainer) => {
             const projectorsRegtistrationService = await container.get('ProjectorsRegistrationService');
             return new ConcreteProjectionService(projectorsRegtistrationService);
         }
-    ).declare(
+    )
+    .declare(
         'CommandsMessagingSystem',
         async (container: ServiceContainer) => {
             const msg = new AMQPMessagingSystem(
@@ -114,7 +132,8 @@ module.exports = (container: ServiceContainer) => {
         
             return msg;
         }
-    ).declare(
+    )
+    .declare(
         'EventsMessagingSystem',
         async (container: ServiceContainer) => {
             const msg = new AMQPMessagingSystem(
@@ -129,7 +148,8 @@ module.exports = (container: ServiceContainer) => {
         
             return msg;
         }
-    ).declare(
+    )
+    .declare(
         'Projectionist',
         async (container: ServiceContainer) => {
             return container.get('CommandsMessagingSystem')
@@ -145,5 +165,45 @@ module.exports = (container: ServiceContainer) => {
                     )
                 });
         }
-    );
+    )
+    .declare(
+        'CardSerializer', // to use for APIs
+        async () => new StringCardSerializer()
+    )
+    .declare(
+        'MatchService',
+        async (container: ServiceContainer) => {
+            const cardSerializer = new StdCardSerializer();
+            DomainEvent.cardSerializer = cardSerializer;
+            
+            const matchFactory = new ConcreteMatchFactory(
+                new MySQLIDGenerator(
+                    await container.get('DB'),
+                    'ids',
+                    'id'
+                ),
+                new ConcreteGamingAreaFactory(
+                    new ConcreteRunFactory(),
+                    cardSerializer,
+                ),
+                (teamId: number) => new EventScoreCalculator(
+                    teamId,
+                    cardSerializer,
+                    new CardsValueCalculator(),
+                    new StandardRunScoringPolicy()
+                )
+            );
+
+            const matchRepository = new MatchesRepositoryImpl(
+                await container.get('EventStore'),
+                await container.get('SnapshotRepository'),
+                matchFactory
+            );
+
+            return new ConcreteMatchService(
+                matchFactory,
+                matchRepository
+            );
+        }
+    )
 }

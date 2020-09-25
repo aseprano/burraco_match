@@ -20,6 +20,7 @@ import { ActionNotAllowedException } from "../../domain/exceptions/ActionNotAllo
  * 
  * @status 2001 Invalid source
  * @status 2002 Invalid player turn
+ * @status 2003 Action not allowed in the current state
  */
 export class TakeCardAction extends AbstractAction {
     private readonly STOCK = 'stock';
@@ -64,8 +65,6 @@ export class TakeCardAction extends AbstractAction {
                 return new MicroserviceApiResponse({cards: this.serializeCards(cards)});
             }
         } catch (error) {
-            console.log(error);
-
             if (error instanceof MatchNotFoundException) {
                 throw this.matchNotFoundError();
             } else if (error instanceof PlayerNotFoundException) {
@@ -73,7 +72,7 @@ export class TakeCardAction extends AbstractAction {
             } else if (error instanceof BadPlayerTurnException) {
                 throw new ForbiddenApiResponse({'error': 'Not the player turn to play'});
             } else if (error instanceof ActionNotAllowedException) {
-                throw new MicroserviceApiError(400, 2002, 'Bad player turn');
+                throw new MicroserviceApiError(400, 2003, 'Action not allowed in the current state');
             } else {
                 throw error;
             }

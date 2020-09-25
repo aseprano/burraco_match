@@ -2,8 +2,8 @@ import { Router } from "../Router";
 import { Express, Request, Response } from "express";
 import { ServiceContainer } from "./ServiceContainer";
 import { NextFunction } from "connect";
-import { ControllerResult } from "../ControllerResult";
 import { ApiResponse } from "../api/ApiResponse";
+import { MicroserviceApiError } from "../../controllers/MicroserviceApiError";
 
 interface RouterMapping {
     serviceName: string;
@@ -37,8 +37,13 @@ export class ConcreteRouter implements Router {
                 res.end();
             }
         } catch (e) {
-            console.log('*** Exception caught: ' + e.message);
-            res.status(500).send('Internal server error');
+            if (e instanceof MicroserviceApiError) {
+                res.status(e.getStatusCode())
+                    .send(e.getBody());
+            } else {
+                console.log('*** Exception caught: ' + e.message);
+                res.status(500).send('Internal server error');
+            }
         }
     }
 
