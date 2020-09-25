@@ -8,6 +8,19 @@ import { MatchPlayersException } from "../../domain/exceptions/MatchPlayersExcep
 import { PlayerID } from "../../domain/value_objects/PlayerID";
 import { Team } from "../../domain/value_objects/Team";
 
+/**
+ * @summary Creates a new match
+ * @method POST
+ * @url /matches
+ * 
+ * @parameter players [array[PlayerID], required] The list of player, starting from NORTH, clockwise
+ * @parameter game_id [number, required] The id of the game that the match belongs to
+ * 
+ * @status 1002 Invalid game id
+ * @status 1003 Bad players format
+ * @status 1004 Invalid number of players
+ * @status 1005 Duplicated players
+ */
 export class CreateMatchAction extends AbstractAction {
 
     private parseGameId(): number {
@@ -37,19 +50,6 @@ export class CreateMatchAction extends AbstractAction {
         ];
     }
 
-    /**
-     * @summary Creates a new match
-     * @method POST
-     * @url /matches
-     * 
-     * @parameter players [array[PlayerID], required] The list of player, starting from NORTH, clockwise
-     * @parameter game_id [number, required] The id of the game that the match belongs to
-     * 
-     * @status 1002 Invalid game id
-     * @status 1003 Bad players format
-     * @status 1004 Invalid number of players
-     * @status 1005 Duplicated players
-     */
     public async serveRequest(): Promise<ApiResponse> {
         const gameId = this.parseGameId();
         const players = this.parsePlayers();
