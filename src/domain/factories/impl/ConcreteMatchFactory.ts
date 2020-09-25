@@ -6,12 +6,15 @@ import { ConcreteStock } from "../../entities/impl/ConcreteStock";
 import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer";
 import { GamingAreaFactory } from "../GamingAreaFactory";
 import { CardList } from "../../value_objects/CardList";
+import { ScoreCalculator } from "../../domain-services/ScoreCalculator";
+import { Function } from "../../../lib/Function";
 
 export class ConcreteMatchFactory implements MatchFactory {
 
     constructor(
         private idGenerator: IDGenerator,
-        private gamingAreaFactory: GamingAreaFactory
+        private gamingAreaFactory: GamingAreaFactory,
+        private scoreCalculatorProvider: Function<number,ScoreCalculator>
     ) {}
 
     private createMatch(): ConcreteMatch {
@@ -19,7 +22,8 @@ export class ConcreteMatchFactory implements MatchFactory {
             new ConcreteStock(new StdCardSerializer()),
             new CardList(),
             new StdCardSerializer(),
-            this.gamingAreaFactory
+            this.gamingAreaFactory,
+            this.scoreCalculatorProvider
         );
     }
 

@@ -195,7 +195,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     }
 
     private checkTeams(team1: PlayerID[], team2: PlayerID[]) {
-        if (team1.some((player) => team2.includes(player))) {
+        if (team1.some((team1Player) => team2.findIndex((team2Player) => team2Player.equals(team1Player)) >= 0)) {
             throw new MatchPlayersException();
         }
     }
