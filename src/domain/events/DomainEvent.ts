@@ -2,19 +2,19 @@ import { Event, EventPayload } from "../../tech/events/Event";
 import { Card } from "../value_objects/Card";
 import { CardList } from "../value_objects/CardList";
 import { Run } from "../entities/Run";
+import { CardSerializer } from "../domain-services/CardSerializer";
+import { BasicCardSerializer } from "../domain-services/impl/BasicCardSerializer";
 
 export abstract class DomainEvent implements Event {
+    public static cardSerializer: CardSerializer = new BasicCardSerializer();
     private payload: EventPayload = Object.freeze({});
 
     protected serializeCard(card: Card): any {
-        return {
-            suit: card.getSuit(),
-            value: card.getValue(),
-        };
+        return DomainEvent.cardSerializer.serializeCard(card);
     }
 
     protected serializeCardList(cards: CardList): any[] {
-        return cards.asArray().map((card) => this.serializeCard(card));
+        return DomainEvent.cardSerializer.serializeCards(cards);
     }
 
     protected serializeRun(run: Run): any {

@@ -9,10 +9,10 @@ describe("StdCardSerializer", () => {
 
     it("serializes one card", () => {
         expect(serializer.serializeCard(deuceOfClubs))
-            .toEqual({ suit: Suit.Clubs, value: 2 });
+            .toEqual({ suit: 'clubs', value: 2 });
 
         expect(serializer.serializeCard(joker))
-            .toEqual({ suit: Suit.Joker, value: 0 });
+            .toEqual({ suit: 'joker' });
     });
 
     it("serializes a list of cards", () => {
@@ -20,20 +20,20 @@ describe("StdCardSerializer", () => {
         
         expect(serializedCards)
             .toEqual([
-                { suit: Suit.Clubs, value: 2 },
-                { suit: Suit.Joker, value: 0 },
+                { suit: 'clubs', value: 2 },
+                { suit: 'joker' },
             ]);
     });
 
     it('unserializes one card', () => {
-        expect(serializer.unserializeCard({ suit: Suit.Clubs, value: 2 }))
+        expect(serializer.unserializeCard({ suit: 'clubs', value: 2 }))
             .toEqual(deuceOfClubs);
     });
 
     it('unserializes a list of cards', () => {
         expect(serializer.unserializeCards([
-            { suit: Suit.Clubs, value: 2 },
-            { suit: Suit.Joker, value: 0 }
+            { suit: 'clubs', value: 2 },
+            { suit: 'joker', value: 0 }
         ]).cards).toEqual([ deuceOfClubs, joker ]);
     });
     

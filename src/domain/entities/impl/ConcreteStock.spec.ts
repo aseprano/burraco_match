@@ -157,15 +157,12 @@ describe("ConcreteStock", () => {
         const stock = new ConcreteStock(serializer, CardsShuffler.noShuffling, () => stockCards);
         stock.shuffle();
         
-        const sortedStockCards = stock.asArray()
-            .map((card) => serializer.serializeCard(card))
-            .sort((c1, c2) => c1.suit - c2.suit || c1.value - c2.value);
-
-        expect(sortedStockCards).toEqual([
-            { suit: Suit.Joker, value: 0 },
-            { suit: Suit.Clubs, value: 2 },
-            { suit: Suit.Clubs, value: 3 },
-        ]); 
+        expect(stock.asArray())
+            .toEqual([
+                new Card(Suit.Clubs, 2),
+                new Card(Suit.Clubs, 3),
+                Card.Joker(),
+            ]); 
     });
 
 });
