@@ -1,11 +1,12 @@
-import { BadPlayerIDException } from "../domain/exceptions/BadPlayerIDException";
-import { MatchPlayersException } from "../domain/exceptions/MatchPlayersException";
-import { PlayerID } from "../domain/value_objects/PlayerID";
-import { Team } from "../domain/value_objects/Team";
-import { ApiResponse } from "../tech/api/ApiResponse";
 import { AbstractAction } from "./AbstractAction";
-import { MicroserviceApiError } from "./MicroserviceApiError";
-import { MicroserviceApiResponse } from "./MicroserviceApiResponse";
+import { ApiResponse } from "../../tech/api/ApiResponse";
+import { MicroserviceApiError } from "../MicroserviceApiError";
+import { MicroserviceApiResponse } from "../MicroserviceApiResponse";
+
+import { BadPlayerIDException } from "../../domain/exceptions/BadPlayerIDException";
+import { MatchPlayersException } from "../../domain/exceptions/MatchPlayersException";
+import { PlayerID } from "../../domain/value_objects/PlayerID";
+import { Team } from "../../domain/value_objects/Team";
 
 export class CreateMatchAction extends AbstractAction {
 

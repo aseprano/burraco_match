@@ -1,11 +1,11 @@
-import { MatchService } from "../domain/app-services/MatchService";
-import { CardSerializer } from "../domain/domain-services/CardSerializer";
-import { Card } from "../domain/value_objects/Card";
-import { CardList } from "../domain/value_objects/CardList";
-import { MatchID } from "../domain/value_objects/MatchID";
-import { PlayerID } from "../domain/value_objects/PlayerID";
-import { ApiResponse } from "../tech/api/ApiResponse";
-import { BaseController } from "./BaseController";
+import { MatchService } from "../../domain/app-services/MatchService";
+import { CardSerializer } from "../../domain/domain-services/CardSerializer";
+import { Card } from "../../domain/value_objects/Card";
+import { CardList } from "../../domain/value_objects/CardList";
+import { MatchID } from "../../domain/value_objects/MatchID";
+import { PlayerID } from "../../domain/value_objects/PlayerID";
+import { ApiResponse } from "../../tech/api/ApiResponse";
+import { BaseController } from "../BaseController";
 
 export abstract class AbstractAction extends BaseController {
 
