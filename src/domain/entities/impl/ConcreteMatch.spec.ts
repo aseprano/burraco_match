@@ -33,7 +33,7 @@ describe('ConcreteMatch', () => {
     it('can be initialized', () => {
         const stock = new ConcreteStock(serializer, CardsShuffler.noShuffling);
 
-        const match = new ConcreteMatch(stock, new CardList(), serializer, gamingAreaFactory, scoreCalculatorProvider);
+        const match = new ConcreteMatch(stock, [], serializer, gamingAreaFactory, scoreCalculatorProvider);
         match.initialize(7);
 
         expect(match.commitEvents()).toEqual([
@@ -98,7 +98,7 @@ describe('ConcreteMatch', () => {
 
         const stock = new ConcreteStock(serializer, CardsShuffler.noShuffling, () => stockCards);
 
-        const match = new ConcreteMatch(stock, discardPile, serializer, gamingAreaFactory, scoreCalculatorProvider);
+        const match = new ConcreteMatch(stock, [...discardPile.asArray()], serializer, gamingAreaFactory, scoreCalculatorProvider);
         match.applyEvent(new MatchInitialized(8));
 
         match.start1vs1(1981, new PlayerID('darkbyte'), new PlayerID('johndoe'));

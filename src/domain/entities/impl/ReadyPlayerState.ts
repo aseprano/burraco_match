@@ -1,16 +1,16 @@
 import { BasePlayerState } from "./BasePlayerState";
 import { Card } from "../../value_objects/Card";
-import { CardList } from "../../value_objects/CardList";
 import { Run } from "../Run";
 import { RunID } from "../../value_objects/RunID";
 import { ActionNotAllowedException } from "../../exceptions/ActionNotAllowedException";
 import { Stock } from "../Stock";
+import { CardList } from "../../value_objects/CardList";
 
 export class ReadyPlayerState extends BasePlayerState {
 
     public constructor(
         private stock: Stock,
-        private discardPile: CardList        
+        private discardPile: Card[]        
     ) {
         super();
     }
@@ -19,7 +19,7 @@ export class ReadyPlayerState extends BasePlayerState {
         return this.stock.takeOne();
     }
 
-    public pickUpAllCardsFromDiscardPile(): CardList {
+    public pickUpAllCardsFromDiscardPile(): Card[] {
         return this.discardPile;
     }
 

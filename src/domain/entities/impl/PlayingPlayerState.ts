@@ -98,7 +98,7 @@ export class PlayingPlayerState extends BasePlayerState {
         throw new ActionNotAllowedException();
     }
     
-    public pickUpAllCardsFromDiscardPile(): CardList {
+    public pickUpAllCardsFromDiscardPile(): Card[] {
         throw new ActionNotAllowedException();
     }
 

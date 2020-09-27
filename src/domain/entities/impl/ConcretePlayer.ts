@@ -33,7 +33,7 @@ export class ConcretePlayer extends AbstractEntity implements Player {
         private teammateId: string,
         private cardSerializer: CardSerializer,
         private stock: Stock,
-        private discardPile: CardList,
+        private discardPile: Card[],
         private gamingArea: TeamGamingArea
     ) {
         super();
@@ -173,7 +173,7 @@ export class ConcretePlayer extends AbstractEntity implements Player {
     }
 
     public pickUpAllCardsFromDiscardPile(): CardList {
-        return this.state.pickUpAllCardsFromDiscardPile();
+        return new CardList(this.state.pickUpAllCardsFromDiscardPile());
     }
 
     public createRun(cards: CardList): Run {

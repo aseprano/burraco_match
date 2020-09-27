@@ -20,7 +20,7 @@ export class ConcreteMatchFactory implements MatchFactory {
     private createMatch(): ConcreteMatch {
         return new ConcreteMatch(
             new ConcreteStock(new StdCardSerializer()),
-            new CardList(),
+            [],
             new StdCardSerializer(),
             this.gamingAreaFactory,
             this.scoreCalculatorProvider

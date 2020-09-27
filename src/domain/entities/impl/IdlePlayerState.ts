@@ -11,7 +11,7 @@ export class IdlePlayerState extends BasePlayerState {
         throw new BadPlayerTurnException();
     }
 
-    public pickUpAllCardsFromDiscardPile(): CardList {
+    public pickUpAllCardsFromDiscardPile(): Card[] {
         throw new BadPlayerTurnException();
     }
 

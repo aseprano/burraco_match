@@ -29,7 +29,7 @@ describe('ConcretePlayer', () => {
 
     it('can be initialized via constructor', () => {
         const stock: Stock = <Stock>{};
-        const discardPile = new CardList();
+        const discardPile: Card[] = [];
 
         const player = new ConcretePlayer('darkbyte', 'joe', serializer, stock, discardPile, {} as TeamGamingArea);
         expect(player.getId()).toEqual('darkbyte');
@@ -37,13 +37,13 @@ describe('ConcretePlayer', () => {
     });
 
     it('starts in Idle state', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
         expect(player.getState()).toBeInstanceOf(IdlePlayerState);
     });
 
     it('adds cards to the hand on CardsDealtToPlayer event', () => {
         const stock: Stock = <Stock>{};
-        const discardPile = new CardList();
+        const discardPile: Card[] = [];
 
         const player = new ConcretePlayer('darkbyte', '', serializer, stock, discardPile, {} as TeamGamingArea);
 
@@ -55,14 +55,14 @@ describe('ConcretePlayer', () => {
     });
 
     it('switches to the Ready state on turn', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
 
         player.applyEvent(new GameTurnToPlayer(123, 'darkbyte'));
         expect(player.getState()).toBeInstanceOf(ReadyPlayerState);
     });
 
     it('adds cards to the hand on PlayerTookOneCardFromStock event', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
         player.applyEvent(new PlayerTookOneCardFromStock(123, 'darkbyte', new Card(Suit.Diamonds, 9)));
 
         expect(player.getHand().cards).toEqual([
@@ -71,7 +71,7 @@ describe('ConcretePlayer', () => {
     });
 
     it('adds cards to the hand on PlayerPickedUpDiscardPile event', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
 
         player.applyEvent(
             new PlayerPickedUpDiscardPile(
@@ -93,14 +93,14 @@ describe('ConcretePlayer', () => {
     });
 
     it('switches to the Playing state after picking from the stock', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
         player.applyEvent(new PlayerTookOneCardFromStock(123, 'darkbyte', new Card(Suit.Diamonds, 9)));
 
         expect(player.getState()).toBeInstanceOf(PlayingPlayerState);
     });
 
     it('switches to the Playing state after picking up the discard pile', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
         player.applyEvent(new PlayerPickedUpDiscardPile(123, 'darkbyte', CardList.empty()));
         expect(player.getState()).toBeInstanceOf(PlayingPlayerState);
     });
@@ -111,11 +111,12 @@ describe('ConcretePlayer', () => {
             '',
             serializer,
             {} as Stock,
-            new CardList(),
+            [],
             {} as TeamGamingArea,
         );
 
         player.setLastCardTaken(new Card(Suit.Clubs, 9));
+
         player.setHand(new CardList([
             new Card(Suit.Clubs, 9),
             new Card(Suit.Clubs, 10),
@@ -151,7 +152,7 @@ describe('ConcretePlayer', () => {
     });
 
     it('removes cards from hand when applying the RunCreated event', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
 
         const playerCards = [
             deuceOfClubs,
@@ -182,7 +183,7 @@ describe('ConcretePlayer', () => {
     });
 
     it('removes cards from hand when applying the CardsMeldedToRun event', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
 
         const playerCards = [
             deuceOfClubs,
@@ -219,7 +220,7 @@ describe('ConcretePlayer', () => {
     });
 
     it('removes cards from hand when applying the PlayerThrewCardToDiscardPile event', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
 
         const playerCards = [
             deuceOfClubs,
@@ -244,7 +245,7 @@ describe('ConcretePlayer', () => {
     });
     
     it('switches to Idle state after throwning a card', () => {
-        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, new CardList(), {} as TeamGamingArea);
+        const player = new ConcretePlayer('darkbyte', '', serializer, {} as Stock, [], {} as TeamGamingArea);
         player.applyEvent(new PlayerThrewCardToDiscardPile(123, 'darkbyte', Card.Joker()));
         expect(player.getState()).toBeInstanceOf(IdlePlayerState);
     });
@@ -255,7 +256,7 @@ describe('ConcretePlayer', () => {
             '',
             serializer,
             {} as Stock,
-            new CardList(),
+            [],
             {} as TeamGamingArea
         );
 
@@ -290,7 +291,7 @@ describe('ConcretePlayer', () => {
             'john',
             serializer,
             {} as Stock,
-            new CardList(),
+            [],
             {} as TeamGamingArea
         );
 
@@ -323,7 +324,7 @@ describe('ConcretePlayer', () => {
             'john',
             serializer,
             {} as Stock,
-            new CardList(),
+            [],
             {} as TeamGamingArea
         );
 
@@ -356,7 +357,7 @@ describe('ConcretePlayer', () => {
             'john',
             serializer,
             {} as Stock,
-            new CardList(),
+            [],
             {} as TeamGamingArea
         );
 

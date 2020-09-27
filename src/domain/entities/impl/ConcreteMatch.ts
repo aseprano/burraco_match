@@ -48,7 +48,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
     constructor(
         private stock: Stock,
-        private discardPile: CardList,
+        private discardPile: Card[],
         private cardSerializer: CardSerializer,
         private gamingAreaFactory: GamingAreaFactory,
         private scoreCalculatorProvider: Function<number, ScoreCalculator>
@@ -131,7 +131,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
     private handleMatchStartedEvent(event: Event) {
         this.started = true;
-        this.discardPile = this.discardPile.clear();
+        this.discardPile = [];
         const team1: Array<string> = event.getPayload().team1;
         const team2: Array<string> = event.getPayload().team2;
 
@@ -152,7 +152,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
     private handleFirstCardThrownEvent(event: Event) {
         const cardThrown = this.cardSerializer.unserializeCard(event.getPayload().card);
-        this.discardPile = this.discardPile.append(cardThrown);
+        this.discardPile.push(cardThrown);
     }
 
     private handleGameTurnToPlayerEvent(event: Event) {

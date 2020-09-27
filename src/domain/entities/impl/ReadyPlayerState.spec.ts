@@ -26,10 +26,10 @@ describe('ReadyPlayerState', () => {
         new Card(Suit.Hearts, 9),
     ];
 
-    const discardPile = new CardList([
+    const discardPile = [
         new Card(Suit.Clubs, 2),
         new Card(Suit.Diamonds, 7)
-    ]);
+    ];
 
     const stock = createStock(new CardList(stockCards));
 
@@ -48,7 +48,7 @@ describe('ReadyPlayerState', () => {
     it('does not alter the discard pile', () => {
         state.pickUpAllCardsFromDiscardPile();
 
-        expect(discardPile.cards).toEqual([
+        expect(discardPile).toEqual([
             new Card(Suit.Clubs, 2),
             new Card(Suit.Diamonds, 7),
         ]);

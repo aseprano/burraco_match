@@ -8,7 +8,7 @@ export abstract class BasePlayerState implements PlayerState {
 
     public abstract takeOneCardFromStock(): Card;
 
-    public abstract pickUpAllCardsFromDiscardPile(): CardList;
+    public abstract pickUpAllCardsFromDiscardPile(): Card[];
 
     public abstract createRun(cards: CardList): Run;
 

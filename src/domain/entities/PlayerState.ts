@@ -7,7 +7,7 @@ export interface PlayerState {
 
     takeOneCardFromStock(): Card;
 
-    pickUpAllCardsFromDiscardPile(): CardList;
+    pickUpAllCardsFromDiscardPile(): Card[];
 
     createRun(cards: CardList): Run;
 
