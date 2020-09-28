@@ -1,10 +1,13 @@
+import { Request, response } from "express";
 import { MatchService } from "../../domain/app-services/MatchService";
 import { CardSerializer } from "../../domain/domain-services/CardSerializer";
+import { PlayerNotFoundException } from "../../domain/exceptions/PlayerNotFoundException";
 import { Card } from "../../domain/value_objects/Card";
 import { CardList } from "../../domain/value_objects/CardList";
 import { MatchID } from "../../domain/value_objects/MatchID";
 import { PlayerID } from "../../domain/value_objects/PlayerID";
 import { ApiResponse } from "../../tech/api/ApiResponse";
+import { ForbiddenApiResponse } from "../../tech/api/ForbiddenApiResponse";
 import { BaseController } from "../BaseController";
 import { MicroserviceApiError } from "../MicroserviceApiError";
 
@@ -38,15 +41,12 @@ export abstract class AbstractAction extends BaseController {
         return this.cardSerializer.serializeCards(cards);
     }
 
-    protected parsePlayerId(): PlayerID {
-        const playerId = this.request.params.player_id;
-        console.debug(`Found player_id in request params: ${playerId}`);
-        
-        try {
-            return new PlayerID(playerId);
-        } catch (error) {
-            throw new MicroserviceApiError(400, E_BAD_PLAYER_ID, `Bad player: ${playerId}`);
-        }
+    protected getPlayerID(): PlayerID {
+        const userId = this.request.currentUser.username;
+
+        console.debug(`Found user id: ${userId}`);
+
+        return new PlayerID(userId);
     }
 
     protected parseMatchId(): MatchID {
@@ -68,8 +68,15 @@ export abstract class AbstractAction extends BaseController {
         return new MicroserviceApiError(404, E_MATCH_NOT_FOUND, 'Match not found');
     }
 
-    protected playerNotFoundError(): MicroserviceApiError {
-        return new MicroserviceApiError(404, E_PLAYER_NOT_FOUND, 'Player not found');
+    public async run(req: Request): Promise<ApiResponse> {
+        return super.run(req)
+            .catch((error) => {
+                if (error instanceof PlayerNotFoundException) {
+                    return new ForbiddenApiResponse();
+                } else {
+                    throw error;
+                }
+            });
     }
 
     public async abstract serveRequest(): Promise<ApiResponse>;

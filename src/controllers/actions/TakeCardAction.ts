@@ -3,7 +3,6 @@ import { ApiResponse } from "../../tech/api/ApiResponse";
 import { MicroserviceApiResponse } from "../MicroserviceApiResponse";
 import { MicroserviceApiError } from "../MicroserviceApiError";
 import { MatchNotFoundException } from "../../domain/exceptions/MatchNotFoundException";
-import { PlayerNotFoundException } from "../../domain/exceptions/PlayerNotFoundException";
 import { BadPlayerTurnException } from "../../domain/exceptions/BadPlayerTurnException";
 import { ForbiddenApiResponse } from "../../tech/api/ForbiddenApiResponse";
 import { ActionNotAllowedException } from "../../domain/exceptions/ActionNotAllowedException";
@@ -11,10 +10,9 @@ import { ActionNotAllowedException } from "../../domain/exceptions/ActionNotAllo
 /**
  * @summary Makes one player take one card from the stock or the full discard pile
  * @method POST
- * @url /matches/{id}/players/{player}/hand
+ * @url /matches/{id}/hand
  * 
  * @get id [integer, required] The id of the match
- * @get player [string, required] The id of the player that wants to take the card(s)
  * 
  * @parameter from [enum(stock,discard_pile)] Where the player wants to take the card(s) from
  * 
@@ -53,9 +51,9 @@ export class TakeCardAction extends AbstractAction {
     }
 
     public async serveRequest(): Promise<ApiResponse> {
-        const playerId = this.parsePlayerId();
+        const playerId = this.getPlayerID();
         const matchId = this.parseMatchId();
-
+        
         try {
             if (this.wantsToTakeFromStock()) {
                 const card = await this.matchService.playerTakesFromStock(matchId, playerId);
@@ -67,8 +65,6 @@ export class TakeCardAction extends AbstractAction {
         } catch (error) {
             if (error instanceof MatchNotFoundException) {
                 throw this.matchNotFoundError();
-            } else if (error instanceof PlayerNotFoundException) {
-                throw this.playerNotFoundError();
             } else if (error instanceof BadPlayerTurnException) {
                 throw new ForbiddenApiResponse({'error': 'Not the player turn to play'});
             } else if (error instanceof ActionNotAllowedException) {
