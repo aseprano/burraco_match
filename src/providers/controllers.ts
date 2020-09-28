@@ -2,13 +2,13 @@ import { CreateMatchAction } from "../controllers/actions/CreateMatchAction";
 import { TakeCardAction } from "../controllers/actions/TakeCardAction";
 import { ServiceContainer } from "../tech/impl/ServiceContainer";
 
-module.exports = (container: ServiceContainer) => {
+module.exports = async (container: ServiceContainer) => {
+    const matchService = await container.get('MatchService');
+    const cardSerializer = await container.get('CardSerializer');
+
     container.declare(
         'CreateMatchAction',
         async (container: ServiceContainer) => {
-            const matchService = await container.get('MatchService');
-            const cardSerializer = await container.get('CardSerializer');
-
             return new CreateMatchAction(
                 matchService,
                 cardSerializer
@@ -18,9 +18,6 @@ module.exports = (container: ServiceContainer) => {
     .declare(
         'TakeCardAction',
         async (container: ServiceContainer) => {
-            const matchService = await container.get('MatchService');
-            const cardSerializer = await container.get('CardSerializer');
-
             return new TakeCardAction(
                 matchService,
                 cardSerializer

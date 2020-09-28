@@ -82,7 +82,7 @@ module.exports = (container: ServiceContainer) => {
                     return Promise.all([
                         config.get('DB_HOST', 'localhost'),
                         config.get('DB_USER', 'root'),
-                        config.get('DB_PASS', 'root'),
+                        config.get('DB_PASS', 'test'),
                         config.get('DB_NAME', 'buraco')
                     ]).then((values) => {
                         const pool = mysql.createPool({

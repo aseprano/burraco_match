@@ -16,11 +16,11 @@ import { QueuedProjector } from "./projectors/QueuedProjector";
 import { DB } from "./tech/db/DB";
 import { DBAbstractProjector } from "./projectors/DBAbstractProjector";
 
-function createServiceContainer(): ServiceContainer {
+async function createServiceContainer(): Promise<ServiceContainer> {
     const serviceContainer = new ServiceContainer();
 
-    require('./providers/domain')(serviceContainer);
-    require('./providers/controllers')(serviceContainer);
+    await require('./providers/domain')(serviceContainer);
+    await require('./providers/controllers')(serviceContainer);
     
     return serviceContainer;
 }
@@ -128,16 +128,21 @@ function doAskReplay(serviceContainer: ServiceContainer) {
 const app = express();
 app.use(bodyParser.json());
 
-const serviceContainer = createServiceContainer();
-createRoutes(app, serviceContainer);
-bindEventBusToMessagingSystem(serviceContainer);
-
 const port = process.env['PORT'] || 8000;
+
+createServiceContainer()
+    .then((serviceContainer) => {
+        createRoutes(app, serviceContainer);
+        bindEventBusToMessagingSystem(serviceContainer);
+
+        app.listen(
+            port,
+            () => {
+                console.log(`» Listening on port ${port}`);
+                doAskReplay(serviceContainer);
+            }
+        );        
+    });
+
+
     
-app.listen(
-    port,
-    () => {
-        console.log(`» Listening on port ${port}`);
-        doAskReplay(serviceContainer);
-    }
-);        

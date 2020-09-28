@@ -26,20 +26,20 @@ export class ServiceContainer {
         return this;
     }
 
-    get(serviceName: string): Promise<Service> {
+    async get(serviceName: string): Promise<Service> {
         let service: Service = this.singletons.get(serviceName);
 
         if (!service) {
             const provider = this.providers.get(serviceName);
 
-            if (provider !== undefined) {
-                service = provider(this);
-            } else {
-                return Promise.reject(new Error('Unknown service: ' + serviceName));
+            if (provider === undefined) {
+                throw new Error(`Unknown service: ${serviceName}`);
             }
+            
+            service = provider(this);
         }
 
-        return Promise.resolve(service);
+        return service;
     }
     
 }
