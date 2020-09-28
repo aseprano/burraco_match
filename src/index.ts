@@ -15,6 +15,8 @@ import { ProjectorLogger } from "./projectors/ProjectorLogger";
 import { QueuedProjector } from "./projectors/QueuedProjector";
 import { DB } from "./tech/db/DB";
 import { DBAbstractProjector } from "./projectors/DBAbstractProjector";
+import { FakeAuthenticationService } from "./tech/impl/FakeAuthenticationService";
+import { Authentication, AuthenticationService } from "./tech/AuthenticationService";
 
 async function createServiceContainer(): Promise<ServiceContainer> {
     const serviceContainer = new ServiceContainer();
@@ -112,6 +114,16 @@ async function bindEventBusToMessagingSystem(serviceContainer: ServiceContainer)
         });
 }
 
+async function createAuthenticationService(serviceContainer: ServiceContainer): Promise<AuthenticationService> {
+    return new FakeAuthenticationService({
+        'kdarkbyte': {username: 'darkbyte', role: 'user'},
+        'kjohn':     {username: 'john',     role: 'user'},
+        'kdaddy':    {username: 'daddy',    role: 'user'},
+        'kmummy':    {username: 'mummy',    role: 'user'},
+        'kmoo':      {username: 'moo',      role: 'user'},
+    });
+}
+
 function doAskReplay(serviceContainer: ServiceContainer) {
     setTimeout(() => {
         serviceContainer.get('Projectionist')
@@ -125,13 +137,49 @@ function doAskReplay(serviceContainer: ServiceContainer) {
     }, 5000);
 }
 
+declare global{
+    namespace Express {
+        interface Request {
+            currentUser: Authentication
+        }
+    }
+}
+
 const app = express();
 app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+    console.debug(`${req.method} ${req.path}`);
+    next();
+});
 
 const port = process.env['PORT'] || 8000;
 
 createServiceContainer()
-    .then((serviceContainer) => {
+    .then(async (serviceContainer) => {
+        const authenticationService = await createAuthenticationService(serviceContainer);
+
+        app.use(async (req, res, next) => {
+            const authorization = req.headers.authorization;
+            console.log(`Authorization: ${authorization}`);
+
+            if (typeof authorization !== 'string' || !authorization.startsWith('Bearer ')) {
+                res.sendStatus(401);
+                return;
+            }
+
+            const key = authorization.split(' ').slice(1).join(' ');
+            const user = await authenticationService.getUsername(key);
+
+            if (!user) {
+                res.sendStatus(401);
+            } else {
+                req.currentUser = user;
+                console.debug(`Going next`);
+                next();
+            }
+        });
+
         createRoutes(app, serviceContainer);
         bindEventBusToMessagingSystem(serviceContainer);
 
