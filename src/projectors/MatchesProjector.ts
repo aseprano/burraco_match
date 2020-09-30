@@ -9,6 +9,7 @@ import { CardSerializer } from "../domain/domain-services/CardSerializer";
 import { PlayerPickedUpDiscardPile } from "../domain/events/PlayerPickedUpDiscardPile";
 import { PlayerTookOneCardFromStock } from "../domain/events/PlayerTookOneCardFromStock";
 import { CardList } from "../domain/value_objects/CardList";
+import { PlayerThrewCardToDiscardPile } from "../domain/events/PlayerThrewCardToDiscardPile";
 
 export class MatchesProjector extends DBAbstractProjector {
 
@@ -59,6 +60,48 @@ export class MatchesProjector extends DBAbstractProjector {
         ).then(() => undefined);
     }
 
+    private async addCardsToPlayerHand(cards: CardList, playerId: string, matchId: number, connection: Queryable): Promise<void> {
+        const sqlTuples = this.dbCardSerializer.serializeCards(cards).map((card) => `'$', '${card}'`).join(',');
+
+        return connection.query(
+            `UPDATE matches_players SET \`hand\` = JSON_ARRAY_APPEND(\`hand\`, ${sqlTuples}) WHERE match_id = :matchId AND player_id = :playerId`,
+            {
+                matchId,
+                playerId,
+            }
+        ).then(() => undefined);
+    }
+
+    private async removeCardsFromPlayerHand(cards: CardList, playerId: string, matchId: number, connection: Queryable): Promise<void> {
+        connection.query(
+            'SELECT hand FROM matches_players WHERE match_id = :matchId AND player_id = :playerId',
+            {
+                matchId,
+                playerId
+            }
+        )
+        .then((res) => res.fields[0])
+        .then(async (row) => {
+            if (!row) {
+                console.log(`Hand not found in DB`);
+                return;
+            }
+
+            console.log(`Hand found in DB`);
+
+            const newHand = this.dbCardSerializer.unserializeCards(JSON.parse(row.hand)).remove(cards);
+
+            return connection.query(
+                'UPDATE matches_players SET hand = :newHand WHERE match_id = :matchId AND player_id = :playerId',
+                {
+                    newHand: JSON.stringify(this.dbCardSerializer.serializeCards(newHand)),
+                    matchId,
+                    playerId
+                }
+            )
+        });
+    }
+
     private async handleMatchStarted(event: IncomingEvent, connection: Queryable): Promise<void> {
         return this.addMatch(event, connection)
             .then(() => this.insertPlayers(event, connection));
@@ -70,18 +113,6 @@ export class MatchesProjector extends DBAbstractProjector {
             {
                 playerId: event.getPayload().player_id,
                 matchId: event.getPayload().match_id
-            }
-        ).then(() => undefined);
-    }
-
-    private async addCardsToPlayerHand(cards: CardList, playerId: string, matchId: number, connection: Queryable): Promise<void> {
-        const sqlTuples = this.dbCardSerializer.serializeCards(cards).map((card) => `'$', '${card}'`).join(',');
-
-        return connection.query(
-            `UPDATE matches_players SET \`hand\` = JSON_ARRAY_APPEND(\`hand\`, ${sqlTuples}) WHERE match_id = :matchId AND player_id = :playerId`,
-            {
-                matchId,
-                playerId,
             }
         ).then(() => undefined);
     }
@@ -98,6 +129,18 @@ export class MatchesProjector extends DBAbstractProjector {
         );
     }
 
+    private async handlePlayerThrewCardToDiscardPile(event: IncomingEvent, connection: Queryable): Promise<void> {
+        const eventPayload: {[key: string]: any} = event.getPayload(); 
+        const card = this.eventCardSerializer.unserializeCard(eventPayload.card);
+
+        this.removeCardsFromPlayerHand(
+            new CardList(card),
+            eventPayload.player_id,
+            eventPayload.match_id,
+            connection
+        );
+    }
+
     public getEventsOfInterest(): string[] {
         return [
             MatchStarted.EventName,
@@ -105,6 +148,7 @@ export class MatchesProjector extends DBAbstractProjector {
             CardsDealtToPlayer.EventName,
             PlayerPickedUpDiscardPile.EventName,
             PlayerTookOneCardFromStock.EventName,
+            PlayerThrewCardToDiscardPile.EventName,
         ];
     }
 
@@ -118,7 +162,11 @@ export class MatchesProjector extends DBAbstractProjector {
 
             case CardsDealtToPlayer.EventName:
             case PlayerPickedUpDiscardPile.EventName:
+            case PlayerTookOneCardFromStock.EventName:
                 return this.handleCardsDealtToPlayer(event, connection);
+
+            case PlayerThrewCardToDiscardPile.EventName:
+                return this.handlePlayerThrewCardToDiscardPile(event, connection);
         }
 
         return Promise.resolve();

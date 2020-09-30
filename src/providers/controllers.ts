@@ -1,5 +1,6 @@
 import { CreateMatchAction } from "../controllers/actions/CreateMatchAction";
 import { TakeCardAction } from "../controllers/actions/TakeCardAction";
+import { ThrowCardAction } from "../controllers/actions/ThrowCardAction";
 import { ServiceContainer } from "../tech/impl/ServiceContainer";
 
 module.exports = async (container: ServiceContainer) => {
@@ -8,21 +9,15 @@ module.exports = async (container: ServiceContainer) => {
 
     container.declare(
         'CreateMatchAction',
-        async (container: ServiceContainer) => {
-            return new CreateMatchAction(
-                matchService,
-                cardSerializer
-            );
-        }
+        async () => new CreateMatchAction(matchService, cardSerializer)
     )
     .declare(
         'TakeCardAction',
-        async (container: ServiceContainer) => {
-            return new TakeCardAction(
-                matchService,
-                cardSerializer
-            );
-        }
+        async () => new TakeCardAction(matchService, cardSerializer)
+    )
+    .declare(
+        'ThrowCardAction',
+        async () => new ThrowCardAction(matchService, cardSerializer)
     )
     // container.declare(
     //     'SomeController',

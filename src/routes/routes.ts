@@ -6,7 +6,11 @@ module.exports = (router: Router) => {
         'CreateMatchAction'
     )
     .post(
-        '/matches/:match_id/players/:player_id/hand',
+        '/matches/:match_id/hand',
         'TakeCardAction'
-    );
+    )
+    .post(
+        '/matches/:match_id/discard_pile',
+        'ThrowCardAction'
+    )
 }

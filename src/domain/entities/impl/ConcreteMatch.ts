@@ -31,6 +31,7 @@ import { ScoreCalculator } from "../../domain-services/ScoreCalculator";
 import { Function } from "../../../lib/Function";
 import { MatchEnded } from "../../events/MatchEnded";
 import { PlayerNotFoundException } from "../../exceptions/PlayerNotFoundException";
+import { NoRetryPolicy } from "../../../tech/impl/NoRetryPolicy";
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;
@@ -169,6 +170,14 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         this.potsTaken.push(teamId);
     }
 
+    private handlePlayerPickedUpDiscardPileEvent(event: Event) {
+        this.discardPile = [];
+    }
+
+    private handlePlayerThrewCardToDiscardPileEvent(event: Event) {
+        this.discardPile.push(this.cardSerializer.unserializeCard(event.getPayload().card));
+    }
+
     protected deal(targetPlayer: Player, numberOfCards = 1) {
         const cardsDealt = this.stock.take(numberOfCards);
         this.appendUncommittedEvent(new CardsDealtToPlayer(this.id, cardsDealt, targetPlayer.getId()));
@@ -263,6 +272,14 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
                 this.handleGameTurnToPlayerEvent(event);
                 break;
 
+            case PlayerPickedUpDiscardPile.EventName:
+                this.handlePlayerPickedUpDiscardPileEvent(event);
+                break;
+
+            case PlayerThrewCardToDiscardPile.EventName:
+                this.handlePlayerThrewCardToDiscardPileEvent(event);
+                break;
+
             case PlayerTookPot.EventName:
                 this.handlePlayerTookPotEvent(event);
                 break;
@@ -298,16 +315,16 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
 
     private checkIfPlayerEndedMatch(playerId: PlayerID) {
         if (!this.playerHandIsEmpty(playerId) || !this.potHasBeenTakenByPlayerTeam(playerId)) {
-            return;
+            this.turnToNextPlayer();
+        } else {
+            this.appendUncommittedEvent(
+                new MatchEnded(
+                    this.id,
+                    this.team1ScoreCalculator.getScore(),
+                    this.team2ScoreCalculator.getScore()
+                )
+            );
         }
-
-        this.appendUncommittedEvent(
-            new MatchEnded(
-                this.id,
-                this.team1ScoreCalculator.getScore(),
-                this.team2ScoreCalculator.getScore()
-            )
-        );
     }
 
     public getId() {

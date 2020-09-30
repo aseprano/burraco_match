@@ -80,6 +80,6 @@ export interface MatchService {
      * @throws RunNotFoundException
      * @throws RunException
      */
-    playerThrowsCardToDiscardPile(matchId: MatchID, player: PlayerID, card: Card): void;
+    playerThrowsCardToDiscardPile(matchId: MatchID, player: PlayerID, card: Card): Promise<void>;
 
 }
