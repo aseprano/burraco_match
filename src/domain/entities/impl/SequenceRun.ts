@@ -3,6 +3,7 @@ import { Card, Suit } from "../../value_objects/Card";
 import { CardList } from "../../value_objects/CardList";
 import { RunException } from "../../exceptions/RunException";
 import { WildcardException } from "../../exceptions/WildcardException";
+import { GameTurnToPlayer } from "../../events/GameTurnToPlayer";
 
 export class SequenceRun extends AbstractRun
 {
@@ -60,6 +61,11 @@ export class SequenceRun extends AbstractRun
         } else if (this.getBottomCard().isDeuce() && this.getWildcardPosition() <= 0 && (newCard.getValue() === this.getTopCard().getValue() + 2 || newCard.getValue() === 1 && topmostCard.getValue() === 12)) {
             const bottomDeuce = this.removeCardAtBottom();
             this.insertWildcardAtTop(bottomDeuce);
+            this.insertCardAtTop(newCard);
+            return true;
+        } else if (this.wildcardIsTheBottommostCard() && (newCard.getValue() === this.getTopCard().getValue() + 2 || newCard.getValue() === 1 && topmostCard.getValue() === 12)) {
+            const joker = this.removeCardAtBottom();
+            this.insertWildcardAtTop(joker);
             this.insertCardAtTop(newCard);
             return true;
         }

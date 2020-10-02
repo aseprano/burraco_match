@@ -475,6 +475,26 @@ describe('SequenceRun', () => {
         expect(run.getWildcardPosition()).toEqual(3);
     });
 
+    it('moves the joker up if it can be used to add a new card', () => {
+        const run = SequenceRun.restore(
+            [
+                Card.Joker(),
+                new Card(Suit.Clubs, 11),
+            ],
+            0
+        );
+
+        run.add(new Card(Suit.Clubs, 13));
+
+        expect(run.getCards().asArray()).toEqual([
+            new Card(Suit.Clubs, 11),
+            Card.Joker(),
+            new Card(Suit.Clubs, 13),
+        ]);
+
+        expect(run.getWildcardPosition()).toEqual(1);
+    });
+
     it('can be set cards and wildcard position', () => {
         const threeOfClubs = getCard(3);
         const fourOfClubs = getCard(4);

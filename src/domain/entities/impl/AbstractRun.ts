@@ -12,6 +12,7 @@ import { InvalidCardListException } from "../../exceptions/InvalidCardListExcept
 export abstract class AbstractRun extends AbstractEntity implements Run
 {
     private id: RunID = new RunID(0);
+    private logsEnabled = false;
 
     protected constructor(
         private cards: CardList,
@@ -21,6 +22,12 @@ export abstract class AbstractRun extends AbstractEntity implements Run
 
         if (wildcardPosition !== -1 && wildcardPosition >= cards.length) {
             throw new RunException('Wildcard out of boundary');
+        }
+    }
+
+    protected log(msg: () => string) {
+        if (this.logsEnabled) {
+            console.debug(msg());
         }
     }
 
@@ -90,6 +97,13 @@ export abstract class AbstractRun extends AbstractEntity implements Run
         const newCards = [...this.cards.asArray()];
         const cardRemoved = newCards.splice(0, 1)[0];
         this.cards = new CardList(newCards);
+
+        if (this.wildcardPosition === index) {
+            this.wildcardPosition = -1;
+        } else if (this.wildcardPosition > index) {
+            this.wildcardPosition--;
+        }
+
         return cardRemoved;
     }
 
@@ -215,7 +229,11 @@ export abstract class AbstractRun extends AbstractEntity implements Run
     protected abstract addJoker(joker: Card): boolean;
 
     protected abstract addCard(card: Card): boolean;
-
+    
     public abstract isSequence(): boolean;
+
+    public enableLogs() {
+        this.logsEnabled = true;
+    }
     
 }
