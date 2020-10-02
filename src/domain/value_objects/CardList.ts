@@ -12,7 +12,7 @@ export class CardList {
         if (cards instanceof Card) {
             this.cards = [cards];
         } else {
-            this.cards = cards;
+            this.cards = [...cards];
         }
 
         this.length = this.cards.length;
