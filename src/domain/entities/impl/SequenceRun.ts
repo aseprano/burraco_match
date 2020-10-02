@@ -34,7 +34,7 @@ export class SequenceRun extends AbstractRun
         this.suit = cards.at(wildcardPosition === 0 ? 1 : 0).getSuit();
     }
 
-    private getWildcardValue(): number {
+    public getWildcardValue(): number {
         if (this.wildcardIsTheBottommostCard()) {
             return this.getCardAt(1).getValue() - 1;
         } else if (this.wildcardIsTheTopmostCard()) {
@@ -83,7 +83,7 @@ export class SequenceRun extends AbstractRun
         return false;
     }
 
-    private tryReplaceWildcard(newCard: Card): boolean {
+    public tryReplaceWildcard(newCard: Card): boolean {
         if (newCard.getValue() === this.getWildcardValue()) {
             const wildcard = this.replaceWildcard(newCard);
 
@@ -111,16 +111,19 @@ export class SequenceRun extends AbstractRun
             )
          ) {
             this.insertCardAtBottom(deuce);
-            return true;
         } else if (
             (deuce.getSuit() === this.suit)
             &&
             (this.size() === 1 && this.getBottomCard().getValue() === 1) // the only card in the sequence is an ace
         ) {
             this.insertCardAtTop(deuce);
-            return true;
-        } else { // no, it is a wildcard
-            if (this.hasWildcard()) { //
+        } else {
+            // no, it is a wildcard
+            if (this.hasWildcard()) {
+                if (deuce.getSuit() === this.suit && this.tryReplaceWildcard(deuce)) {
+                    return true;
+                }
+
                 throw new WildcardException('Game already contains a wildcard');
             }
 

@@ -211,7 +211,7 @@ export abstract class AbstractRun extends AbstractEntity implements Run
 
     protected doApplyEvent(event: Event) {
     }
-
+    
     protected abstract addJoker(joker: Card): boolean;
 
     protected abstract addCard(card: Card): boolean;

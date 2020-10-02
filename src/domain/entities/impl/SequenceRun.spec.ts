@@ -3,6 +3,7 @@ import { Suit, Card } from "../../value_objects/Card";
 import { RunID } from "../../value_objects/RunID";
 import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
 import { CardList } from "../../value_objects/CardList";
+import { isRegExp } from "util";
 
 describe('SequenceRun', () => {
     const joker = Card.Joker();
@@ -488,6 +489,26 @@ describe('SequenceRun', () => {
         const run = SequenceRun.restore([new Card(Suit.Clubs, 7)], -1);
 
         expect(() => run.add(CardList.empty())).toThrow(new InvalidCardListException());
+    });
+
+    it('can add a deuce to a 1C,JOKER sequence', () => {
+        const run = SequenceRun.restore(
+            [
+                new Card(Suit.Clubs, 1),
+                Card.Joker()
+            ],
+            1
+        );
+
+        run.add(new Card(Suit.Clubs, 2));
+        
+        expect(run.asArray()).toEqual([
+            new Card(Suit.Clubs, 1),
+            new Card(Suit.Clubs, 2),
+            Card.Joker(),
+        ]);
+        
+        expect(run.getWildcardPosition()).toBe(2);
     });
 
 });
