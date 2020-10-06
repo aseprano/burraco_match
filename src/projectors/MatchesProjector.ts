@@ -87,8 +87,6 @@ export class MatchesProjector extends DBAbstractProjector {
                 return;
             }
 
-            console.log(`Hand found in DB`);
-
             const newHand = this.dbCardSerializer.unserializeCards(JSON.parse(row.hand)).remove(cards);
 
             return connection.query(
