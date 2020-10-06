@@ -171,7 +171,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
     }
 
     private handlePlayerPickedUpDiscardPileEvent(event: Event) {
-        this.discardPile = [];
+        this.discardPile.splice(0);
     }
 
     private handlePlayerThrewCardToDiscardPileEvent(event: Event) {

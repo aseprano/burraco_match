@@ -1,20 +1,23 @@
 import { Request, response } from "express";
 import { MatchService } from "../../domain/app-services/MatchService";
 import { CardSerializer } from "../../domain/domain-services/CardSerializer";
+import { ActionNotAllowedException } from "../../domain/exceptions/ActionNotAllowedException";
+import { BadPlayerTurnException } from "../../domain/exceptions/BadPlayerTurnException";
+import { MatchNotFoundException } from "../../domain/exceptions/MatchNotFoundException";
 import { PlayerNotFoundException } from "../../domain/exceptions/PlayerNotFoundException";
 import { Card } from "../../domain/value_objects/Card";
 import { CardList } from "../../domain/value_objects/CardList";
 import { MatchID } from "../../domain/value_objects/MatchID";
 import { PlayerID } from "../../domain/value_objects/PlayerID";
 import { ApiResponse } from "../../tech/api/ApiResponse";
-import { ForbiddenApiResponse } from "../../tech/api/ForbiddenApiResponse";
 import { BaseController } from "../BaseController";
 import { MicroserviceApiError } from "../MicroserviceApiError";
 
-const E_BAD_PLAYER_ID    = 1002;
-const E_BAD_MATCH_ID     = 1003;
-const E_MATCH_NOT_FOUND  = 1004;
-const E_PLAYER_NOT_FOUND = 1005;
+const E_BAD_MATCH_ID       = 1001;
+const E_MATCH_NOT_FOUND    = 1002;
+const E_PLAYER_NOT_FOUND   = 1003;
+const E_BAD_TURN           = 1004;
+const E_ACTION_NOT_ALLOWED = 1005;
 
 export abstract class AbstractAction extends BaseController {
 
@@ -64,15 +67,17 @@ export abstract class AbstractAction extends BaseController {
         return [];
     }
 
-    protected matchNotFoundError(): MicroserviceApiError {
-        return new MicroserviceApiError(404, E_MATCH_NOT_FOUND, 'Match not found');
-    }
-
     public async run(req: Request): Promise<ApiResponse> {
         return super.run(req)
             .catch((error) => {
-                if (error instanceof PlayerNotFoundException) {
-                    return new ForbiddenApiResponse();
+                if (error instanceof MatchNotFoundException) {
+                    throw new MicroserviceApiError(404, E_MATCH_NOT_FOUND, 'Match not found');
+                } else if (error instanceof PlayerNotFoundException) {
+                    throw new MicroserviceApiError(403, E_PLAYER_NOT_FOUND, 'Player not found in the match');
+                } else if (error instanceof BadPlayerTurnException) {
+                    throw new MicroserviceApiError(403, E_BAD_TURN, 'Not your turn to play');
+                } else if (error instanceof ActionNotAllowedException) {
+                    throw new MicroserviceApiError(403, E_ACTION_NOT_ALLOWED, 'Action not allowed in the current state');
                 } else {
                     throw error;
                 }

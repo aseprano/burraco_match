@@ -1,4 +1,3 @@
-import e from "express";
 import { MatchService } from "../../domain/app-services/MatchService";
 import { CardSerializer } from "../../domain/domain-services/CardSerializer";
 import { CannotThrowCardException } from "../../domain/exceptions/CannotThrowCardException";
@@ -42,8 +41,6 @@ export class ThrowCardAction extends AbstractAction {
             ).then(() => {
                 return new MicroserviceApiResponse();
             }).catch((error) => {
-                console.debug(`Found error: ${error.constructor.name}`);
-
                 if (error instanceof CardNotOwnedException) {
                     throw new MicroserviceApiError(2002, 409, 'Card not owned');
                 } else if (error instanceof CannotThrowCardException) {

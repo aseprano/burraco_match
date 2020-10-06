@@ -1,4 +1,6 @@
+import { AddCardsToRunAction } from "../controllers/actions/AddCardsToRunAction";
 import { CreateMatchAction } from "../controllers/actions/CreateMatchAction";
+import { CreateRunAction } from "../controllers/actions/CreateRunAction";
 import { TakeCardAction } from "../controllers/actions/TakeCardAction";
 import { ThrowCardAction } from "../controllers/actions/ThrowCardAction";
 import { ServiceContainer } from "../tech/impl/ServiceContainer";
@@ -18,6 +20,14 @@ module.exports = async (container: ServiceContainer) => {
     .declare(
         'ThrowCardAction',
         async () => new ThrowCardAction(matchService, cardSerializer)
+    )
+    .declare(
+        'CreateRunAction',
+        async () => new CreateRunAction(matchService, cardSerializer)
+    )
+    .declare(
+        'AddCardsToRunAction',
+        async () => new AddCardsToRunAction(matchService, cardSerializer)
     )
     // container.declare(
     //     'SomeController',

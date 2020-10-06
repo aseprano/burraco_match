@@ -201,6 +201,7 @@ export class ConcretePlayer extends AbstractEntity implements Player {
     }
 
     public setState(newState: PlayerState) {
+        //console.debug(`Switching to ${newState.constructor.name} for ${this.playerId}`);
         this.state = newState;
     }
 

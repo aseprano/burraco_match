@@ -54,25 +54,13 @@ export class TakeCardAction extends AbstractAction {
         const playerId = this.getPlayerID();
         const matchId = this.parseMatchId();
         
-        try {
-            if (this.wantsToTakeFromStock()) {
-                const card = await this.matchService.playerTakesFromStock(matchId, playerId);
-                return new MicroserviceApiResponse({card: this.serializeCard(card)});
-            } else {
-                const cards = await this.matchService.playerPicksUpDiscardPile(matchId, playerId);
-                return new MicroserviceApiResponse({cards: this.serializeCards(cards)});
-            }
-        } catch (error) {
-            if (error instanceof MatchNotFoundException) {
-                throw this.matchNotFoundError();
-            } else if (error instanceof BadPlayerTurnException) {
-                throw new ForbiddenApiResponse({'error': 'Not the player turn to play'});
-            } else if (error instanceof ActionNotAllowedException) {
-                throw new MicroserviceApiError(400, 2003, 'Action not allowed in the current state');
-            } else {
-                throw error;
-            }
+        if (this.wantsToTakeFromStock()) {
+            const card = await this.matchService.playerTakesFromStock(matchId, playerId);
+            return new MicroserviceApiResponse({card: this.serializeCard(card)});
+        } else {
+            const cards = await this.matchService.playerPicksUpDiscardPile(matchId, playerId);
+            return new MicroserviceApiResponse({cards: this.serializeCards(cards)});
         }
-    }
+}
 
 }
