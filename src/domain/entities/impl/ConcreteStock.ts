@@ -12,6 +12,7 @@ import { PotCreated } from "../../events/PotCreated";
 import { FirstCardThrown } from "../../events/FirstCardThrown";
 import { AbstractEntity } from "./AbstractEntity";
 import { Function } from "../../../lib/Function";
+import { PlayerTookOneCardFromStock } from "../../events/PlayerTookOneCardFromStock";
 
 export class ConcreteStock extends AbstractEntity implements Stock {
     private cards = new CardList();
@@ -82,6 +83,10 @@ export class ConcreteStock extends AbstractEntity implements Stock {
         this.removeCardsFromEvent([event.getPayload().card]);
     }
 
+    private handlePlayerTookCardFromStockEvent(event: Event) {
+        this.removeCardsFromEvent([event.getPayload().card]);
+    }
+
     public getId(): number {
         return 1;
     }
@@ -102,6 +107,10 @@ export class ConcreteStock extends AbstractEntity implements Stock {
 
             case FirstCardThrown.EventName:
                 this.handleFirstCardThrownEvent(event);
+                break;
+
+            case PlayerTookOneCardFromStock.EventName:
+                this.handlePlayerTookCardFromStockEvent(event);
                 break;
         }
     }
