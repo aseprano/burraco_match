@@ -52,7 +52,7 @@ export class ConcreteMatch extends AbstractRootEntity implements Match {
         private discardPile: Card[],
         private cardSerializer: CardSerializer,
         private gamingAreaFactory: GamingAreaFactory,
-        private scoreCalculatorProvider: Function<number, ScoreCalculator>
+        scoreCalculatorProvider: Function<number, ScoreCalculator>
     ) {
         super();
 
