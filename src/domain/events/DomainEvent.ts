@@ -1,9 +1,9 @@
-import { Event, EventPayload } from "../../tech/events/Event";
 import { Card } from "../value_objects/Card";
 import { CardList } from "../value_objects/CardList";
 import { Run } from "../entities/Run";
 import { CardSerializer } from "../domain-services/CardSerializer";
 import { BasicCardSerializer } from "../domain-services/impl/BasicCardSerializer";
+import { Event, EventPayload } from '@darkbyte/herr';
 
 export abstract class DomainEvent implements Event {
     public static cardSerializer: CardSerializer = new BasicCardSerializer();

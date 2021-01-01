@@ -1,16 +1,19 @@
+import { Connection } from '@darkbyte/herr';
 import { IDGenerator } from "../IDGenerator";
-import { DB } from "../../../tech/db/DB";
 
 export class MySQLIDGenerator implements IDGenerator {
 
-    constructor(private db: DB, private tableName: string, private columnName = 'id') {}
+    public constructor(
+        private readonly connection: Connection,
+        private readonly tableName: string,
+        private readonly columnName = 'id'
+    ) {}
 
-    generate(): Promise<number> {
-        return this.db.query(`INSERT INTO ${this.tableName} (${this.columnName}) VALUES (NULL)`)
-            .then(() => {
-                return this.db.query('SELECT last_insert_id() AS id')
-                    .then((res) => res.fields[0].id);
-            });
+    public async generate(): Promise<number> {
+        return this.connection
+            .query(`INSERT INTO ${this.tableName} (${this.columnName}) VALUES (NULL)`)
+            .then(() => this.connection.query('SELECT last_insert_id() AS id'))
+            .then((resultset) => resultset.fields[0].id);
     }
     
 }

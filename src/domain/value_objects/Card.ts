@@ -23,23 +23,23 @@ export class Card {
         }
     }
 
-    getSuit(): Suit {
+    public getSuit(): Suit {
         return this.suit;
     }
 
-    getValue(): number {
+    public getValue(): number {
         return this.value;
     }
 
-    isJoker(): boolean {
+    public isJoker(): boolean {
         return this.suit === Suit.Joker;
     }
 
-    isDeuce(): boolean {
+    public isDeuce(): boolean {
         return this.getValue() === 2;
     }
 
-    isEqual(otherCard: Card): boolean {
+    public isEqual(otherCard: Card): boolean {
         return this === otherCard || (this.suit === otherCard.suit && this.value === otherCard.value);
     }
     

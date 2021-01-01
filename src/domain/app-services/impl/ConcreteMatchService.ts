@@ -10,12 +10,14 @@ import { MatchesRepository } from "../../repositories/MatchesRepository";
 import { Match } from "../../entities/Match";
 import { Run } from "../../entities/Run";
 
-export class ConcreteMatchService implements MatchService {
+export class ConcreteMatchService extends MatchService {
 
     constructor(
-        private factory: MatchFactory,
-        private repository: MatchesRepository
-    ) {}
+        private readonly factory: MatchFactory,
+        private readonly repository: MatchesRepository
+    ) {
+        super();
+    }
 
     private async runInMatch(matchId: MatchID, callback: (match: Match) => any): Promise<any> {
         return this.repository

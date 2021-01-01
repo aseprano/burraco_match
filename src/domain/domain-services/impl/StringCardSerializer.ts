@@ -1,6 +1,3 @@
-import { time } from "console";
-import e from "express";
-import { stringify } from "querystring";
 import { BadCardFormatException } from "../../exceptions/BadCardFormatException";
 import { Card, Suit } from "../../value_objects/Card";
 import { CardList } from "../../value_objects/CardList";

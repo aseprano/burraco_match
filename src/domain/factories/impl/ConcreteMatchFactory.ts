@@ -5,9 +5,8 @@ import { ConcreteMatch } from "../../entities/impl/ConcreteMatch";
 import { ConcreteStock } from "../../entities/impl/ConcreteStock";
 import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer";
 import { GamingAreaFactory } from "../GamingAreaFactory";
-import { CardList } from "../../value_objects/CardList";
 import { ScoreCalculator } from "../../domain-services/ScoreCalculator";
-import { Function } from "../../../lib/Function";
+import { Function } from '@darkbyte/herr/lib/types';
 
 export class ConcreteMatchFactory implements MatchFactory {
 
