@@ -1,4 +1,3 @@
-import { Event } from "../../../tech/events/Event";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 import { MatchStarted } from "../../events/MatchStarted";
 import { Card } from "../../value_objects/Card";
@@ -14,6 +13,7 @@ import { RunCreated } from "../../events/RunCreated";
 import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 import { PlayerTookPot } from "../../events/PlayerTookPot";
 import { RunScoringPolicy } from "../RunScoringPolicy";
+import { Event } from '@darkbyte/herr';
 
 export class EventScoreCalculator implements ScoreCalculator {
     private events: Array<Event> = [];

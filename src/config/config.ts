@@ -26,6 +26,10 @@ export default {
         pool: {
             min: process.env.DB_POOL_MIN || 0,
             max: process.env.DB_POOL_MAX || 10,
+        },
+        idGenerator: {
+            tableName: 'ids',
+            columnName: 'id'
         }
     },
     eventStore: {

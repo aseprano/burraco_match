@@ -1,12 +1,11 @@
+import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse, NotFoundHTTPError } from '@darkbyte/herr';
+import { Request } from 'express';
+import { MatchService } from '../domain/app-services/MatchService';
 import { CardNotOwnedException } from "../domain/exceptions/CardNotOwnedException";
 import { RunException } from "../domain/exceptions/RunException";
 import { RunNotFoundException } from "../domain/exceptions/RunNotFoundException";
 import { RunID } from "../domain/value_objects/RunID";
-import { ApiResponse } from "../../tech/api/ApiResponse";
-import { NotFoundApiResponse } from "../../tech/api/NotFoundApiResponse";
-import { MicroserviceApiError } from "../MicroserviceApiError";
-import { MicroserviceApiResponse } from "../MicroserviceApiResponse";
-import { AbstractAction } from "./MicroserviceAction";
+import { BaseAction } from './BaseAction';
 
 /**
  * @summary Creates a new match
@@ -21,10 +20,16 @@ import { AbstractAction } from "./MicroserviceAction";
  * @status 2003 Invalid number of players
  * @status 2004 Duplicated players
  */
-export class AddCardsToRunAction extends AbstractAction {
+export class AddCardsToRunAction extends BaseAction {
 
-    private getRunId(): RunID {
-        return new RunID(parseInt(this.request.params['run_id'], 10));
+    constructor(
+        private readonly matchService: MatchService
+    ) {
+        super();
+    }
+
+    private getRunIdFromRequest(request: Request): RunID {
+        return new RunID(parseInt(request.params.run_id, 10));
     }
 
     public requiredParameters(): Array<string> {
@@ -33,19 +38,19 @@ export class AddCardsToRunAction extends AbstractAction {
         ];
     }
 
-    public serveRequest(): Promise<ApiResponse> {
+    public serveRequest(request: Request): Promise<ApiResponse> {
         return this.matchService
             .playerMeldsCardsToExistingRun(
                 this.parseMatchId(),
                 this.getPlayerID(),
-                this.parseCards(this.request.body.cards),
+                this.parseCards(request.body.cards),
                 this.getRunId()
             ).then((newRun) => new MicroserviceApiResponse({
                 id: newRun.getId(),
                 cards: this.serializeCards(newRun.getCards())
             })).catch((error) => {
                 if (error instanceof RunNotFoundException) {
-                    throw new NotFoundApiResponse('Run not found');
+                    throw new NotFoundHTTPError('Run not found');
                 } else if (error instanceof CardNotOwnedException) {
                     throw new MicroserviceApiError(400, 2002, 'Card not owned');
                 } else if (error instanceof RunException) {

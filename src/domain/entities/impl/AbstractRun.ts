@@ -4,10 +4,9 @@ import { Card } from "../../value_objects/Card";
 import { CardList } from "../../value_objects/CardList";
 import { RunException } from "../../exceptions/RunException";
 import { WildcardException } from "../../exceptions/WildcardException";
-import { SnapshotState } from "../../../tech/Snapshot";
 import { AbstractEntity } from "./AbstractEntity";
-import { Event } from "../../../tech/events/Event";
 import { InvalidCardListException } from "../../exceptions/InvalidCardListException";
+import { Event, SnapshotState } from '@darkbyte/herr';
 
 export abstract class AbstractRun extends AbstractEntity implements Run
 {

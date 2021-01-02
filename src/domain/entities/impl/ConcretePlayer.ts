@@ -1,5 +1,4 @@
 import { Player } from "../Player";
-import { Event } from "../../../tech/events/Event";
 import { Card } from "../../value_objects/Card";
 import { CardList } from "../../value_objects/CardList";
 import { Run } from "../Run";
@@ -20,6 +19,7 @@ import { RunCreated } from "../../events/RunCreated";
 import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
 import { PlayerTookPot } from "../../events/PlayerTookPot";
+import { Event } from '@darkbyte/herr';
 
 export class ConcretePlayer extends AbstractEntity implements Player {
     private hand = new CardList();

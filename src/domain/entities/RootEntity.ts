@@ -1,7 +1,6 @@
 import { Entity } from "./Entity";
-import { EventStream } from "../../tech/events/EventStream";
-import { Snapshot } from "../../tech/Snapshot";
 import { DomainEvent } from "../events/DomainEvent";
+import { EventStream, Snapshot } from '@darkbyte/herr';
 
 export interface RootEntity extends Entity {
     

@@ -1,9 +1,10 @@
-import { Projector } from "../tech/projections/Projector";
-import { IncomingEvent } from "../tech/impl/events/IncomingEvent";
+import { IncomingEvent, Projector } from '@darkbyte/herr';
 
 export class ProjectorLogger implements Projector {
 
-    constructor(private innerProjector: Projector) {}
+    constructor(
+        private readonly innerProjector: Projector
+    ) {}
 
     getId(): string {
         return this.innerProjector.getId();
@@ -17,11 +18,11 @@ export class ProjectorLogger implements Projector {
         //console.debug(`[${this.getId()}] ${message}`);
     }
 
-    async project(event: IncomingEvent): Promise<void> {
+    async projectEvent(event: IncomingEvent): Promise<void> {
         this.doLog(`Projecting event ${event.getName()}`);
 
         return this.innerProjector
-            .project(event)
+            .projectEvent(event)
             .then(() => {
                 this.doLog(`Event ${event.getName()} projected`);
             }).catch((error) => {

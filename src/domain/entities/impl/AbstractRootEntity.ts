@@ -1,9 +1,7 @@
-import { EventStream } from "../../../tech/events/EventStream";
 import { DomainEvent } from "../../events/DomainEvent";
-import { Snapshot, SnapshotState } from "../../../tech/Snapshot";
 import { AbstractEntity } from "./AbstractEntity";
 import { RootEntity } from "../RootEntity";
-import { Event } from "../../../tech/events/Event";
+import { Event, EventStream, Snapshot, SnapshotState } from '@darkbyte/herr';
 
 export abstract class AbstractRootEntity extends AbstractEntity implements RootEntity {
     private currentStreamVersion: number = -1;

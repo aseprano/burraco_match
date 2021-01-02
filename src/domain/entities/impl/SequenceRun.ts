@@ -3,7 +3,6 @@ import { Card, Suit } from "../../value_objects/Card";
 import { CardList } from "../../value_objects/CardList";
 import { RunException } from "../../exceptions/RunException";
 import { WildcardException } from "../../exceptions/WildcardException";
-import { GameTurnToPlayer } from "../../events/GameTurnToPlayer";
 
 export class SequenceRun extends AbstractRun
 {

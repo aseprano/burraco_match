@@ -1,5 +1,5 @@
+import { Event } from '@darkbyte/herr';
 import { Entity } from "../Entity";
-import { Event } from "../../../tech/events/Event";
 
 export abstract class AbstractEntity implements Entity {
     
