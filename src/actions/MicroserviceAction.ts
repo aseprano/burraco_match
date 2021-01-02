@@ -1,22 +1,18 @@
-import { ApiResponse, MicroserviceApiError } from '@darkbyte/herr';
+import { ApiResponse, BadRequestHTTPError, ForbiddenHTTPError, MicroserviceApiError, NotFoundHTTPError, UnauthorizedHTTPError } from '@darkbyte/herr';
 import { Request } from "express";
 import { MatchService } from "../domain/app-services/MatchService";
 import { CardSerializer } from "../domain/domain-services/CardSerializer";
 import { ActionNotAllowedException } from "../domain/exceptions/ActionNotAllowedException";
 import { BadPlayerTurnException } from "../domain/exceptions/BadPlayerTurnException";
+import { BadRunIdException } from '../domain/exceptions/BadRunIdException';
 import { MatchNotFoundException } from "../domain/exceptions/MatchNotFoundException";
 import { PlayerNotFoundException } from "../domain/exceptions/PlayerNotFoundException";
 import { Card } from "../domain/value_objects/Card";
 import { CardList } from "../domain/value_objects/CardList";
 import { MatchID } from "../domain/value_objects/MatchID";
 import { PlayerID } from "../domain/value_objects/PlayerID";
+import { RunID } from '../domain/value_objects/RunID';
 import { BaseAction } from "./BaseAction";
-
-const E_BAD_MATCH_ID       = 1001;
-const E_MATCH_NOT_FOUND    = 1002;
-const E_PLAYER_NOT_FOUND   = 1003;
-const E_BAD_TURN           = 1004;
-const E_ACTION_NOT_ALLOWED = 1005;
 
 export abstract class MicroserviceAction extends BaseAction {
 
@@ -25,6 +21,18 @@ export abstract class MicroserviceAction extends BaseAction {
         private cardSerializer: CardSerializer
     ) {
         super();
+    }
+
+    protected parseRunID(request: Request): RunID {
+        try {
+            return new RunID(parseInt(request.params.run_id, 10));
+        } catch (error) {
+            if (error instanceof BadRunIdException) {
+                throw new NotFoundHTTPError('Run not found');
+            } else {
+                throw error;
+            }
+        }
     }
 
     protected parseCard(card: any): Card {
@@ -43,8 +51,8 @@ export abstract class MicroserviceAction extends BaseAction {
         return this.cardSerializer.serializeCards(cards);
     }
 
-    protected getPlayerID(request: Request): PlayerID {
-        const userId = request['currentUser'].username;
+    protected getPlayerId(request: Request): PlayerID {
+        const userId = request['currentUser'].username as string;
 
         console.debug(`Found user id: ${userId}`);
 
@@ -53,12 +61,35 @@ export abstract class MicroserviceAction extends BaseAction {
 
     protected parseMatchId(request: Request): MatchID {
         const matchId = request.params.match_id;
-        console.debug(`Found match_id in request params: ${matchId}`);
 
         try {
             return new MatchID(parseInt(matchId, 10));
         } catch (e) {
-            throw new MicroserviceApiError(404, E_BAD_MATCH_ID, 'Match not found')
+            throw new NotFoundHTTPError('Match not found')
+        }
+    }
+
+    protected parseGameId(request: Request): number {
+        const gameId = request.body.game_id;
+
+        if (typeof gameId !== 'number') {
+            throw new BadRequestHTTPError('Invalid game id');
+        }
+
+        return gameId;
+    }
+
+    protected parsePlayers(request: Request): Array<PlayerID> {
+        const players = request.body.players;
+
+        if (!Array.isArray(players)) {
+            throw new BadRequestHTTPError('Invalid players list');
+        }
+
+        try {
+            return players.map((playerId) => new PlayerID(playerId));
+        } catch (error) {
+            throw new BadRequestHTTPError('Invalid players list');
         }
     }
 
@@ -72,13 +103,13 @@ export abstract class MicroserviceAction extends BaseAction {
                 console.warn(`Error caught: ${error}`);
 
                 if (error instanceof MatchNotFoundException) {
-                    throw new MicroserviceApiError(404, E_MATCH_NOT_FOUND, 'Match not found');
+                    throw new NotFoundHTTPError('Match not found');
                 } else if (error instanceof PlayerNotFoundException) {
-                    throw new MicroserviceApiError(403, E_PLAYER_NOT_FOUND, 'Player not found in the match');
+                    throw new UnauthorizedHTTPError('Player not found in the match');
                 } else if (error instanceof BadPlayerTurnException) {
-                    throw new MicroserviceApiError(403, E_BAD_TURN, 'Not your turn to play');
+                    throw new ForbiddenHTTPError('Not your turn to play');
                 } else if (error instanceof ActionNotAllowedException) {
-                    throw new MicroserviceApiError(403, E_ACTION_NOT_ALLOWED, 'Action not allowed in the current state');
+                    throw new ForbiddenHTTPError('Action not allowed in the current state');
                 } else {
                     throw error;
                 }

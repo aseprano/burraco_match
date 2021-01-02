@@ -35,7 +35,7 @@ export class ThrowCardAction extends MicroserviceAction {
         return this.matchService
             .playerThrowsCardToDiscardPile(
                 matchId,
-                this.getPlayerID(request),
+                this.getPlayerId(request),
                 card
             ).then(() => {
                 return new MicroserviceApiResponse({

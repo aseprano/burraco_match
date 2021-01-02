@@ -1,6 +1,7 @@
 import { MicroserviceAction } from './MicroserviceAction';
 import { Request } from 'express';
-import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
+import { ApiResponse, BadRequestHTTPError, MicroserviceApiResponse } from '@darkbyte/herr';
+import { CardList } from '../domain/value_objects/CardList';
 
 /**
  * @summary Makes one player take one card from the stock or the full discard pile
@@ -9,11 +10,9 @@ import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse } from '@dar
  * 
  * @get id [integer, required] The id of the match
  * 
- * @parameter from [enum(stock,discard_pile)] Where the player wants to take the card(s) from
+ * @parameter from [enum(stock,discard_pile), required] Where the player wants to take the card(s) from
  * 
- * @status 2001 Invalid source
- * @status 2002 Invalid player turn
- * @status 2003 Action not allowed in the current state
+ * @response cards [array, required] The list of cards taken from the player
  */
 export class TakeCardAction extends MicroserviceAction {
     private readonly STOCK = 'stock';
@@ -35,7 +34,7 @@ export class TakeCardAction extends MicroserviceAction {
         const from: any = request.body.from;
 
         if (typeof from !== 'string' || !this.isValidSource(from)) {
-            throw new MicroserviceApiError(400, 2001, 'Invalid source');
+            throw new BadRequestHTTPError('Invalid source');
         }
 
         return from;
@@ -45,17 +44,25 @@ export class TakeCardAction extends MicroserviceAction {
         return this.parseFrom(request) === this.STOCK;
     }
 
-    public async serveRequest(request: Request): Promise<ApiResponse> {
-        const playerId = this.getPlayerID(request);
+    private async doTake(request: Request): Promise<CardList> {
+        const playerId = this.getPlayerId(request);
         const matchId = this.parseMatchId(request);
-        
+
         if (this.wantsToTakeFromStock(request)) {
-            const card = await this.matchService.playerTakesFromStock(matchId, playerId);
-            return new MicroserviceApiResponse({card: this.serializeCard(card)});
+            return this.matchService
+                .playerTakesFromStock(matchId, playerId)
+                .then((card) => new CardList(card));
         } else {
-            const cards = await this.matchService.playerPicksUpDiscardPile(matchId, playerId);
-            return new MicroserviceApiResponse({cards: this.serializeCards(cards)});
+            return this.matchService
+                .playerPicksUpDiscardPile(matchId, playerId);
         }
+    }
+
+    public async serveRequest(request: Request): Promise<ApiResponse> {
+        return this.doTake(request)
+            .then((cards) => new MicroserviceApiResponse({
+                cards
+            }));
     }
 
 }

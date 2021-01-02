@@ -1,11 +1,10 @@
-import { MicroserviceAction } from "./MicroserviceAction";
+import { MicroserviceAction } from './MicroserviceAction';
 import { Request } from 'express';
-
-import { BadPlayerIDException } from "../domain/exceptions/BadPlayerIDException";
-import { MatchPlayersException } from "../domain/exceptions/MatchPlayersException";
-import { PlayerID } from "../domain/value_objects/PlayerID";
-import { Team } from "../domain/value_objects/Team";
 import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
+
+import { Team } from '../domain/value_objects/Team';
+import { MatchPlayersException } from '../domain/exceptions/MatchPlayersException';
+import { BadTeamException } from '../domain/exceptions/BadTeamException';
 
 /**
  * @summary Creates a new match
@@ -15,32 +14,10 @@ import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse } from '@dar
  * @parameter players [array[PlayerID], required] The list of player, starting from NORTH, clockwise
  * @parameter game_id [number, required] The id of the game that the match belongs to
  * 
- * @status 2001 Invalid game id
- * @status 2002 Bad players format
- * @status 2003 Invalid number of players
- * @status 2004 Duplicated players
+ * @status 2001 Invalid number of players
+ * @status 2002 Bad players list
  */
 export class CreateMatchAction extends MicroserviceAction {
-
-    private parseGameId(request: Request): number {
-        const gameId = request.body.game_id;
-
-        if (typeof gameId !== 'number') {
-            throw new MicroserviceApiError(400, 2001, 'Invalid game id');
-        }
-
-        return gameId;
-    }
-
-    private parsePlayers(request: Request): Array<PlayerID> {
-        const players = request.body.players;
-
-        if (!Array.isArray(players)) {
-            throw new MicroserviceApiError(400, 2002, 'Bad players format');
-        }
-
-        return players.map((playerId) => new PlayerID(playerId));
-    }
     
     public requiredParameters(): string[] {
         return [
@@ -54,7 +31,7 @@ export class CreateMatchAction extends MicroserviceAction {
         const players = this.parsePlayers(request);
 
         if (players.length !== 2 && players.length !== 4) {
-            return new MicroserviceApiError(400, 2003, 'Invalid number of players');
+            return new MicroserviceApiError(400, 2001, 'Invalid number of players');
         }
 
         try {
@@ -86,10 +63,8 @@ export class CreateMatchAction extends MicroserviceAction {
                 match_id: matchId
             });
         } catch (e) {
-            if (e instanceof MatchPlayersException) {
-                return new MicroserviceApiError(400, 2002, 'Bad players format');
-            } else if (e instanceof BadPlayerIDException) {
-                return new MicroserviceApiError(400, 2004, 'Duplicated players')
+            if (e instanceof MatchPlayersException || e instanceof BadTeamException) {
+                return new MicroserviceApiError(400, 2002, 'Bad players list');
             } else {
                 throw e;
             }

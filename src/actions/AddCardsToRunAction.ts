@@ -1,36 +1,24 @@
 import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse, NotFoundHTTPError } from '@darkbyte/herr';
 import { Request } from 'express';
-import { MatchService } from '../domain/app-services/MatchService';
 import { CardNotOwnedException } from "../domain/exceptions/CardNotOwnedException";
 import { RunException } from "../domain/exceptions/RunException";
 import { RunNotFoundException } from "../domain/exceptions/RunNotFoundException";
-import { RunID } from "../domain/value_objects/RunID";
-import { BaseAction } from './BaseAction';
+import { MicroserviceAction } from './MicroserviceAction';
 
 /**
- * @summary Creates a new match
+ * @summary Adds some cards to an existing run
  * @method POST
- * @url /matches/{id}/runs/{id_run}/cards
+ * @url /matches/{id}/runs/{id_run}
  * 
- * @parameter players [array[PlayerID], required] The list of player, starting from NORTH, clockwise
- * @parameter game_id [number, required] The id of the game that the match belongs to
+ * @get id [integer, required] The id of the match
+ * @get id_run [integer, required] The id of the run
  * 
- * @status 2001 Invalid game id
- * @status 2002 Bad players format
- * @status 2003 Invalid number of players
- * @status 2004 Duplicated players
+ * @parameter cards [array<Card>, required] The list of cards to tadd to the run
+ * 
+ * @status 2001 Cards not owned
+ * @status 2003 Cannot add the provided cards to the run
  */
-export class AddCardsToRunAction extends BaseAction {
-
-    constructor(
-        private readonly matchService: MatchService
-    ) {
-        super();
-    }
-
-    private getRunIdFromRequest(request: Request): RunID {
-        return new RunID(parseInt(request.params.run_id, 10));
-    }
+export class AddCardsToRunAction extends MicroserviceAction {
 
     public requiredParameters(): Array<string> {
         return [
@@ -41,10 +29,10 @@ export class AddCardsToRunAction extends BaseAction {
     public serveRequest(request: Request): Promise<ApiResponse> {
         return this.matchService
             .playerMeldsCardsToExistingRun(
-                this.parseMatchId(),
-                this.getPlayerID(),
+                this.parseMatchId(request),
+                this.getPlayerId(request),
                 this.parseCards(request.body.cards),
-                this.getRunId()
+                this.parseRunID(request)
             ).then((newRun) => new MicroserviceApiResponse({
                 id: newRun.getId(),
                 cards: this.serializeCards(newRun.getCards())
@@ -52,9 +40,9 @@ export class AddCardsToRunAction extends BaseAction {
                 if (error instanceof RunNotFoundException) {
                     throw new NotFoundHTTPError('Run not found');
                 } else if (error instanceof CardNotOwnedException) {
-                    throw new MicroserviceApiError(400, 2002, 'Card not owned');
+                    throw new MicroserviceApiError(400, 2001, 'Card not owned');
                 } else if (error instanceof RunException) {
-                    throw new MicroserviceApiError(400, 2003, 'Cannot add the provided cards to the run');
+                    throw new MicroserviceApiError(400, 2002, 'Cannot add the provided cards to the run');
                 } else {
                     throw error;
                 }

@@ -10,7 +10,7 @@ const routes: RouteDeclarations = {
     'POST /matches/:match_id/hand':               TakeCardAction,
     'POST /matches/:match_id/discard_pile':       ThrowCardAction,
     'POST /matches/:match_id/runs':               CreateRunAction,
-    'POST /matches/:match_id/runs/:run_id/cards': AddCardsToRunAction,
+    'POST /matches/:match_id/runs/:run_id':       AddCardsToRunAction,
 };
 
 export { routes };
