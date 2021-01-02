@@ -1,7 +1,11 @@
-import { AppConfig, Application } from "@darkbyte/herr";
+import { Microservice } from "@darkbyte/herr";
 import config from './config/config';
 
-const app = new Application(config as AppConfig);
+const ms = new Microservice(config);
 
-app.run()
+ms.useMiddleware((req, res, next) => {
+    next();
+});
+
+ms.run()
     .then(() => console.info('Goodbye!'));
