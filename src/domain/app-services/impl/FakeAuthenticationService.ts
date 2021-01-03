@@ -1,17 +1,18 @@
-import { Authentication, AuthenticationService } from '../AuthenticationService';
+import { Optional } from '@darkbyte/herr';
+import { UserData, TokensRegistry } from '../TokensRegistry';
 
-export class FakeAuthenticationService implements AuthenticationService {
+export class FakeAuthenticationService implements TokensRegistry {
 
     constructor(
-        private readonly users: Map<string, Authentication>) {
+        private readonly users: Map<string, UserData>) {
     }
 
-    public async getUsername(key: any): Promise<Authentication> {
-        if (!this.users.has(key)) {
-            throw new Error(`User not found: ${key}`);
+    public async getUserByAuthorizationToken(authorizationToken: string): Promise<Optional<UserData>> {
+        if (!this.users.has(authorizationToken)) {
+            throw new Error(`Token not found: ${authorizationToken}`);
         }
 
-        return this.users.get(key)!;
+        return this.users.get(authorizationToken)!;
     }
 
 }

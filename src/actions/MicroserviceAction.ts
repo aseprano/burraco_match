@@ -54,7 +54,7 @@ export abstract class MicroserviceAction extends BaseAction {
     }
 
     protected getPlayerId(request: Request): PlayerID {
-        const userId = this.context.get(request).username as string;
+        const userId = this.context.getForRequest(request).user?.username as string;
         console.debug(`Found user id: ${userId}`);
         return new PlayerID(userId);
     }

@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
-import { AuthenticationService } from '../domain/app-services/AuthenticationService';
+import { TokensRegistry } from '../domain/app-services/TokensRegistry';
 import { ConcreteContext } from '../domain/app-services/impl/ConcreteContext';
 
-export function AuthMiddleware(authorizationService: AuthenticationService, ctx: ConcreteContext): RequestHandler {
+export function AuthMiddleware(tokensRegistry: TokensRegistry, ctx: ConcreteContext): RequestHandler {
     return async (req, res, next) => {
         const authorizationHeader = req.headers.authorization;
     
@@ -12,12 +12,12 @@ export function AuthMiddleware(authorizationService: AuthenticationService, ctx:
         }
     
         const bearerToken = authorizationHeader.split(' ').slice(1).join(' ');
-        const userData = await authorizationService.getUsername(bearerToken);
+        const userData = await tokensRegistry.getUserByAuthorizationToken(bearerToken);
     
         if (!userData) {
             res.sendStatus(401); // SBAM! Unauthorized!!!
         } else {
-            ctx.bind(req, userData);
+            ctx.bind(req, { user: userData });
             console.debug(`Going next`);
             next();
         }

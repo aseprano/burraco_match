@@ -1,11 +1,11 @@
 import config from './config/config';
 import { Microservice } from "@darkbyte/herr";
-import { AuthenticationService } from './domain/app-services/AuthenticationService';
+import { TokensRegistry } from './domain/app-services/TokensRegistry';
 import { FakeAuthenticationService } from './domain/app-services/impl/FakeAuthenticationService';
 import { ctx } from './domain/app-services/impl/ConcreteContext';
 import { AuthMiddleware } from './middlewares/AuthMiddleware';
 
-function createAuthenticationService(): AuthenticationService {
+function createAuthenticationService(): TokensRegistry {
     const entries = Object.entries({
         'kdarkbyte': { username: 'darkbyte', role: 'user' },
         'kjohn':     { username: 'john',     role: 'user' },
