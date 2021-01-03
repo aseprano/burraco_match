@@ -3,7 +3,7 @@ import { Authentication, AuthenticationService } from '../AuthenticationService'
 export class FakeAuthenticationService implements AuthenticationService {
 
     constructor(
-        private readonly users: Map<string,Authentication>) {
+        private readonly users: Map<string, Authentication>) {
     }
 
     public async getUsername(key: any): Promise<Authentication> {

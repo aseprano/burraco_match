@@ -15,6 +15,7 @@ import { GamingAreaFactory } from '../domain/factories/GamingAreaFactory';
 import { EventScoreCalculator } from '../domain/domain-services/impl/EventScoreCalculator';
 import { CardsValueCalculator } from '../domain/domain-services/impl/CardsValueCalculator';
 import { StandardRunScoringPolicy } from '../domain/domain-services/impl/StandardRunScoringPolicy';
+import { ctx } from '../domain/app-services/impl/ConcreteContext';
 
 const singletons: FactoriesList = {
     AuthenticationService: () => {
@@ -55,6 +56,7 @@ const singletons: FactoriesList = {
     MatchService: ConcreteMatchService,
     MatchesRepository: MatchesRepositoryImpl,
     GamingAreaFactory: ConcreteGamingAreaFactory,
+    Context: () => ctx;
 }
 
 const transients: FactoriesList = {
