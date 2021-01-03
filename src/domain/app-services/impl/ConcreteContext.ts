@@ -15,4 +15,4 @@ class ConcreteContext {
 
 const ctx = new ConcreteContext();
 
-export { ctx };
+export { ConcreteContext, ctx };

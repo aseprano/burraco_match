@@ -1,6 +1,4 @@
 import { MicroserviceAction } from './MicroserviceAction';
-import { MatchService } from "../domain/app-services/MatchService";
-import { CardSerializer } from "../domain/domain-services/CardSerializer";
 import { CannotThrowCardException } from "../domain/exceptions/CannotThrowCardException";
 import { CardNotOwnedException } from "../domain/exceptions/CardNotOwnedException";
 import { Card } from "../domain/value_objects/Card";
@@ -8,13 +6,6 @@ import { Request } from 'express';
 import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
 
 export class ThrowCardAction extends MicroserviceAction {
-
-    constructor(
-        matchService: MatchService,
-        serializer: CardSerializer
-    ) {
-        super(matchService, serializer);
-    }
 
     private getCard(request: Request): Card {
         try {

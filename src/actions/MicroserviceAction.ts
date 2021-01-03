@@ -1,5 +1,6 @@
 import { ApiResponse, BadRequestHTTPError, ForbiddenHTTPError, MicroserviceApiError, NotFoundHTTPError, UnauthorizedHTTPError } from '@darkbyte/herr';
 import { Request } from "express";
+import { Context } from '../domain/app-services/Context';
 import { MatchService } from "../domain/app-services/MatchService";
 import { CardSerializer } from "../domain/domain-services/CardSerializer";
 import { ActionNotAllowedException } from "../domain/exceptions/ActionNotAllowedException";
@@ -17,8 +18,9 @@ import { BaseAction } from "./BaseAction";
 export abstract class MicroserviceAction extends BaseAction {
 
     constructor(
-        protected matchService: MatchService,
-        private cardSerializer: CardSerializer
+        protected readonly matchService: MatchService,
+        private readonly cardSerializer: CardSerializer,
+        private readonly context: Context,
     ) {
         super();
     }
@@ -52,10 +54,8 @@ export abstract class MicroserviceAction extends BaseAction {
     }
 
     protected getPlayerId(request: Request): PlayerID {
-        const userId = request['currentUser'].username as string;
-
+        const userId = this.context.get(request).username as string;
         console.debug(`Found user id: ${userId}`);
-
         return new PlayerID(userId);
     }
 

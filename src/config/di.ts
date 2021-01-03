@@ -56,7 +56,7 @@ const singletons: FactoriesList = {
     MatchService: ConcreteMatchService,
     MatchesRepository: MatchesRepositoryImpl,
     GamingAreaFactory: ConcreteGamingAreaFactory,
-    Context: () => ctx;
+    Context: () => ctx,
 }
 
 const transients: FactoriesList = {
