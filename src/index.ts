@@ -5,6 +5,11 @@ import { FakeAuthenticationService } from './domain/app-services/impl/FakeAuthen
 import { ctx } from './domain/app-services/impl/ConcreteContext';
 import { AuthMiddleware } from './middlewares/AuthMiddleware';
 
+function getVersion(): string {
+    const pjson = require('../package.json');
+    return pjson.version;
+}
+
 function createAuthenticationService(): TokensRegistry {
     const entries = Object.entries({
         'kdarkbyte': { username: 'darkbyte', role: 'user' },
@@ -17,7 +22,7 @@ function createAuthenticationService(): TokensRegistry {
     return new FakeAuthenticationService(new Map(entries));
 }
 
-console.log(`HERE 2`);
+console.log(`Starting v${getVersion()}`);
 
 const authService = createAuthenticationService();
 const context = ctx;
