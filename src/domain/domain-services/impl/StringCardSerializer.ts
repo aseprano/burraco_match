@@ -1,8 +1,10 @@
+import { Injectable } from '@darkbyte/herr';
 import { BadCardFormatException } from "../../exceptions/BadCardFormatException";
 import { Card, Suit } from "../../value_objects/Card";
 import { CardList } from "../../value_objects/CardList";
 import { CardSerializer } from "../CardSerializer";
 
+@Injectable()
 export class StringCardSerializer implements CardSerializer {
     private suitToString: {[key: number]: string};
     private stringToSuits: {[key: string]: Suit};

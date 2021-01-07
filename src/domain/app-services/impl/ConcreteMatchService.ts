@@ -9,7 +9,9 @@ import { RunID } from "../../value_objects/RunID";
 import { MatchesRepository } from "../../repositories/MatchesRepository";
 import { Match } from "../../entities/Match";
 import { Run } from "../../entities/Run";
+import { Injectable } from '@darkbyte/herr';
 
+@Injectable()
 export class ConcreteMatchService extends MatchService {
 
     constructor(
