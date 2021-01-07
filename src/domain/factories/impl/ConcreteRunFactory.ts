@@ -8,7 +8,9 @@ import { SequenceRun } from "../../entities/impl/SequenceRun";
 import { RunException } from "../../exceptions/RunException";
 import { AbstractRun } from "../../entities/impl/AbstractRun";
 import { CannotBuildRunException } from "../../exceptions/CannotBuildRunException";
+import { Injectable } from '@darkbyte/herr';
 
+@Injectable()
 export class ConcreteRunFactory implements RunFactory {
 
     private isNonWildcard(card: Card): boolean {
