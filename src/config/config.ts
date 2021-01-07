@@ -8,18 +8,18 @@ export default {
     transientFactories: transients,
     logLevel: LogLevel.DEBUG,
     amqpConfig: {
-        host: process.env.AMQP_HOST || 'localhost',
-        port: process.env.AMQP_PORT || 5672,
-        username: process.env.AMQP_USER || 'burraco',
-        password: process.env.AMQP_PASS || 'burraco',
-        vhost: process.env.AMQP_VHOST || 'burraco',
+        host: process.env.RABBITMQ_HOST || 'localhost',
+        port: process.env.RABBITMQ_PORT || 5672,
+        username: process.env.RABBITMQ_USER || 'burraco',
+        password: process.env.RABBITMQ_PASS || 'burraco',
+        vhost: process.env.RABBITMQ_VHOST || 'burraco',
         inputExchange: process.env.AMQP_IN_EXCH || 'events',
         outputExchange: process.env.AMQP_OUT_EXCH || 'events',
-        inputQueue: process.env.AMQP_IN_QUEUE || 'burraco_match'
+        inputQueue: process.env.AMQP_IN_QUEUE || 'matches-queue'
     },
     db: {
         host: process.env.DB_HOST || 'localhost',
-        port: process.env.DB_HOST || 12345,
+        port: process.env.DB_PORT || 3306,
         username: process.env.DB_USER || 'root',
         password: process.env.DB_PASS || 'test',
         dbname: process.env.DB_NAME || 'burraco',
@@ -33,10 +33,10 @@ export default {
         }
     },
     eventStore: {
-        host: process.env.EVENTSTORE_HOST || 'localhost',
-        port: process.env.EVENTSTORE_PORT || 1113,
-        username: process.env.EVENTSTORE_USER || 'admin',
-        password: process.env.EVENTSTORE_PASS || 'changeit!',
+        host: process.env.EVENT_STORE_HOST || 'localhost',
+        port: process.env.EVENT_STORE_PORT || 1113,
+        username: process.env.EVENT_STORE_USERNAME || 'admin',
+        password: process.env.EVENT_STORE_PASSWORD || 'changeit!',
         poolSize: {
             min: 1,
             max: 5,
@@ -47,7 +47,7 @@ export default {
         projectorsClasses: projectors,
     },
     web: {
-        port: process.env.WEBPORT || 8080,
+        port: process.env.PORT || 8080,
         routes
     },
 } as AppConfig

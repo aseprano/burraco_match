@@ -3,8 +3,9 @@ import { CannotThrowCardException } from "../domain/exceptions/CannotThrowCardEx
 import { CardNotOwnedException } from "../domain/exceptions/CardNotOwnedException";
 import { Card } from "../domain/value_objects/Card";
 import { Request } from 'express';
-import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
+import { ApiResponse, Injectable, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
 
+@Injectable()
 export class ThrowCardAction extends MicroserviceAction {
 
     private getCard(request: Request): Card {

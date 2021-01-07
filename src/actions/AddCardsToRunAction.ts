@@ -1,4 +1,4 @@
-import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse, NotFoundHTTPError } from '@darkbyte/herr';
+import { ApiResponse, Injectable, MicroserviceApiError, MicroserviceApiResponse, NotFoundHTTPError } from '@darkbyte/herr';
 import { Request } from 'express';
 import { CardNotOwnedException } from "../domain/exceptions/CardNotOwnedException";
 import { RunException } from "../domain/exceptions/RunException";
@@ -18,6 +18,7 @@ import { MicroserviceAction } from './MicroserviceAction';
  * @status 2001 Cards not owned
  * @status 2003 Cannot add the provided cards to the run
  */
+@Injectable()
 export class AddCardsToRunAction extends MicroserviceAction {
 
     public requiredParameters(): Array<string> {

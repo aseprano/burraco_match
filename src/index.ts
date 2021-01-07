@@ -17,6 +17,8 @@ function createAuthenticationService(): TokensRegistry {
     return new FakeAuthenticationService(new Map(entries));
 }
 
+console.log(`HERE 2`);
+
 const authService = createAuthenticationService();
 const context = ctx;
 

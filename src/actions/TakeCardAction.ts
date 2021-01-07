@@ -1,6 +1,6 @@
 import { MicroserviceAction } from './MicroserviceAction';
 import { Request } from 'express';
-import { ApiResponse, BadRequestHTTPError, MicroserviceApiResponse } from '@darkbyte/herr';
+import { ApiResponse, BadRequestHTTPError, Injectable, MicroserviceApiResponse } from '@darkbyte/herr';
 import { CardList } from '../domain/value_objects/CardList';
 
 /**
@@ -14,6 +14,7 @@ import { CardList } from '../domain/value_objects/CardList';
  * 
  * @response cards [array, required] The list of cards taken from the player
  */
+@Injectable()
 export class TakeCardAction extends MicroserviceAction {
     private readonly STOCK = 'stock';
     private readonly DISCARD_PILE = 'discard_pile';

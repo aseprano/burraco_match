@@ -8,11 +8,15 @@ export class FakeAuthenticationService implements TokensRegistry {
     }
 
     public async getUserByAuthorizationToken(authorizationToken: string): Promise<Optional<UserData>> {
-        if (!this.users.has(authorizationToken)) {
-            throw new Error(`Token not found: ${authorizationToken}`);
-        }
-
-        return this.users.get(authorizationToken)!;
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if (!this.users.has(authorizationToken)) {
+                    reject(new Error(`Token not found: ${authorizationToken}`));
+                } else {
+                    resolve(this.users.get(authorizationToken)!);
+                }
+            }, 1000);
+        })
     }
 
 }

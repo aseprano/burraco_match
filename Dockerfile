@@ -1,12 +1,10 @@
-FROM node:10.15-alpine
+FROM node:14.15.3-alpine3.12
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
 RUN apk add curl
-RUN npm install
 COPY . .
+RUN npm install
 RUN npm run build
-
 EXPOSE 80
 ENTRYPOINT ["sh", "start.sh"]

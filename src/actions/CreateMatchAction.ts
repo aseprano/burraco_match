@@ -1,6 +1,6 @@
 import { MicroserviceAction } from './MicroserviceAction';
 import { Request } from 'express';
-import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
+import { ApiResponse, Injectable, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
 
 import { Team } from '../domain/value_objects/Team';
 import { MatchPlayersException } from '../domain/exceptions/MatchPlayersException';
@@ -17,6 +17,7 @@ import { BadTeamException } from '../domain/exceptions/BadTeamException';
  * @status 2001 Invalid number of players
  * @status 2002 Bad players list
  */
+@Injectable()
 export class CreateMatchAction extends MicroserviceAction {
     
     public requiredParameters(): string[] {

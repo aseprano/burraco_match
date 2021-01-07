@@ -1,5 +1,5 @@
 import { MicroserviceAction } from "./MicroserviceAction";
-import { ApiResponse, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
+import { ApiResponse, Injectable, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
 import { Request } from "express";
 import { CardNotOwnedException } from "../domain/exceptions/CardNotOwnedException";
 import { RunException } from "../domain/exceptions/RunException";
@@ -17,6 +17,7 @@ import { CardList } from "../domain/value_objects/CardList";
  * @status 2001 Card not owned
  * @status 2002 Cannot create a run using the provided cards
  */
+@Injectable()
 export class CreateRunAction extends MicroserviceAction {
 
     private getCards(request: Request): CardList {
