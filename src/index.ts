@@ -7,7 +7,7 @@ import { AuthMiddleware } from './middlewares/AuthMiddleware';
 
 function getVersion(): string {
     const pjson = require('../package.json');
-    return pjson.version;
+    return `${pjson.name} v${pjson.version}`;
 }
 
 function createAuthenticationService(): TokensRegistry {
@@ -22,7 +22,7 @@ function createAuthenticationService(): TokensRegistry {
     return new FakeAuthenticationService(new Map(entries));
 }
 
-console.log(`Starting v${getVersion()}`);
+console.log(`Starting ${getVersion()}`);
 
 const authService = createAuthenticationService();
 const context = ctx;
