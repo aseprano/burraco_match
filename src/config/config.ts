@@ -22,7 +22,7 @@ export default {
         port: process.env.DB_PORT || 3306,
         username: process.env.DB_USER || 'root',
         password: process.env.DB_PASS || 'test',
-        dbname: process.env.DB_NAME || 'burraco',
+        dbname: process.env.DB_NAME || 'buraco',
         pool: {
             min: process.env.DB_POOL_MIN || 0,
             max: process.env.DB_POOL_MAX || 10,
@@ -43,7 +43,7 @@ export default {
         }
     },
     projections: {
-        registryTableName: 'projections',
+        registryTableName: 'handled_events',
         projectorsClasses: projectors,
     },
     web: {

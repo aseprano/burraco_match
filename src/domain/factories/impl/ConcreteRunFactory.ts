@@ -11,8 +11,12 @@ import { CannotBuildRunException } from "../../exceptions/CannotBuildRunExceptio
 import { Injectable } from '@darkbyte/herr';
 
 @Injectable()
-export class ConcreteRunFactory implements RunFactory {
+export class ConcreteRunFactory extends RunFactory {
 
+    constructor() {
+        super();
+    }
+    
     private isNonWildcard(card: Card): boolean {
         return card.getValue() !== 2 && !card.isJoker();
     }

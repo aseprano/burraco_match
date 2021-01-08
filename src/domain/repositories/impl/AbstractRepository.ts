@@ -8,7 +8,10 @@ export interface EntityStream {
 
 export abstract class AbstractRepository {
 
-    constructor(private eventStore: EventStore, private snapshotRepo: SnapshotsRepository) {}
+    constructor(
+        private readonly eventStore: EventStore,
+        private readonly snapshotRepo: SnapshotsRepository
+    ) {}
 
     private shouldTakeSnapshot(entity: RootEntity): boolean {
         return this.getSnapshotInterval() > 0 && (entity.getVersion() % this.getSnapshotInterval()) === 0

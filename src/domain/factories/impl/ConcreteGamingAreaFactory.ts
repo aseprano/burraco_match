@@ -6,12 +6,14 @@ import { ConcreteTeamGamingArea } from "../../entities/impl/ConcreteTeamGamingAr
 import { Injectable } from '@darkbyte/herr';
 
 @Injectable()
-export class ConcreteGamingAreaFactory implements GamingAreaFactory {
+export class ConcreteGamingAreaFactory extends GamingAreaFactory {
 
     constructor(
         private readonly runFactory: RunFactory,
         private readonly cardSerializer: CardSerializer
-    ) {}
+    ) {
+        super();
+    }
 
     public build(id: number): TeamGamingArea {
         return new ConcreteTeamGamingArea(id, this.runFactory, this.cardSerializer);

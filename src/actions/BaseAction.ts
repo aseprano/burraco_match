@@ -1,10 +1,22 @@
-import { ApiResponse, MicroserviceApiError, RouteHandler } from '@darkbyte/herr';
+import { ApiResponse, Logger, MicroserviceApiError, RouteHandler } from '@darkbyte/herr';
 import { Request } from "express";
 
 export abstract class BaseAction implements RouteHandler {
 
+    constructor(
+        private readonly logger: Logger
+    ) {
+        logger.setPrefix('Action');
+    }
+
     private ensureRequestContainsAllRequiredParameters(request: Request) {
-        const notFoundParameters = this.requiredParameters()
+        this.logger.debug(() => `Ensuring that the request contains all the required parameters`);
+        
+        const requiredParameters = this.requiredParameters();
+        this.logger.debug(() => `Required parameters: ${JSON.stringify(requiredParameters)}`);
+        this.logger.debug(() => `Request body is: ${JSON.stringify(request.body)}`);
+
+        const notFoundParameters = requiredParameters
             .map((paramName: string) => {
                 return {
                     paramName,
@@ -13,6 +25,7 @@ export abstract class BaseAction implements RouteHandler {
             }).filter((param) => !param.found);
 
         if (notFoundParameters.length) {
+            this.logger.debug(() => `Params not found: ${JSON.stringify(notFoundParameters.map(p => p.paramName))}`);
             throw new MicroserviceApiError(400, 1001, `Missing required parameter: ${notFoundParameters[0].paramName}`);
         }
     }

@@ -11,7 +11,7 @@ export class MatchesRepositoryImpl extends AbstractRepository implements Matches
     constructor(
         eventStore: EventStore,
         snapshotsRepository: SnapshotsRepository,
-        private matchFactory: MatchFactory
+        private readonly matchFactory: MatchFactory
     ) {
         super(eventStore, snapshotsRepository);
     }

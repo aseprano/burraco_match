@@ -5,11 +5,18 @@ import { CardList } from "../../value_objects/CardList";
 import { CardSerializer } from "../CardSerializer";
 
 @Injectable()
-export class StringCardSerializer implements CardSerializer {
-    private suitToString: {[key: number]: string};
-    private stringToSuits: {[key: string]: Suit};
+export class StringCardSerializer extends CardSerializer {
+    private readonly suitToString: {
+        [key: number]: string
+    };
+
+    private readonly stringToSuits: {
+        [key: string]: Suit
+    };
 
     constructor() {
+        super();
+
         this.suitToString = {
             [Suit.Clubs]:    'C',
             [Suit.Diamonds]: 'D',

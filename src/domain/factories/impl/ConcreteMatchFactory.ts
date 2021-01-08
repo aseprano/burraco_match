@@ -7,14 +7,18 @@ import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer"
 import { GamingAreaFactory } from "../GamingAreaFactory";
 import { ScoreCalculator } from "../../domain-services/ScoreCalculator";
 import { Function } from '@darkbyte/herr/lib/types';
+import { Injectable } from '@darkbyte/herr';
 
-export class ConcreteMatchFactory implements MatchFactory {
+@Injectable()
+export class ConcreteMatchFactory extends MatchFactory {
 
     constructor(
-        private idGenerator: IDGenerator,
-        private gamingAreaFactory: GamingAreaFactory,
-        private scoreCalculatorProvider: Function<number,ScoreCalculator>
-    ) {}
+        private readonly idGenerator: IDGenerator,
+        private readonly gamingAreaFactory: GamingAreaFactory,
+        private readonly scoreCalculatorProvider: Function<number,ScoreCalculator>
+    ) {
+        super();
+    }
 
     private createMatch(): ConcreteMatch {
         return new ConcreteMatch(

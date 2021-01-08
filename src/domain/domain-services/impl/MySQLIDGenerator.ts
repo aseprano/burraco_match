@@ -11,9 +11,15 @@ export class MySQLIDGenerator implements IDGenerator {
 
     public async generate(): Promise<number> {
         return this.connection
-            .query(`INSERT INTO ${this.tableName} (${this.columnName}) VALUES (NULL)`)
-            .then(() => this.connection.query('SELECT last_insert_id() AS id'))
-            .then((resultset) => resultset.fields[0].id);
+            .beginTransaction()
+            .then((transaction) => {
+                return transaction.query(`INSERT INTO ${this.tableName} (${this.columnName}) VALUES (NULL)`)
+                    .then(() => transaction.query('SELECT last_insert_id() AS id'))
+                    .then((resultset) => {
+                        transaction.commit();
+                        return resultset.fields[0].id;
+                    });
+            });
     }
     
 }

@@ -1,4 +1,4 @@
-import { ApiResponse, BadRequestHTTPError, ForbiddenHTTPError, Injectable, MicroserviceApiError, NotFoundHTTPError, UnauthorizedHTTPError } from '@darkbyte/herr';
+import { ApiResponse, BadRequestHTTPError, ForbiddenHTTPError, Injectable, Logger, MicroserviceApiError, NotFoundHTTPError, UnauthorizedHTTPError } from '@darkbyte/herr';
 import { Request } from "express";
 import { Context } from '../domain/app-services/Context';
 import { MatchService } from "../domain/app-services/MatchService";
@@ -19,11 +19,12 @@ import { BaseAction } from "./BaseAction";
 export abstract class MicroserviceAction extends BaseAction {
 
     constructor(
+        logger: Logger,
         protected readonly matchService: MatchService,
         private readonly cardSerializer: CardSerializer,
         private readonly context: Context,
     ) {
-        super();
+        super(logger);
     }
 
     protected parseRunID(request: Request): RunID {
