@@ -1,12 +1,34 @@
-import { AppConfig, LogLevel } from '@darkbyte/herr';
+import { AppConfig, Logger, LogLevel } from '@darkbyte/herr';
 import { singletons, transients } from './di';
 import { routes } from './routes';
 import { projectors } from './projectors';
 
+function getLogLevelFromEnv(): LogLevel
+{
+    const levels: {[key: string]: LogLevel} = {
+        'TRACE': LogLevel.TRACE,
+        'INFO': LogLevel.INFO,
+        'WARNING': LogLevel.WARNING,
+        'DEBUG': LogLevel.DEBUG,
+        'ERROR': LogLevel.ERROR,
+        'FATAL': LogLevel.FATAL,
+    };
+
+    const defaultLogLevel = 'DEBUG';
+    const envLogLevel = process.env.LOG_LEVEL as string || defaultLogLevel;
+    let logLevel = levels[envLogLevel];
+    
+    if (!logLevel) {
+        console.warn(`Unknown log level: ${envLogLevel}, using default (${defaultLogLevel})`);
+        logLevel = levels[defaultLogLevel];
+    }
+
+    return logLevel;
+}
 export default {
     singletonsFactories: singletons,
     transientFactories: transients,
-    logLevel: LogLevel.DEBUG,
+    logLevel: getLogLevelFromEnv(),
     amqpConfig: {
         host: process.env.RABBITMQ_HOST || 'localhost',
         port: process.env.RABBITMQ_PORT || 5672,
