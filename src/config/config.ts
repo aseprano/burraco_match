@@ -21,6 +21,8 @@ function getLogLevelFromEnv(): LogLevel
     if (!logLevel) {
         console.warn(`Unknown log level: ${envLogLevel}, using default (${defaultLogLevel})`);
         logLevel = levels[defaultLogLevel];
+    } else {
+        console.info(`Starting with log level: ${envLogLevel}`);
     }
 
     return logLevel;
