@@ -25,6 +25,7 @@ function getLogLevelFromEnv(): LogLevel
 
     return logLevel;
 }
+
 export default {
     singletonsFactories: singletons,
     transientFactories: transients,
