@@ -11,7 +11,6 @@ import { StringCardSerializer } from '../domain/domain-services/impl/StringCardS
 import { StdCardSerializer } from '../domain/domain-services/impl/StdCardSerializer';
 import { DomainEvent } from '../domain/events/DomainEvent';
 import { IDGenerator } from '../domain/domain-services/IDGenerator';
-import { GamingAreaFactory } from '../domain/factories/GamingAreaFactory';
 import { EventScoreCalculator } from '../domain/domain-services/impl/EventScoreCalculator';
 import { CardsValueCalculator } from '../domain/domain-services/impl/CardsValueCalculator';
 import { StandardRunScoringPolicy } from '../domain/domain-services/impl/StandardRunScoringPolicy';
