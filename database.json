@@ -1,0 +1,14 @@
+{
+    "defaultEnv": "local",
+    "local": {
+        "multipleStatements": true,
+        "driver":   "mysql",
+        "host":     {"ENV": "DB_HOST"},
+        "user":     {"ENV": "DB_USER"},
+        "password": {"ENV": "DB_PASS"},
+        "database": {"ENV": "DB_NAME"}
+    },
+    "prod": {
+
+    }
+}
