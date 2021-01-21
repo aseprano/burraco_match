@@ -1,7 +1,4 @@
-import { Snapshot } from "../../../tech/Snapshot";
-import { EventStream } from "../../../tech/events/EventStream";
-import { EventStore } from "../../../tech/events/EventStore";
-import { SnapshotRepository } from "../../../tech/SnapshotRepository";
+import { EventStore, EventStream, Snapshot, SnapshotsRepository } from '@darkbyte/herr';
 import { RootEntity } from "../../entities/RootEntity";
 
 export interface EntityStream {
@@ -11,7 +8,10 @@ export interface EntityStream {
 
 export abstract class AbstractRepository {
 
-    constructor(private eventStore: EventStore, private snapshotRepo: SnapshotRepository) {}
+    constructor(
+        private readonly eventStore: EventStore,
+        private readonly snapshotRepo: SnapshotsRepository
+    ) {}
 
     private shouldTakeSnapshot(entity: RootEntity): boolean {
         return this.getSnapshotInterval() > 0 && (entity.getVersion() % this.getSnapshotInterval()) === 0

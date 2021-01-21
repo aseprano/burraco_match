@@ -2,17 +2,16 @@ import { Stock } from "../Stock";
 import { Card, Suit } from "../../value_objects/Card";
 import { CardList } from "../../value_objects/CardList";
 import { InsufficientCardsInStockException } from "../../exceptions/InsufficientCardsInStockException";
-import { Event } from "../../../tech/events/Event";
 import { MatchStarted } from "../../events/MatchStarted";
 import { CardSerializer } from "../../domain-services/CardSerializer";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
-import { Provider } from "../../../lib/Provider";
 import { CardsShuffler } from "../../domain-services/CardsShuffler";
 import { PotCreated } from "../../events/PotCreated";
 import { FirstCardThrown } from "../../events/FirstCardThrown";
 import { AbstractEntity } from "./AbstractEntity";
-import { Function } from "../../../lib/Function";
 import { PlayerTookOneCardFromStock } from "../../events/PlayerTookOneCardFromStock";
+import { Function, Provider } from '@darkbyte/herr/lib/types';
+import { Event } from '@darkbyte/herr';
 
 export class ConcreteStock extends AbstractEntity implements Stock {
     private cards = new CardList();

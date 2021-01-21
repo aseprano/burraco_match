@@ -1,16 +1,22 @@
-import { time } from "console";
-import e from "express";
-import { stringify } from "querystring";
+import { Injectable } from '@darkbyte/herr';
 import { BadCardFormatException } from "../../exceptions/BadCardFormatException";
 import { Card, Suit } from "../../value_objects/Card";
 import { CardList } from "../../value_objects/CardList";
 import { CardSerializer } from "../CardSerializer";
 
-export class StringCardSerializer implements CardSerializer {
-    private suitToString: {[key: number]: string};
-    private stringToSuits: {[key: string]: Suit};
+@Injectable()
+export class StringCardSerializer extends CardSerializer {
+    private readonly suitToString: {
+        [key: number]: string
+    };
+
+    private readonly stringToSuits: {
+        [key: string]: Suit
+    };
 
     constructor() {
+        super();
+
         this.suitToString = {
             [Suit.Clubs]:    'C',
             [Suit.Diamonds]: 'D',

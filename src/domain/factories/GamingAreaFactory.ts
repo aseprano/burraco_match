@@ -1,7 +1,9 @@
+import { Injectable } from '@darkbyte/herr';
 import { TeamGamingArea } from "../entities/TeamGamingArea";
 
-export interface GamingAreaFactory {
+@Injectable()
+export abstract class GamingAreaFactory {
 
-    build(id: number): TeamGamingArea;
+    public abstract build(id: number): TeamGamingArea;
     
 }

@@ -3,7 +3,6 @@ import { RunFactory } from "../../factories/RunFactory";
 import { CardList } from "../../value_objects/CardList";
 import { Run } from "../Run";
 import { RunID } from "../../value_objects/RunID";
-import { Event } from "../../../tech/events/Event";
 import { GroupRun } from "./GroupRun";
 import { RunNotFoundException } from "../../exceptions/RunNotFoundException";
 import { DuplicatedRunException } from "../../exceptions/DuplicatedRunException";
@@ -11,6 +10,7 @@ import { RunCreated } from "../../events/RunCreated";
 import { CardSerializer } from "../../domain-services/CardSerializer";
 import { SequenceRun } from "./SequenceRun";
 import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
+import { Event } from '@darkbyte/herr';
 
 export class ConcreteTeamGamingArea implements  TeamGamingArea {
     private runs: Run[] = [];

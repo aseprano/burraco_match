@@ -1,5 +1,8 @@
-export interface IDGenerator {
+import { Injectable } from '@darkbyte/herr';
 
-    generate(): Promise<number>;
+@Injectable()
+export abstract class IDGenerator {
+
+    public abstract generate(): Promise<number>;
 
 }

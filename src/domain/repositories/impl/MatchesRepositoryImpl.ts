@@ -2,16 +2,16 @@ import { MatchesRepository } from "../MatchesRepository";
 import { AbstractRepository } from "./AbstractRepository";
 import { MatchID } from "../../value_objects/MatchID";
 import { Match } from "../../entities/Match";
-import { EventStore } from "../../../tech/events/EventStore";
-import { SnapshotRepository } from "../../../tech/SnapshotRepository";
 import { MatchFactory } from "../../factories/MatchFactory";
+import { EventStore, Injectable, SnapshotsRepository } from '@darkbyte/herr';
 
+@Injectable()
 export class MatchesRepositoryImpl extends AbstractRepository implements MatchesRepository {
 
     constructor(
         eventStore: EventStore,
-        snapshotsRepository: SnapshotRepository,
-        private matchFactory: MatchFactory
+        snapshotsRepository: SnapshotsRepository,
+        private readonly matchFactory: MatchFactory
     ) {
         super(eventStore, snapshotsRepository);
     }
@@ -33,11 +33,11 @@ export class MatchesRepositoryImpl extends AbstractRepository implements Matches
             });
     }
 
-    add(match: Match): Promise<void> {
+    public async add(match: Match): Promise<void> {
         return this.saveEntity(match);
     }
 
-    update(match: Match): Promise<void> {
+    public async update(match: Match): Promise<void> {
         return this.saveEntity(match);
     }
 

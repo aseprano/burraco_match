@@ -1,9 +1,11 @@
 import { CardList } from "../value_objects/CardList";
 import { Run } from "../entities/Run";
 import { RunID } from "../value_objects/RunID";
+import { Injectable } from '@darkbyte/herr';
 
-export interface RunFactory {
+@Injectable()
+export abstract class RunFactory {
 
-    build(cards: CardList, id: RunID): Run;
+    public abstract build(cards: CardList, id: RunID): Run;
 
 }

@@ -8,9 +8,15 @@ import { SequenceRun } from "../../entities/impl/SequenceRun";
 import { RunException } from "../../exceptions/RunException";
 import { AbstractRun } from "../../entities/impl/AbstractRun";
 import { CannotBuildRunException } from "../../exceptions/CannotBuildRunException";
+import { Injectable } from '@darkbyte/herr';
 
-export class ConcreteRunFactory implements RunFactory {
+@Injectable()
+export class ConcreteRunFactory extends RunFactory {
 
+    constructor() {
+        super();
+    }
+    
     private isNonWildcard(card: Card): boolean {
         return card.getValue() !== 2 && !card.isJoker();
     }

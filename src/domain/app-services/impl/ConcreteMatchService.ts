@@ -9,13 +9,17 @@ import { RunID } from "../../value_objects/RunID";
 import { MatchesRepository } from "../../repositories/MatchesRepository";
 import { Match } from "../../entities/Match";
 import { Run } from "../../entities/Run";
+import { Injectable } from '@darkbyte/herr';
 
-export class ConcreteMatchService implements MatchService {
+@Injectable()
+export class ConcreteMatchService extends MatchService {
 
     constructor(
-        private factory: MatchFactory,
-        private repository: MatchesRepository
-    ) {}
+        private readonly factory: MatchFactory,
+        private readonly repository: MatchesRepository
+    ) {
+        super();
+    }
 
     private async runInMatch(matchId: MatchID, callback: (match: Match) => any): Promise<any> {
         return this.repository

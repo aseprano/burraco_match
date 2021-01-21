@@ -5,7 +5,7 @@ export class StandardRunScoringPolicy implements RunScoringPolicy {
 
     constructor() {}
 
-    getScore(run: CardList, wildcardPosition: number): number {
+    public getScore(run: CardList, wildcardPosition: number): number {
         if (run.length < 7) {
             return 0;
         } else if (wildcardPosition === -1) {

@@ -1,11 +1,11 @@
-import { PlayerID } from "../value_objects/PlayerID";
+import { Injectable } from '@darkbyte/herr';
 import { Match } from "../entities/Match";
-import { Team } from "../value_objects/Team";
 
-export interface MatchFactory {
+@Injectable()
+export abstract class MatchFactory {
 
-    createInitialized(): Promise<Match>;
+    public abstract createInitialized(): Promise<Match>;
 
-    createEmpty(): Match;
+    public abstract createEmpty(): Match;
     
 }

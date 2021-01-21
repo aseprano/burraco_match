@@ -3,8 +3,6 @@ import { AbstractRootEntity } from "./AbstractRootEntity";
 import { MatchInitialized} from "../../events/MatchInitialized";
 import { PlayerID } from "../../value_objects/PlayerID";
 import { Team } from "../../value_objects/Team";
-import { SnapshotState } from "../../../tech/Snapshot";
-import { Event } from "../../../tech/events/Event";
 import { MatchPlayersException } from "../../exceptions/MatchPlayersException";
 import { MatchStarted } from "../../events/MatchStarted";
 import { Stock } from "../Stock";
@@ -28,10 +26,10 @@ import { RunID } from "../../value_objects/RunID";
 import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
 import { PlayerTookPot } from "../../events/PlayerTookPot";
 import { ScoreCalculator } from "../../domain-services/ScoreCalculator";
-import { Function } from "../../../lib/Function";
 import { MatchEnded } from "../../events/MatchEnded";
 import { PlayerNotFoundException } from "../../exceptions/PlayerNotFoundException";
-import { NoRetryPolicy } from "../../../tech/impl/NoRetryPolicy";
+import { Function } from '@darkbyte/herr/lib/types';
+import { Event, SnapshotState } from '@darkbyte/herr';
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;

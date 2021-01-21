@@ -1,0 +1,4 @@
+1 - Create an authentication layer
+  1.1 - Create a fake layer to use in dev mode
+
+2 - Design APIs in a way that the actor is deduced by the authentication layer
