@@ -102,8 +102,6 @@ export abstract class MicroserviceAction extends BaseAction {
     public async handleRequest(request: Request): Promise<ApiResponse> {
         return super.handleRequest(request)
             .catch((error) => {
-                console.warn(`Error caught: ${error}`);
-
                 if (error instanceof MatchNotFoundException) {
                     throw new NotFoundHTTPError('Match not found');
                 } else if (error instanceof PlayerNotFoundException) {

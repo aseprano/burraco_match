@@ -22,6 +22,7 @@ CREATE TABLE `matches` (
 CREATE TABLE `matches_players` (
   `match_id` bigint(11) unsigned NOT NULL,
   `player_id` varchar(255) NOT NULL DEFAULT '',
+  `team_id` bigint(11) NOT NULL,
   `hand` varchar(255) NOT NULL DEFAULT '[]',
   PRIMARY KEY (`match_id`,`player_id`),
   CONSTRAINT `matches_players_ibfk_1` FOREIGN KEY (`match_id`) REFERENCES `matches` (`id`) ON DELETE CASCADE
