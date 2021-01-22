@@ -36,13 +36,19 @@ export class MatchesProjector extends AbstractProjector {
         ).then(() => undefined);
     }
 
-    private async insertPlayer(matchId: number, playerId: string, teamId: number): Promise<void> {
+    private async insertPlayer(
+        matchId: number,
+        playerId: string,
+        teamId: number,
+        sequence: number
+    ): Promise<void> {
         return this.getConnection().query(
-            "INSERT INTO matches_players(match_id, team_id, player_id, hand) VALUES (:matchId, :teamId, :playerId, '[]')",
+            "INSERT INTO matches_players(match_id, team_id, player_id, seq, hand) VALUES (:matchId, :teamId, :playerId, :seq, '[]')",
             {
                 matchId,
                 playerId,
                 teamId,
+                seq: sequence,
             }
         ).then(() => undefined);
     }
@@ -55,8 +61,8 @@ export class MatchesProjector extends AbstractProjector {
                 const player2Id = event.getPayload().team2[index];
 
                 return Promise.all([
-                    this.insertPlayer(matchId, player1Id, 0),
-                    this.insertPlayer(matchId, player2Id, 1),
+                    this.insertPlayer(matchId, player1Id, 0, 2*index+0),
+                    this.insertPlayer(matchId, player2Id, 1, 2*index+1),
                 ]);
             })
         ).then(() => undefined);

@@ -18,7 +18,7 @@ function getLogLevelFromEnv(): LogLevel
     const envLogLevel = process.env.LOG_LEVEL as string || defaultLogLevel;
     let logLevel = levels[envLogLevel];
     
-    if (!logLevel) {
+    if (typeof logLevel !== 'number') {
         console.warn(`Unknown log level: ${envLogLevel}, using default (${defaultLogLevel})`);
         logLevel = levels[defaultLogLevel];
     } else {

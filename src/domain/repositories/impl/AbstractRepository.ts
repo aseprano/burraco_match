@@ -42,8 +42,8 @@ export abstract class AbstractRepository {
      */
     protected async saveEntity(entity: RootEntity): Promise<void> {
         const streamId = this.streamNameForId(entity.getId());
-        const eventsToCommit = entity.commitEvents();
         const entityVersion = entity.getVersion();
+        const eventsToCommit = entity.commitEvents();
 
         const streamPromise = entityVersion < 0 ?
             this.eventStore.createStream(streamId, eventsToCommit) :
