@@ -14,6 +14,7 @@ import { MatchID } from "../domain/value_objects/MatchID";
 import { PlayerID } from "../domain/value_objects/PlayerID";
 import { RunID } from '../domain/value_objects/RunID';
 import { BaseAction } from "./BaseAction";
+const { performance } = require('perf_hooks');
 
 @Injectable()
 export abstract class MicroserviceAction extends BaseAction {
@@ -100,6 +101,8 @@ export abstract class MicroserviceAction extends BaseAction {
     }
 
     public async handleRequest(request: Request): Promise<ApiResponse> {
+        const t0 = performance.now();
+
         return super.handleRequest(request)
             .catch((error) => {
                 if (error instanceof MatchNotFoundException) {
@@ -113,6 +116,9 @@ export abstract class MicroserviceAction extends BaseAction {
                 } else {
                     throw error;
                 }
+            }).finally(() => {
+                const t = performance.now() - t0;
+                this.getLogger().debug(() => `Request handled in: ${t} ms`);
             });
     }
 

@@ -10,7 +10,7 @@
   "homepage": "https://github.com/aseprano/burraco_match#issues",
   "main": "index.js",
   "dependencies": {
-    "@darkbyte/herr": "^0.26.4",
+    "@darkbyte/herr": "^0.26.8",
     "body-parser": "^1.19.0",
     "uuidv4": "^6.2.6"
   },
