@@ -1,6 +1,6 @@
 import { MicroserviceAction } from './MicroserviceAction';
 import { Request } from 'express';
-import { ApiResponse, BadRequestHTTPError, Injectable, MicroserviceApiResponse } from '@darkbyte/herr';
+import { ApiResponse, BadRequestHTTPError, Context, Injectable, MicroserviceApiResponse } from '@darkbyte/herr';
 import { CardList } from '../domain/value_objects/CardList';
 
 /**
@@ -45,8 +45,8 @@ export class TakeCardAction extends MicroserviceAction {
         return this.parseFrom(request) === this.STOCK;
     }
 
-    private async doTake(request: Request): Promise<CardList> {
-        const playerId = this.getPlayerId(request);
+    private async doTake(request: Request, context: Context): Promise<CardList> {
+        const playerId = this.getPlayerId(context);
         const matchId = this.parseMatchId(request);
 
         if (this.wantsToTakeFromStock(request)) {
@@ -59,11 +59,9 @@ export class TakeCardAction extends MicroserviceAction {
         }
     }
 
-    public async serveRequest(request: Request): Promise<ApiResponse> {
-        return this.doTake(request)
-            .then((cards) => new MicroserviceApiResponse({
-                cards
-            }));
+    public async serveRequest(request: Request, context: Context): Promise<ApiResponse> {
+        return this.doTake(request, context)
+            .then((cards) => new MicroserviceApiResponse({cards}));
     }
 
 }

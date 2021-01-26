@@ -1,6 +1,6 @@
 import { MicroserviceAction } from './MicroserviceAction';
 import { Request } from 'express';
-import { ApiResponse, Injectable, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
+import { ApiResponse, Context, Injectable, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
 
 import { Team } from '../domain/value_objects/Team';
 import { MatchPlayersException } from '../domain/exceptions/MatchPlayersException';
@@ -27,7 +27,7 @@ export class CreateMatchAction extends MicroserviceAction {
         ];
     }
 
-    public async serveRequest(request: Request): Promise<ApiResponse> {
+    public async serveRequest(request: Request, context: Context): Promise<ApiResponse> {
         const gameId = this.parseGameId(request);
         const players = this.parsePlayers(request);
 

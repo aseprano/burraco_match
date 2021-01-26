@@ -1,6 +1,5 @@
-import { ApiResponse, BadRequestHTTPError, ForbiddenHTTPError, Injectable, Logger, MicroserviceApiError, NotFoundHTTPError, UnauthorizedHTTPError } from '@darkbyte/herr';
+import { AbstractAction, ApiResponse, BadRequestHTTPError, Context, ContextBindings, ForbiddenHTTPError, Injectable, Logger, NotFoundHTTPError, UnauthorizedHTTPError } from '@darkbyte/herr';
 import { Request } from "express";
-import { Context } from '../domain/app-services/Context';
 import { MatchService } from "../domain/app-services/MatchService";
 import { CardSerializer } from "../domain/domain-services/CardSerializer";
 import { ActionNotAllowedException } from "../domain/exceptions/ActionNotAllowedException";
@@ -13,19 +12,18 @@ import { CardList } from "../domain/value_objects/CardList";
 import { MatchID } from "../domain/value_objects/MatchID";
 import { PlayerID } from "../domain/value_objects/PlayerID";
 import { RunID } from '../domain/value_objects/RunID';
-import { BaseAction } from "./BaseAction";
 const { performance } = require('perf_hooks');
 
 @Injectable()
-export abstract class MicroserviceAction extends BaseAction {
+export abstract class MicroserviceAction extends AbstractAction {
 
     constructor(
         logger: Logger,
+        context: ContextBindings,
         protected readonly matchService: MatchService,
         private readonly cardSerializer: CardSerializer,
-        private readonly context: Context,
     ) {
-        super(logger);
+        super(logger, context);
     }
 
     protected parseRunID(request: Request): RunID {
@@ -56,10 +54,8 @@ export abstract class MicroserviceAction extends BaseAction {
         return this.cardSerializer.serializeCards(cards);
     }
 
-    protected getPlayerId(request: Request): PlayerID {
-        const userId = this.context.getForRequest(request).user?.username as string;
-        console.debug(`Found user id: ${userId}`);
-        return new PlayerID(userId);
+    protected getPlayerId(context: Context): PlayerID {
+        return new PlayerID(context.user!.username);
     }
 
     protected parseMatchId(request: Request): MatchID {
@@ -122,6 +118,6 @@ export abstract class MicroserviceAction extends BaseAction {
             });
     }
 
-    public abstract serveRequest(request: Request): Promise<ApiResponse>;
+    public abstract serveRequest(request: Request, context: Context): Promise<ApiResponse>;
 
 }
