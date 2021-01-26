@@ -1,6 +1,6 @@
+import { Entity } from '@darkbyte/herr';
 import { Card } from "../value_objects/Card";
 import { CardList } from "../value_objects/CardList";
-import { Entity } from "./Entity";
 
 export interface Stock extends Entity {
     

@@ -1,5 +1,4 @@
 import { Match } from "../Match";
-import { AbstractRootEntity } from "./AbstractRootEntity";
 import { MatchInitialized} from "../../events/MatchInitialized";
 import { PlayerID } from "../../value_objects/PlayerID";
 import { Team } from "../../value_objects/Team";
@@ -29,7 +28,7 @@ import { ScoreCalculator } from "../../domain-services/ScoreCalculator";
 import { MatchEnded } from "../../events/MatchEnded";
 import { PlayerNotFoundException } from "../../exceptions/PlayerNotFoundException";
 import { Function } from '@darkbyte/herr/lib/types';
-import { Event, SnapshotState } from '@darkbyte/herr';
+import { AbstractRootEntity, Event, SnapshotState } from '@darkbyte/herr';
 
 export class ConcreteMatch extends AbstractRootEntity implements Match {
     private id = 0;

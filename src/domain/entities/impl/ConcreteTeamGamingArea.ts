@@ -12,7 +12,7 @@ import { SequenceRun } from "./SequenceRun";
 import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 import { Event } from '@darkbyte/herr';
 
-export class ConcreteTeamGamingArea implements  TeamGamingArea {
+export class ConcreteTeamGamingArea implements TeamGamingArea {
     private runs: Run[] = [];
 
     constructor(

@@ -1,7 +1,7 @@
-import { Entity } from "./Entity";
 import { CardList } from "../value_objects/CardList";
 import { Run } from "./Run";
 import { RunID } from "../value_objects/RunID";
+import { Entity } from '@darkbyte/herr';
 
 export interface TeamGamingArea extends Entity {
     
