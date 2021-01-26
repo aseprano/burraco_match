@@ -3,7 +3,7 @@ import { CannotThrowCardException } from "../domain/exceptions/CannotThrowCardEx
 import { CardNotOwnedException } from "../domain/exceptions/CardNotOwnedException";
 import { Card } from "../domain/value_objects/Card";
 import { Request } from 'express';
-import { ApiResponse, Injectable, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
+import { ApiResponse, Context, Injectable, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
 
 @Injectable()
 export class ThrowCardAction extends MicroserviceAction {
@@ -20,14 +20,14 @@ export class ThrowCardAction extends MicroserviceAction {
         return ['card'];
     }
 
-    public async serveRequest(request: Request): Promise<ApiResponse> {
+    public async serveRequest(request: Request, context: Context): Promise<ApiResponse> {
         const matchId = this.parseMatchId(request);
         const card = this.getCard(request);
 
         return this.matchService
             .playerThrowsCardToDiscardPile(
                 matchId,
-                this.getPlayerId(request),
+                this.getPlayerId(context),
                 card
             ).then(() => {
                 return new MicroserviceApiResponse({

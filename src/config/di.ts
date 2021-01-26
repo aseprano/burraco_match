@@ -1,6 +1,5 @@
 import { FactoriesList } from '@darkbyte/herr/lib/container/impl/ContainerImpl';
-import { AppConfig, Connection, Container } from '@darkbyte/herr';
-import { FakeAuthenticationService } from '../domain/app-services/impl/FakeAuthenticationService';
+import { AppConfig, Connection, Container, AuthService, FakeAuthService } from '@darkbyte/herr';
 import { ConcreteMatchService } from '../domain/app-services/impl/ConcreteMatchService';
 import { ConcreteMatchFactory } from '../domain/factories/impl/ConcreteMatchFactory';
 import { MatchesRepositoryImpl } from '../domain/repositories/impl/MatchesRepositoryImpl';
@@ -14,21 +13,9 @@ import { IDGenerator } from '../domain/domain-services/IDGenerator';
 import { EventScoreCalculator } from '../domain/domain-services/impl/EventScoreCalculator';
 import { CardsValueCalculator } from '../domain/domain-services/impl/CardsValueCalculator';
 import { StandardRunScoringPolicy } from '../domain/domain-services/impl/StandardRunScoringPolicy';
-import { ctx } from '../domain/app-services/impl/ConcreteContext';
 import { GamingAreaFactory } from '../domain/factories/GamingAreaFactory';
 
 const singletons: FactoriesList = {
-    AuthenticationService: () => {
-        const users = new Map(Object.entries({
-            'kdarkbyte': {username: 'darkbyte', role: 'user'},
-            'kjohn':     {username: 'john',     role: 'user'},
-            'kdaddy':    {username: 'daddy',    role: 'user'},
-            'kmummy':    {username: 'mummy',    role: 'user'},
-            'kmoo':      {username: 'moo',      role: 'user'},
-        }));
-
-        new FakeAuthenticationService(users);
-    },
     IDGenerator: (container: Container, config: AppConfig) => {
         return new MySQLIDGenerator(
             container.get(Connection),
@@ -51,12 +38,22 @@ const singletons: FactoriesList = {
             )
         );
     },
+    AuthService: () => {
+        const users = new Map(Object.entries({
+            'kdarkbyte': {username: 'darkbyte', role: 'user'},
+            'kjohn':     {username: 'john',     role: 'user'},
+            'kdaddy':    {username: 'daddy',    role: 'user'},
+            'kmummy':    {username: 'mummy',    role: 'user'},
+            'kmoo':      {username: 'moo',      role: 'user'},
+        }));
+
+        return new FakeAuthService(users);
+    },
     CardSerializer: StringCardSerializer,
     RunFactory: ConcreteRunFactory,
     MatchService: ConcreteMatchService,
     MatchesRepository: MatchesRepositoryImpl,
     GamingAreaFactory: ConcreteGamingAreaFactory,
-    Context: () => ctx,
 }
 
 const transients: FactoriesList = {

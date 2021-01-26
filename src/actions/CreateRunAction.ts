@@ -1,5 +1,5 @@
 import { MicroserviceAction } from "./MicroserviceAction";
-import { ApiResponse, Injectable, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
+import { ApiResponse, Context, Injectable, MicroserviceApiError, MicroserviceApiResponse } from '@darkbyte/herr';
 import { Request } from "express";
 import { CardNotOwnedException } from "../domain/exceptions/CardNotOwnedException";
 import { RunException } from "../domain/exceptions/RunException";
@@ -32,11 +32,11 @@ export class CreateRunAction extends MicroserviceAction {
         return ['cards'];
     }
 
-    public async serveRequest(request: Request): Promise<ApiResponse> {
+    public async serveRequest(request: Request, context: Context): Promise<ApiResponse> {
         return this.matchService
             .playerCreatesRun(
                 this.parseMatchId(request),
-                this.getPlayerId(request),
+                this.getPlayerId(context),
                 this.getCards(request)
             ).then((run) => new MicroserviceApiResponse({
                 run: {

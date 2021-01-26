@@ -1,4 +1,4 @@
-import { ApiResponse, Injectable, MicroserviceApiError, MicroserviceApiResponse, NotFoundHTTPError } from '@darkbyte/herr';
+import { ApiResponse, Context, Injectable, MicroserviceApiError, MicroserviceApiResponse, NotFoundHTTPError } from '@darkbyte/herr';
 import { Request } from 'express';
 import { CardNotOwnedException } from "../domain/exceptions/CardNotOwnedException";
 import { RunException } from "../domain/exceptions/RunException";
@@ -27,11 +27,11 @@ export class AddCardsToRunAction extends MicroserviceAction {
         ];
     }
 
-    public serveRequest(request: Request): Promise<ApiResponse> {
+    public serveRequest(request: Request, context: Context): Promise<ApiResponse> {
         return this.matchService
             .playerMeldsCardsToExistingRun(
                 this.parseMatchId(request),
-                this.getPlayerId(request),
+                this.getPlayerId(context),
                 this.parseCards(request.body.cards),
                 this.parseRunID(request)
             ).then((newRun) => new MicroserviceApiResponse({
