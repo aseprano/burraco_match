@@ -42,22 +42,18 @@ export abstract class AbstractRepository {
      */
     protected async saveEntity(entity: RootEntity): Promise<void> {
         const streamId = this.streamNameForId(entity.getId());
+        const entityVersion = entity.getVersion();
+        const eventsToCommit = entity.commitEvents();
 
-        if (entity.getVersion() >= 0) {
-            const restoredVersion = entity.getVersion();
-            const eventsToCommit = entity.commitEvents();
-    
-            return this.eventStore
-                .appendToStream(streamId, eventsToCommit, restoredVersion)
-                .then(() => {
-                    if (this.shouldTakeSnapshot(entity)) {
-                        return this.snapshotRepo.add(streamId, entity.getSnapshot());
-                    }
-                });
-        } else {
-            return this.eventStore
-                .createStream(streamId, entity.commitEvents());
-        }
+        const streamPromise = entityVersion < 0 ?
+            this.eventStore.createStream(streamId, eventsToCommit) :
+            this.eventStore.appendToStream(streamId, eventsToCommit, entityVersion);
+
+        return streamPromise.then(() => {
+            if (this.shouldTakeSnapshot(entity)) {
+                return this.snapshotRepo.add(streamId, entity.getSnapshot());
+            }
+        });
     }
 
     protected async deleteEntity(entity: RootEntity): Promise<void> {

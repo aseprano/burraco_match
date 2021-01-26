@@ -34,6 +34,10 @@ export abstract class BaseAction implements RouteHandler {
         return [];
     }
 
+    protected getLogger(): Logger {
+        return this.logger;
+    }
+
     public async handleRequest(request: Request): Promise<ApiResponse> {
         this.ensureRequestContainsAllRequiredParameters(request);
         return this.serveRequest(request);

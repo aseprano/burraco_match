@@ -15,6 +15,7 @@ import { EventScoreCalculator } from '../domain/domain-services/impl/EventScoreC
 import { CardsValueCalculator } from '../domain/domain-services/impl/CardsValueCalculator';
 import { StandardRunScoringPolicy } from '../domain/domain-services/impl/StandardRunScoringPolicy';
 import { ctx } from '../domain/app-services/impl/ConcreteContext';
+import { GamingAreaFactory } from '../domain/factories/GamingAreaFactory';
 
 const singletons: FactoriesList = {
     AuthenticationService: () => {
