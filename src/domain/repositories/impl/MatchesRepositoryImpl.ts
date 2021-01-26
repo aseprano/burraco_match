@@ -1,9 +1,8 @@
+import { AbstractRepository, EventStore, Injectable, SnapshotsRepository } from '@darkbyte/herr';
 import { MatchesRepository } from "../MatchesRepository";
-import { AbstractRepository } from "./AbstractRepository";
 import { MatchID } from "../../value_objects/MatchID";
 import { Match } from "../../entities/Match";
 import { MatchFactory } from "../../factories/MatchFactory";
-import { EventStore, Injectable, SnapshotsRepository } from '@darkbyte/herr';
 
 @Injectable()
 export class MatchesRepositoryImpl extends AbstractRepository implements MatchesRepository {

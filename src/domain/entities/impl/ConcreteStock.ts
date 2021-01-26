@@ -8,10 +8,9 @@ import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 import { CardsShuffler } from "../../domain-services/CardsShuffler";
 import { PotCreated } from "../../events/PotCreated";
 import { FirstCardThrown } from "../../events/FirstCardThrown";
-import { AbstractEntity } from "./AbstractEntity";
 import { PlayerTookOneCardFromStock } from "../../events/PlayerTookOneCardFromStock";
 import { Function, Provider } from '@darkbyte/herr/lib/types';
-import { Event } from '@darkbyte/herr';
+import { AbstractEntity, Event } from '@darkbyte/herr';
 
 export class ConcreteStock extends AbstractEntity implements Stock {
     private cards = new CardList();

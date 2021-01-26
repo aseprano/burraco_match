@@ -4,7 +4,6 @@ import { CardList } from "../../value_objects/CardList";
 import { Run } from "../Run";
 import { RunID } from "../../value_objects/RunID";
 import { Stock } from "../Stock";
-import { AbstractEntity } from "./AbstractEntity";
 import { CardsDealtToPlayer } from "../../events/CardsDealtToPlayer";
 import { CardSerializer } from "../../domain-services/CardSerializer";
 import { PlayerState } from "../PlayerState";
@@ -19,7 +18,7 @@ import { RunCreated } from "../../events/RunCreated";
 import { CardsMeldedToRun } from "../../events/CardsMeldedToRun";
 import { PlayerThrewCardToDiscardPile } from "../../events/PlayerThrewCardToDiscardPile";
 import { PlayerTookPot } from "../../events/PlayerTookPot";
-import { Event } from '@darkbyte/herr';
+import { AbstractEntity, Event } from '@darkbyte/herr';
 
 export class ConcretePlayer extends AbstractEntity implements Player {
     private hand = new CardList();
