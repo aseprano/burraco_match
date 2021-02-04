@@ -67,7 +67,7 @@ export default {
             max: 5,
         }
     },
-    projections: {
+    handlers: {
         registryTableName: 'handled_events',
         projectorsClasses: projectors,
     },

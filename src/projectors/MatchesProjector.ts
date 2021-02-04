@@ -156,7 +156,7 @@ export class MatchesProjector extends AbstractProjector {
         ];
     }
 
-    public async projectEvent(event: IncomingEvent): Promise<void> {
+    public async handleEvent(event: IncomingEvent): Promise<void> {
         switch (event.getName()) {
             case MatchStarted.EventName:
                 return this.handleMatchStarted(event);
