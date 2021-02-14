@@ -1,5 +1,4 @@
 import { MatchFactory } from "../MatchFactory";
-import { IDGenerator } from "../../domain-services/IDGenerator";
 import { Match } from "../../entities/Match";
 import { ConcreteMatch } from "../../entities/impl/ConcreteMatch";
 import { ConcreteStock } from "../../entities/impl/ConcreteStock";
@@ -7,7 +6,7 @@ import { StdCardSerializer } from "../../domain-services/impl/StdCardSerializer"
 import { GamingAreaFactory } from "../GamingAreaFactory";
 import { ScoreCalculator } from "../../domain-services/ScoreCalculator";
 import { Function } from '@darkbyte/herr/lib/types';
-import { Injectable } from '@darkbyte/herr';
+import { IDGenerator, Injectable } from '@darkbyte/herr';
 
 @Injectable()
 export class ConcreteMatchFactory extends MatchFactory {

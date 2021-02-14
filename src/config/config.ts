@@ -54,7 +54,7 @@ export default {
         },
         idGenerator: {
             tableName: 'ids',
-            columnName: 'id'
+            columnName: 'id',
         }
     },
     eventStore: {
